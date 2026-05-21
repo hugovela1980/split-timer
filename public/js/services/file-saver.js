@@ -1,6 +1,6 @@
 // FileSaver - Handles file saving and data persistence
 
-export class FileSaver {
+class FileSaver {
   constructor() {
     this.isAutosaveEnabled = true;
     this.isServerOnline = false;
