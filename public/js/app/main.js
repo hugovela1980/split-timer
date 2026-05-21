@@ -93,20 +93,22 @@
 
     const manageKeypress = (e) => {
       const tag = document.activeElement.tagName;
+
       if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+      
       if (e.key === ' ') {
+        e.preventDefault();
+        timerInput.value = '';
+
         if (runState === 'stopped') {
-          timerInput.value = '';
-          runState = 'running';
           startTimer();
         } else if (runState === 'running') {
-          timerInput.value = '';
-          runState = 'stopped';
           stopTimer();
         }
-      } else if (e.key === 'r' || e.key === 'R') {
+      }
+      
+      if (e.key === 'r' || e.key === 'R') {
         timerInput.value = '';
-        runState = 'stopped';
         resetTimer();
       }
     }

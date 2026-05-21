@@ -1,3 +1,12 @@
+// RouteLoader currently acts as the main controller for:
+// - loading route JSON files
+// - rendering route and sidebar UI
+// - tracking current route progress
+// - tracking active run/session state
+// - saving/restoring route and run data
+// - calculating segment durations, PBs, gold splits, and sum of best
+// - handling route editing and sidebar context menus
+
 // Route Loader - Dynamically loads and populates route data from JSON
 import { deepClone, timeToSeconds, isBetterTime, secondsToTime, escapeHtml, toKebabCase, formatDurationDelta } from '../utils/utils.js';
 import { persistRouteDataToStorage as persistRouteDataToStorageHelper, saveRunSessionToStorage as saveRunSessionToStorageHelper, restoreRunSessionFromStorage as restoreRunSessionFromStorageHelper } from '../persistence/storage.js';
