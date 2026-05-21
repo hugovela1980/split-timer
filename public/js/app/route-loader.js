@@ -1,12 +1,3 @@
-// RouteLoader currently acts as the main controller for:
-// - loading route JSON files
-// - rendering route and sidebar UI
-// - tracking current route progress
-// - tracking active run/session state
-// - saving/restoring route and run data
-// - calculating segment durations, PBs, gold splits, and sum of best
-// - handling route editing and sidebar context menus
-
 // Route Loader - Dynamically loads and populates route data from JSON
 import { deepClone, timeToSeconds, isBetterTime, secondsToTime, escapeHtml, toKebabCase, formatDurationDelta } from '../utils/utils.js';
 import { persistRouteDataToStorage as persistRouteDataToStorageHelper, saveRunSessionToStorage as saveRunSessionToStorageHelper, restoreRunSessionFromStorage as restoreRunSessionFromStorageHelper } from '../persistence/storage.js';
@@ -236,17 +227,12 @@ class RouteLoader {
   }
 
   async endRunManually() {
-    // Process and save gold segments
-    await this.endRunWithGoldSegments();
-
-    // Simulate run completion state
     const currentRunTime = this.liveStopwatchTime || this.getCurrentStopwatchTime();
     const baselinePersonalBest = this.personalBestAtRunStart || this.routeData.personalBest;
-    const isNewPB = false; // Manual end run is never a PB
 
     this.runComplete = {
       finalTime: currentRunTime,
-      isNewPB,
+      isNewPB: false,
       previousPB: baselinePersonalBest || '--:--:--'
     };
 
@@ -1230,9 +1216,6 @@ class RouteLoader {
 
       if (isNewPB) {
         await this.saveRouteDataToFile();
-      } else {
-        // Not a PB, but keep gold segment times
-        await this.endRunWithGoldSegments();
       }
 
       this.runComplete = {
