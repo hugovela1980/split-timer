@@ -1,0 +1,455 @@
+{
+  "name": "Act 1, 100 Percent",
+  "personalBest": "01:04:37",
+  "sumOfBest": "01:03:00",
+  "segments": [
+    {
+      "id": 1,
+      "name": "Get Silk Spear",
+      "time": "00:06:15",
+      "allowSetTime": true,
+      "subSegments": [
+        {
+          "description": "Mossberry 1, Moss Grotto",
+          "time": "",
+          "allowSetTime": false
+        },
+        {
+          "description": "Rosary String, Moss Grotto",
+          "time": "",
+          "allowSetTime": false
+        },
+        {
+          "description": "Moss Mother",
+          "time": "00:02:37",
+          "allowSetTime": true
+        },
+        {
+          "description": "Get Silk Spear",
+          "time": "",
+          "allowSetTime": false
+        }
+      ],
+      "duration": "00:06:15",
+      "bestTime": "00:05:55",
+      "segmentDuration": "00:05:55"
+    },
+    {
+      "id": 2,
+      "name": "Get Swift Step",
+      "time": "00:14:31",
+      "allowSetTime": true,
+      "subSegments": [
+        {
+          "description": "Bell Beast",
+          "time": "00:07:29",
+          "allowSetTime": true
+        },
+        {
+          "description": "Rosary Rocks, The Marrow",
+          "time": "",
+          "allowSetTime": false
+        },
+        {
+          "description": "Skarrgard",
+          "time": "00:11:05",
+          "allowSetTime": true
+        },
+        {
+          "description": "Flea 1, Hunter's March",
+          "time": "",
+          "allowSetTime": false
+        },
+        {
+          "description": "Rosary String, Hunter's March",
+          "time": "",
+          "allowSetTime": false
+        },
+        {
+          "description": "Arena 1, Hunter's March",
+          "time": "",
+          "allowSetTime": true
+        },
+        {
+          "description": "Arena 2, Hunter's March",
+          "time": "",
+          "allowSetTime": true
+        },
+        {
+          "description": "Get Swift Step",
+          "time": "",
+          "allowSetTime": false
+        }
+      ],
+      "duration": "00:08:16",
+      "bestTime": "00:08:16",
+      "segmentDuration": "00:08:54"
+    },
+    {
+      "id": 3,
+      "name": "Enter Haunted Bellhart",
+      "time": "00:23:24",
+      "allowSetTime": true,
+      "subSegments": [
+        {
+          "description": "Flea 2, Deep Docks",
+          "time": "",
+          "allowSetTime": false
+        },
+        {
+          "description": "Flea 3, Deep Docks Bellway",
+          "time": "",
+          "allowSetTime": false
+        },
+        {
+          "description": "Crafting Kit 1, Forge Daughter",
+          "time": "",
+          "allowSetTime": false
+        },
+        {
+          "description": "Lace 1",
+          "time": "00:19:08",
+          "allowSetTime": true
+        },
+        {
+          "description": "Flea 4, Far Fields",
+          "time": "",
+          "allowSetTime": false
+        },
+        {
+          "description": "Flea 5, The Marrow",
+          "time": "",
+          "allowSetTime": false
+        },
+        {
+          "description": "Travel with Fleas and get flea brew",
+          "time": "",
+          "allowSetTime": false
+        },
+        {
+          "description": "Enter Haunted Bellhart",
+          "time": "",
+          "allowSetTime": false
+        }
+      ],
+      "duration": "00:08:53",
+      "bestTime": "00:08:22",
+      "segmentDuration": "00:08:58"
+    },
+    {
+      "id": 4,
+      "name": "Cling Grip",
+      "time": "00:28:00",
+      "allowSetTime": true,
+      "subSegments": [
+        {
+          "description": "Rosary String, Shellwood",
+          "time": "",
+          "allowSetTime": false
+        },
+        {
+          "description": "Pollip 1",
+          "time": "",
+          "allowSetTime": false
+        },
+        {
+          "description": "Cling Grip",
+          "time": "",
+          "allowSetTime": false
+        }
+      ],
+      "duration": "00:04:36",
+      "bestTime": "00:03:50",
+      "segmentDuration": "00:03:50"
+    },
+    {
+      "id": 5,
+      "name": "Needolin",
+      "time": "00:34:49",
+      "allowSetTime": true,
+      "subSegments": [
+        {
+          "description": "Pollip 2",
+          "time": "",
+          "allowSetTime": false
+        },
+        {
+          "description": "Flea 6, Shellwood",
+          "time": "",
+          "allowSetTime": false
+        },
+        {
+          "description": "Mask shard 1, Shellwood (Quit Out)",
+          "time": "",
+          "allowSetTime": false
+        },
+        {
+          "description": "Pollip 3",
+          "time": "",
+          "allowSetTime": false
+        },
+        {
+          "description": "Flea 7, Bellvein",
+          "time": "",
+          "allowSetTime": false
+        },
+        {
+          "description": "Widow",
+          "time": "00:32:17",
+          "allowSetTime": true
+        },
+        {
+          "description": "Needolin",
+          "time": "",
+          "allowSetTime": false
+        }
+      ],
+      "duration": "00:06:49",
+      "bestTime": "00:06:49",
+      "segmentDuration": "00:08:18"
+    },
+    {
+      "id": 6,
+      "name": "Needle Upgrade 1",
+      "time": "00:36:41",
+      "allowSetTime": true,
+      "subSegments": [
+        {
+          "description": "Pollip 4",
+          "time": "",
+          "allowSetTime": false
+        },
+        {
+          "description": "Rosary String, Shellwood",
+          "time": "",
+          "allowSetTime": false
+        },
+        {
+          "description": "Pollip 5",
+          "time": "",
+          "allowSetTime": false
+        },
+        {
+          "description": "Bellhart wishes: Crawbug Clearing and My Missing Courier",
+          "time": "",
+          "allowSetTime": false
+        },
+        {
+          "description": "Needle Ugrade 1",
+          "time": "",
+          "allowSetTime": false
+        }
+      ],
+      "duration": "00:01:52",
+      "bestTime": "00:01:52",
+      "segmentDuration": "00:01:57"
+    },
+    {
+      "id": 7,
+      "name": "Thread Storm",
+      "time": "00:42:58",
+      "allowSetTime": true,
+      "subSegments": [
+        {
+          "description": "Memory Locket 1, Greymoor",
+          "time": "",
+          "allowSetTime": false
+        },
+        {
+          "description": "Crawbug Clearing wish update",
+          "time": "",
+          "allowSetTime": false
+        },
+        {
+          "description": "Spool Fragment 1, Greymoor",
+          "time": "",
+          "allowSetTime": false
+        },
+        {
+          "description": "Rosary String, Greymoor",
+          "time": "",
+          "allowSetTime": false
+        },
+        {
+          "description": "Arena, Craw Lake",
+          "time": "",
+          "allowSetTime": true
+        },
+        {
+          "description": "Thread Storm",
+          "time": "",
+          "allowSetTime": false
+        }
+      ],
+      "duration": "00:06:17",
+      "bestTime": "00:06:17",
+      "segmentDuration": "00:06:40"
+    },
+    {
+      "id": 8,
+      "name": "Reaper Crest",
+      "time": "00:49:28",
+      "allowSetTime": true,
+      "subSegments": [
+        {
+          "description": "Threefold Pin",
+          "time": "",
+          "allowSetTime": false
+        },
+        {
+          "description": "Flea 8, Greymoor",
+          "time": "",
+          "allowSetTime": false
+        },
+        {
+          "description": "Bone Scroll, Greymoor",
+          "time": "",
+          "allowSetTime": false
+        },
+        {
+          "description": "Crawbug Clearing Completion",
+          "time": "",
+          "allowSetTime": false
+        },
+        {
+          "description": "Reaper Crest",
+          "time": "",
+          "allowSetTime": false
+        }
+      ],
+      "duration": "00:06:30",
+      "bestTime": "00:06:30",
+      "segmentDuration": "00:07:49"
+    },
+    {
+      "id": 9,
+      "name": "Drifter's Cloak",
+      "time": "00:52:59",
+      "allowSetTime": true,
+      "subSegments": [
+        {
+          "description": "Switch to Hunter's Crest, Fleatopia",
+          "time": "",
+          "allowSetTime": false
+        },
+        {
+          "description": "Open Bellway, Bellhart",
+          "time": "",
+          "allowSetTime": false
+        },
+        {
+          "description": "Accept Seamstress wish and bench",
+          "time": "",
+          "allowSetTime": false
+        },
+        {
+          "description": "Collect Flexile Spines",
+          "time": "",
+          "allowSetTime": false
+        },
+        {
+          "description": "Silkspeed Anklets (Quit Out and equip)",
+          "time": "",
+          "allowSetTime": false
+        },
+        {
+          "description": "Drifter's Cloak",
+          "time": "",
+          "allowSetTime": false
+        }
+      ],
+      "duration": "00:03:31",
+      "bestTime": "00:03:31",
+      "segmentDuration": "00:05:30"
+    },
+    {
+      "id": 10,
+      "name": "Spool Fragment, Bone Bottom",
+      "time": "00:58:53",
+      "allowSetTime": true,
+      "subSegments": [
+        {
+          "description": "4th Chorus",
+          "time": "",
+          "allowSetTime": true
+        },
+        {
+          "description": "Bellway to Bellhart",
+          "time": "",
+          "allowSetTime": false
+        },
+        {
+          "description": "Pollip 6",
+          "time": "",
+          "allowSetTime": false
+        },
+        {
+          "description": "Grant Pollip Wish",
+          "time": "",
+          "allowSetTime": false
+        },
+        {
+          "description": "Bench at Shellwood Bellway",
+          "time": "",
+          "allowSetTime": false
+        },
+        {
+          "description": "Rescue My Missing Courier",
+          "time": "",
+          "allowSetTime": false
+        },
+        {
+          "description": "Choral Commandment, Mosshome",
+          "time": "",
+          "allowSetTime": false
+        },
+        {
+          "description": "Weaver Effigy, collect rosaries",
+          "time": "",
+          "allowSetTime": false
+        },
+        {
+          "description": "Spool Fragment 2, Bone Bottom (Quit Out)",
+          "time": "",
+          "allowSetTime": false
+        }
+      ],
+      "duration": "00:05:54",
+      "bestTime": "00:05:54",
+      "segmentDuration": "00:07:12"
+    },
+    {
+      "id": 11,
+      "name": "Finish Act 1",
+      "time": "01:04:37",
+      "allowSetTime": true,
+      "subSegments": [
+        {
+          "description": "Memory Locket 2, Blasted Steps",
+          "time": "",
+          "allowSetTime": false
+        },
+        {
+          "description": "Open Bellway and bench, Blasted Steps",
+          "time": "",
+          "allowSetTime": false
+        },
+        {
+          "description": "Craftmetal 1, Blasted Steps",
+          "time": "",
+          "allowSetTime": false
+        },
+        {
+          "description": "Last Judge",
+          "time": "01:04:13",
+          "allowSetTime": true
+        }
+      ],
+      "duration": "00:05:44",
+      "bestTime": "00:05:44",
+      "segmentDuration": "00:09:57"
+    }
+  ],
+  "currentSegmentId": 1,
+  "currentSegmentName": "Get Silk Spear"
+}

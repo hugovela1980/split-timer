@@ -1,0 +1,533 @@
+{
+  "name": "Act 2, 100 Percent",
+  "personalBest": "01:21:54",
+  "sumOfBest": "01:20:40",
+  "segments": [
+    {
+      "id": 1,
+      "name": "Get Whiteward Key",
+      "time": "",
+      "duration": "",
+      "bestTime": "00:04:35",
+      "allowSetTime": true,
+      "completed": false,
+      "subSegments": [
+        {
+          "description": "Spool Fragment 3, Grand Gate",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Bench in Choral Chambers (above Grand Bellway)",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Open Bellway and Ventrica",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Open Ventrica, Songclave",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Get Whiteward Key and Quit Out",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Open Slab Bellway",
+      "time": "00:08:37",
+      "duration": "",
+      "bestTime": "00:03:53",
+      "allowSetTime": true,
+      "completed": false,
+      "subSegments": [
+        {
+          "description": "Cogheart Piece 1, Choral Chambers",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Flea 9, Choral Chambers",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Get Heavy Rosary String, Choral Chambers",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Spool Fragment 4, The Slab",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Open Bellway, The Slab, Quit Out",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Get Clawline",
+      "time": "00:12:33",
+      "duration": "00:03:56",
+      "bestTime": "00:03:56",
+      "allowSetTime": true,
+      "completed": false,
+      "subSegments": [
+        {
+          "description": "Enter Whiteward",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Choral Commandment, Whiteward",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Enter Underworks",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Flea 10, Underworks",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Craftmetal 2, Underworks",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Get Clawline",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "Get Faydown Cloak, Mount Fay",
+      "time": "00:21:00",
+      "duration": "00:08:27",
+      "bestTime": "00:08:27",
+      "allowSetTime": true,
+      "completed": false,
+      "subSegments": [
+        {
+          "description": "Bench near Twelfth Architect, Underworks",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Buy Sawtooth Circlet",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Spool Fragment 5, Underworks, Quit Out",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Open Underworks Ventrica, travel to Grand Bellway",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Travel to The Slab Bellway and enter Mount Fay",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Cocoon skip",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Faydown Cloak",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Ring Songclave Bell",
+      "time": "",
+      "duration": "",
+      "bestTime": "00:04:06",
+      "allowSetTime": true,
+      "completed": false,
+      "subSegments": [
+        {
+          "description": "Bench at upper mount fay bench",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Equip Sawtooth Circlet",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Flea 11, Mount Fay",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Mask Shard 2, Mount Fay",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Get Memory Crystal, Quit Out",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Bellway and Ventrica travel to Songclave",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Ring Songclave Bell",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "name": "Memoriam, Get Spool Fragment 6",
+      "time": "",
+      "duration": "",
+      "bestTime": "00:04:24",
+      "allowSetTime": true,
+      "completed": false,
+      "subSegments": [
+        {
+          "description": "Bench at Memoriam",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Get Cogheart Piece 2",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Memory Locket 3",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Get voltvessels",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Flea 12 (Giant Lost Flea)",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Spool Fragment 6, Memoriam, Quit Out",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "name": "Architect's Melody",
+      "time": "",
+      "duration": "",
+      "bestTime": "00:10:13",
+      "allowSetTime": true,
+      "completed": false,
+      "subSegments": [
+        {
+          "description": "Equip Volt Vessels",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Cogwork Dancers",
+          "time": "",
+          "completed": false,
+          "allowSetTime": true
+        },
+        {
+          "description": "Enter Cogwork Core",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Mask Shard 3, Choral Chambers",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Rosary String, Choral Chambers",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Great Taste of Pharloom, Promise Wish",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Open two levers in Choral Chambers, Quit Out",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Complete Melody Puzzle",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "name": "Needle Upgrade 2",
+      "time": "",
+      "duration": "",
+      "bestTime": "00:15:26",
+      "allowSetTime": true,
+      "completed": false,
+      "subSegments": [
+        {
+          "description": "Enter Whispering Vaults",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Whispering Vaults Arena",
+          "time": "",
+          "completed": false,
+          "allowSetTime": true
+        },
+        {
+          "description": "Cogheart Piece 3, Whispering Vaults",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Flea 13, Whispering Vaults",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Pale Oil 1, Whispering Vaults",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Open lever in Trobbio Room",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Bellway to Bellhart",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Turn in Relics",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Upgrade Needle",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "name": "Get Needle Strike",
+      "time": "",
+      "duration": "",
+      "bestTime": "00:05:06",
+      "allowSetTime": true,
+      "completed": false,
+      "subSegments": [
+        {
+          "description": "Bellway and Bench, Blasted Steps",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Rosary String, Blasted Steps",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Mask Shard 4, Blasted Steps, Quit Out",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Get Magnetite Dice, Quit Out",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Great Conchflies",
+          "time": "01:07:13",
+          "completed": false,
+          "allowSetTime": true
+        },
+        {
+          "description": "Get Needle Strike",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "name": "Get Volt Filament, Sands of Karak",
+      "time": "",
+      "duration": "",
+      "bestTime": "00:20:34",
+      "allowSetTime": true,
+      "completed": false,
+      "subSegments": [
+        {
+          "description": "Enter Sands of Karak",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Visit Shakra",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Get Crustnut, Quit Out",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Buy __ from Grindle",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Get Beast Shard",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Flea 14, Blasted Steps",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Flea 15, Sands of Karak",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Get Simple Key",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Voltvrm",
+          "time": "01:30:53",
+          "completed": false,
+          "allowSetTime": true
+        },
+        {
+          "description": "Get Volt Filament, Quit Out",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        }
+      ]
+    }
+  ],
+  "currentSegmentId": 1,
+  "currentSegmentName": "Get Whiteward Key"
+}

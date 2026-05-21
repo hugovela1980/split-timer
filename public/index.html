@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="main.js" defer></script>
+  <script type="module" src="route-loader.js"></script>
+  <script src="file-saver.js" defer></script>
+  <link rel="icon" type="image/x-icon" href="./favicon.ico">
+  <link rel="stylesheet" href="style.css">
+  <title>Document</title>
+</head>
+
+<body>
+  <div class="timer">
+    <div class="timer__controls">
+      <div class="timer__topbar">
+        <button id="enable-autosave" class="btn-blue autosave-btn">Autosave: On</button>
+
+        <div class="route-picker">
+          <label class="route-picker__label" for="route-selector">Route</label>
+          <select id="route-selector" class="route-picker__select">
+            <option value="__create_new__" class="route-picker__create-option">+ Create New Route</option>
+          </select>
+        </div>
+      </div>
+
+      <h1 class="timer__stopwatch">00:00:00</h1>
+
+      <div class="timer__btns">
+        <button class="timer__start btn-green">Start</button>
+        <button class="timer__stop btn-red">Stop</button>
+        <button class="timer__reset btn-blue">Reset</button>
+      </div>
+
+      <form class="timer__set">
+        <input class="timer__set--input" autofocus>
+        <button class="timer__set--submit btn-blue" type="submit">Set</button>
+      </form>
+    </div>
+
+    <div class="comparisons">comparisons</div>
+  </div>
+
+  <nav class="sidebar">
+    <p class="sidebar__title">Segments</p>
+    <details class="sidebar__editor-panel">
+      <summary class="sidebar__editor-toggle">Route Editor</summary>
+      <div class="sidebar__editor">
+        <form class="sidebar__control" id="add-segment-form">
+          <label class="sidebar__control-label" for="new-segment-name">Add Segment</label>
+          <input class="sidebar__control-input" id="new-segment-name" type="text" placeholder="Segment name" required>
+          <button class="sidebar__control-btn btn-blue" type="submit">Add</button>
+        </form>
+
+        <form class="sidebar__control" id="add-subsegment-form">
+          <label class="sidebar__control-label" for="subsegment-parent-id">Add Sub-Segment</label>
+          <select class="sidebar__control-input" id="subsegment-parent-id" required></select>
+          <input class="sidebar__control-input" id="new-subsegment-description" type="text"
+            placeholder="Sub-segment description" required>
+          <label class="sidebar__checkbox-row" for="new-subsegment-allow-set-time">
+            <input id="new-subsegment-allow-set-time" type="checkbox">
+            <span>Show Set Time Button</span>
+          </label>
+          <button class="sidebar__control-btn btn-blue" type="submit">Add</button>
+        </form>
+
+        <form class="sidebar__control" id="delete-segment-form">
+          <label class="sidebar__control-label" for="delete-segment-id">Delete Segment</label>
+          <select class="sidebar__control-input" id="delete-segment-id" required></select>
+          <button class="sidebar__control-btn btn-red" type="submit">Delete</button>
+        </form>
+      </div>
+    </details>
+
+    <div class="sidebar__header sidebar__row">
+      <span class="sidebar__header-label">Segment</span>
+      <span class="sidebar__header-label sidebar__header-label--right">Time</span>
+      <span class="sidebar__header-label sidebar__header-label--right">Vs Best</span>
+    </div>
+    <ul class="sidebar__list"></ul>
+  </nav>
+
+  <div class="route"></div>
+
+  <dialog id="create-route-modal" class="create-route-modal">
+    <form id="create-route-form" class="create-route-modal__form" method="dialog">
+      <h2 class="create-route-modal__title">Create New Route</h2>
+      <label class="create-route-modal__label" for="new-route-name">Route Name</label>
+      <input
+        id="new-route-name"
+        class="create-route-modal__input"
+        type="text"
+        placeholder="e.g. Any Percent"
+        autocomplete="off"
+        required
+      >
+      <p id="create-route-error" class="create-route-modal__error" hidden></p>
+      <div class="create-route-modal__actions">
+        <button type="button" id="create-route-cancel" class="btn-blue">Cancel</button>
+        <button type="submit" id="create-route-submit" class="btn-green">Create</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="sidebar-context-menu" class="sidebar-context-menu" hidden>
+    <button type="button" id="sidebar-context-edit" class="sidebar-context-menu__item">Edit Name</button>
+    <button type="button" id="sidebar-context-clear-split" class="sidebar-context-menu__item sidebar-context-menu__item--warn">Clear Segment Split</button>
+    <button type="button" id="sidebar-context-delete" class="sidebar-context-menu__item sidebar-context-menu__item--danger">Delete</button>
+  </div>
+
+  <dialog id="rename-sidebar-item-modal" class="rename-item-modal">
+    <form id="rename-sidebar-item-form" class="rename-item-modal__form" method="dialog">
+      <h2 id="rename-sidebar-item-title" class="rename-item-modal__title">Rename Item</h2>
+      <label class="rename-item-modal__label" for="rename-sidebar-item-input">Name</label>
+      <input
+        id="rename-sidebar-item-input"
+        class="rename-item-modal__input"
+        type="text"
+        autocomplete="off"
+        required
+      >
+      <div class="rename-item-modal__actions">
+        <button type="button" id="rename-sidebar-item-cancel" class="btn-blue">Cancel</button>
+        <button type="submit" class="btn-green">Save</button>
+      </div>
+    </form>
+  </dialog>
+
+</body>
+
+</html>
+
+<!-- <div class="segment">
+      <div class="segment__title">
+        <h2 class="segment__title--name">Segment 1</h2>
+        <div class="segment__title--info">
+          <p class="segment__title--time">00:00:00</p>
+          <button class="segment__title--set btn-blue">Set Time</button>
+        </div>
+      </div>
+
+      <div class="sub-segments">
+        <div class="sub-segment">
+          <div class="sub-segment__task">
+            <input type="checkbox" name="task" class="sub-segment__checkbox">
+            <p class="sub-segment__description">Lorem ipsum dolor sit amet.</p>
+          </div>
+          <div class="sub-segment__time">
+            <p class="sub-segment__time"></p>
+            <button class="sub-segment__set btn-blue">Set Time</button>
+          </div>
+        </div>
+
+        <div class="sub-segment">
+          <div class="sub-segment__task">
+            <input type="checkbox" name="task" class="sub-segment__checkbox">
+            <p class="sub-segment__description">Lorem ipsum dolor sit amet.</p>
+          </div>
+          <div class="sub-segment__time">
+            <p class="sub-segment__time">00:00:00</p>
+            <button class="sub-segment__set btn-blue">Set Time</button>
+          </div>
+        </div>
+      </div>    
+    </div> -->

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stopwatch Tests</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      margin: 24px;
+      background: #f3f4f6;
+      color: #111827;
+    }
+    .test-report {
+      padding: 18px;
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+      background: #ffffff;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .test-result {
+      padding: 10px 14px;
+      border-radius: 8px;
+      margin: 8px 0;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+    }
+    .test-result--pass {
+      background: #ecfdf5;
+      border: 1px solid #a7f3d0;
+      color: #166534;
+    }
+    .test-result--fail {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #991b1b;
+    }
+    .test-result__error {
+      margin-top: 6px;
+      color: #7f1d1d;
+      white-space: pre-wrap;
+    }
+    .test-summary {
+      margin-top: 20px;
+      padding: 14px;
+      border-top: 1px solid #d1d5db;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Stopwatch Test Runner</h1>
+    <div id="test-report" class="test-report"></div>
+  </main>
+
+  <script type="module">
+    import { TestRunner } from '../tests/test-runner.js';
+    import { registerStorageTests } from '../tests/storage.test.js';
+    import { registerFileSaverTests } from '../tests/file-saver.test.js';
+    import { registerRouteLoaderFileSaveTests } from '../tests/route-loader-file-save.test.js';
+
+    const reportElement = document.querySelector('#test-report');
+    const runner = new TestRunner({ reportElement });
+
+    registerStorageTests(runner);
+    registerFileSaverTests(runner);
+    registerRouteLoaderFileSaveTests(runner);
+    await runner.run();
+  </script>
+</body>
+</html>
