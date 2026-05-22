@@ -49,21 +49,23 @@ class RouteLoader {
       this.ensureRouteStatsStructure();
       this.updateSegmentDurations();
       this.restoreRunSessionFromStorage();
+
       this.routeContainer = document.querySelector('.route');
       this.sidebarList = document.querySelector('.sidebar__list');
       this.comparisonsContainer = document.querySelector('.comparisons');
+
+      this.resetRouteProgressToFirstSegment();
       this.initStopwatchSync();
       this.initEditorControls();
       this.initSidebarContextMenu();
       this.initRouteSelector();
       this.populateRoute();
+      this.resetRouteProgressToFirstSegment();
       this.populateSidebar();
-      if (!Number.isInteger(this.routeData.currentSegmentId) && this.routeData.segments.length > 0) {
-        await this.setActiveSidebarButton(`segment-${this.routeData.segments[0].id}`);
-      }
       this.renderComparisonsPanel();
       this.refreshEditorSegmentOptions();
       this.initScrollObserver();
+      await this.resetRouteProgressToFirstSegmentAndRender({ scroll: false, save: false });
 
       // On fresh app load, treat the JSON file as the clean source of truth.
       // Clear any old active-run storage, then save the loaded route as the baseline.
@@ -178,6 +180,10 @@ class RouteLoader {
     this.personalBestAtRunStart = this.routeData && typeof this.routeData.personalBest === 'string'
       ? this.routeData.personalBest
       : '';
+
+    // Persist the pre-run state so we can restore it even after active-run data
+    // has been autosaved to the JSON file.
+    this.saveBaselineRouteToStorage();
   }
 
   clearRunSnapshot() {
@@ -189,6 +195,73 @@ class RouteLoader {
     if (!this.runDataSnapshot) return;
     this.routeData = deepClone(this.runDataSnapshot);
     this.clearRunSnapshot();
+  }
+
+  restoreBaselineRouteState() {
+    const storedBaseline = this.restoreBaselineRouteFromStorage();
+
+    if (storedBaseline && Array.isArray(storedBaseline.segments)) {
+      this.routeData = deepClone(storedBaseline);
+      return true;
+    }
+
+    if (this.runDataSnapshot) {
+      this.routeData = deepClone(this.runDataSnapshot);
+      return true;
+    }
+
+    return false;
+  }
+
+  resetRunSessionState() {
+    this.runComplete = null;
+    this.hasRunStarted = false;
+    this.sessionGoldSplits.clear();
+    this.sessionSetSegments.clear();
+    this.sessionBestBySegment.clear();
+    this.clearRunSnapshot();
+    this.clearRunStorage();
+  }
+
+  resetRouteProgressToFirstSegment() {
+    const firstSegment = this.routeData && Array.isArray(this.routeData.segments)
+      ? this.routeData.segments[0]
+      : null;
+
+    if (!firstSegment) return;
+
+    this.routeData.currentSegmentId = Number(firstSegment.id);
+    this.routeData.currentSegmentName = firstSegment.name;
+  }
+
+  async resetRouteProgressToFirstSegmentAndRender({ scroll = false, save = false } = {}) {
+    this.resetRouteProgressToFirstSegment();
+
+    const firstSegment = this.routeData && Array.isArray(this.routeData.segments)
+      ? this.routeData.segments[0]
+      : null;
+
+    if (!firstSegment) return;
+
+    const firstSegmentDomId = `segment-${firstSegment.id}`;
+
+    this.suppressObserverUntil = Date.now() + 1500;
+
+    this.populateSidebar();
+    this.renderComparisonsPanel();
+
+    await this.setActiveSidebarButton(firstSegmentDomId, false);
+
+    if (scroll) {
+      const target = document.getElementById(firstSegmentDomId);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+
+    if (save) {
+      await this.saveCleanRouteState({ force: true });
+    }
   }
 
   async saveRouteDataToFile(options = {}) {
@@ -215,96 +288,70 @@ class RouteLoader {
   }
 
   async deleteCompletedRunData() {
-    if (this.runDataSnapshot) {
-      this.restoreRouteDataFromSnapshot();
-    }
-
-    this.runComplete = null;
-    this.hasRunStarted = false;
-    this.sessionGoldSplits.clear();
-    this.sessionSetSegments.clear();
-    this.sessionBestBySegment.clear();
-    this.clearRunSnapshot();
-    this.clearRunStorage();
-
-    const firstSegment = this.routeData && Array.isArray(this.routeData.segments)
-      ? this.routeData.segments[0]
-      : null;
-
-    if (firstSegment) {
-      this.routeData.currentSegmentId = Number(firstSegment.id);
-      this.routeData.currentSegmentName = firstSegment.name;
-    }
+    this.restoreBaselineRouteState();
+    this.resetRunSessionState();
+    this.resetRouteProgressToFirstSegment();
 
     this.populateRoute();
     this.populateSidebar();
     window.dispatchEvent(new CustomEvent('stopwatch:clear'));
     this.renderComparisonsPanel();
-    this.persistRouteDataToStorage();
-    await this.saveRouteDataToFile();
+
+    await this.saveCleanRouteState({ force: true });
   }
 
   async restartRun() {
-    this.runComplete = null;
-    this.hasRunStarted = false;
-    this.sessionGoldSplits.clear();
-    this.sessionSetSegments.clear();
-    this.sessionBestBySegment.clear();
-    this.clearRunSnapshot();
-    this.clearRunStorage();
+    this.resetRunSessionState();
+    this.restoreBaselineRouteState();
+    this.resetRouteProgressToFirstSegment();
 
-    const firstSegment = this.routeData && Array.isArray(this.routeData.segments)
-      ? this.routeData.segments[0]
-      : null;
-
-    if (firstSegment) {
-      const firstSegmentDomId = `segment-${firstSegment.id}`;
-      this.routeData.currentSegmentId = Number(firstSegment.id);
-      this.routeData.currentSegmentName = firstSegment.name;
-      this.suppressObserverUntil = Date.now() + 1500;
-
-      this.populateSidebar();
-      this.renderComparisonsPanel();
-      await this.setActiveSidebarButton(firstSegmentDomId, false);
-
-      const target = document.getElementById(firstSegmentDomId);
-      if (target) {
-        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    } else {
-      this.populateSidebar();
-      this.renderComparisonsPanel();
-    }
+    this.populateRoute();
+    await this.resetRouteProgressToFirstSegmentAndRender({ scroll: true, save: true });
 
     window.dispatchEvent(new CustomEvent('stopwatch:clear'));
   }
 
   async endRunWithGoldSegments() {
-    // For non-PB runs: update bestTimes for gold segments, revert everything else
-    this.routeData.segments.forEach((segment, index) => {
-      const isGold = this.sessionGoldSplits.has(Number(segment.id));
-      
-      if (isGold && this.sessionSetSegments.has(Number(segment.id))) {
-        // Gold segment: keep bestTime, but clear the run-specific time and duration
-        segment.time = '';
-        segment.duration = '';
-        // bestTime was already updated by updateSegmentDurations, keep it
-      } else if (this.sessionSetSegments.has(Number(segment.id))) {
-        // Non-gold segment: revert completely to pre-run state
-        if (this.runDataSnapshot) {
-          const snapshotSegment = this.runDataSnapshot.segments[index];
-          segment.time = snapshotSegment.time || '';
-          segment.duration = snapshotSegment.duration || '';
-          segment.bestTime = snapshotSegment.bestTime || '';
-        }
+    const activeRunRouteData = this.restoreActiveRunRouteFromStorage()
+      || deepClone(this.routeData);
+
+    const baselineRouteData = this.restoreBaselineRouteFromStorage()
+      || this.runDataSnapshot;
+
+    if (!baselineRouteData || !Array.isArray(baselineRouteData.segments)) {
+      return;
+    }
+
+    const mergedRouteData = deepClone(baselineRouteData);
+
+    mergedRouteData.segments.forEach((baselineSegment) => {
+      const segmentId = Number(baselineSegment.id);
+      const activeSegment = activeRunRouteData.segments.find(
+        (segment) => Number(segment.id) === segmentId
+      );
+
+      if (!activeSegment) return;
+
+      const activeBest = activeSegment.bestTime || '';
+      const baselineBest = baselineSegment.bestTime || '';
+
+      const shouldKeepGoldSplit =
+        this.sessionSetSegments.has(segmentId) &&
+        activeBest &&
+        isBetterTime(activeBest, baselineBest);
+
+      if (shouldKeepGoldSplit) {
+        baselineSegment.bestTime = activeBest;
       }
     });
 
-    // Don't update personalBest since it's not a PB
-    this.routeData.personalBest = this.personalBestAtRunStart || this.routeData.personalBest;
+    // Non-PB run: keep previous PB, but recalculate sum of best after gold split updates.
+    mergedRouteData.personalBest = this.personalBestAtRunStart || mergedRouteData.personalBest || '';
 
-    this.persistRouteDataToStorage();
-    await this.saveRouteDataToFile();
+    this.routeData = mergedRouteData;
+    this.updateRouteRunStats();
+
+    await this.saveCleanRouteState({ force: true });
   }
 
   async endRunManually() {
@@ -318,18 +365,19 @@ class RouteLoader {
     };
 
     this.hasRunStarted = false;
-    this.sessionGoldSplits.clear();
-    this.sessionSetSegments.clear();
-    this.sessionBestBySegment.clear();
-    this.clearRunStorage();
+
+    // Important:
+    // Do NOT clear sessionGoldSplits, sessionSetSegments, or sessionBestBySegment here.
+    // The Run Complete card still needs that data if the user chooses "End Run & Save Gold".
+    this.resetRouteProgressToFirstSegment();
+    this.populateSidebar();
+    this.renderComparisonsPanel();
 
     window.dispatchEvent(new CustomEvent('stopwatch:clear'));
-    this.renderComparisonsPanel();
   }
 
   async resetRun() {
     await this.endRunManually();
-    window.dispatchEvent(new CustomEvent('stopwatch:start'));
   }
 
   async saveRunCompleteGold() {
@@ -337,10 +385,20 @@ class RouteLoader {
 
     if (!this.runComplete.isNewPB) {
       await this.endRunWithGoldSegments();
+    } else {
+      await this.saveCleanRouteState({ force: true });
     }
 
-    await this.restartRun();
-    await this.saveRouteDataToFile();
+    this.resetRunSessionState();
+    this.resetRouteProgressToFirstSegment();
+
+    this.populateRoute();
+    this.populateSidebar();
+    this.renderComparisonsPanel();
+
+    window.dispatchEvent(new CustomEvent('stopwatch:clear'));
+
+    await this.saveCleanRouteState({ force: true });
   }
 
   async cancelRunMidway() {
@@ -869,35 +927,15 @@ class RouteLoader {
       this.hasRunStarted = false;
       this.clearRunStorage();
 
-      // Reset to first segment
-      const firstSegment = this.routeData && Array.isArray(this.routeData.segments)
-        ? this.routeData.segments[0]
-        : null;
-
-      if (firstSegment) {
-        this.routeData.currentSegmentId = Number(firstSegment.id);
-        this.routeData.currentSegmentName = firstSegment.name;
-      }
-
-      // Refresh UI
+      // Reset to first segment and refresh UI
+      this.resetRouteProgressToFirstSegment();
       this.populateRoute();
       this.populateSidebar();
       this.renderComparisonsPanel();
       this.refreshEditorSegmentOptions();
       this.initScrollObserver();
 
-      // Set active segment and scroll
-      if (firstSegment) {
-        await this.setActiveSidebarButton(`segment-${firstSegment.id}`);
-        const target = document.getElementById(`segment-${firstSegment.id}`);
-        if (target) {
-          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      }
-
-      // Save to storage and file
-      this.persistRouteDataToStorage();
-      await this.saveRouteDataToFile();
+      await this.resetRouteProgressToFirstSegmentAndRender({ scroll: true, save: true });
     } catch (error) {
       console.error('Failed to switch route:', error);
     }
@@ -1313,7 +1351,10 @@ class RouteLoader {
       this.renderComparisonsPanel();
 
       this.hasRunStarted = false;
-      this.clearRunStorage();
+
+      // Do not clear run storage here.
+      // The Run Complete card still needs active run/session data so the user can
+      // choose either "End Run & Save Gold" or "Delete Run Info".
 
       return;
     }
@@ -1342,6 +1383,10 @@ class RouteLoader {
 
       this.isStopwatchRunning = detail.runState === 'running';
       if (this.isStopwatchRunning && !this.hasRunStarted) {
+        this.resetRouteProgressToFirstSegment();
+        this.populateSidebar();
+        this.renderComparisonsPanel();
+
         this.captureSessionBestSnapshot();
         this.ensureRunSnapshotCaptured();
         this.hasRunStarted = true;
