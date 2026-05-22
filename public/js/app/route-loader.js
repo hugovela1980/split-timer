@@ -1,6 +1,15 @@
 // Route Loader - Dynamically loads and populates route data from JSON
 import { deepClone, timeToSeconds, isBetterTime, secondsToTime, escapeHtml, toKebabCase, formatDurationDelta } from '../utils/utils.js';
-import { persistRouteDataToStorage as persistRouteDataToStorageHelper, saveRunSessionToStorage as saveRunSessionToStorageHelper, restoreRunSessionFromStorage as restoreRunSessionFromStorageHelper } from '../persistence/storage.js';
+import {
+  persistRouteDataToStorage as persistRouteDataToStorageHelper,
+  saveRunSessionToStorage as saveRunSessionToStorageHelper,
+  restoreRunSessionFromStorage as restoreRunSessionFromStorageHelper,
+  saveBaselineRouteToStorage,
+  restoreBaselineRouteFromStorage,
+  saveActiveRunRouteToStorage,
+  restoreActiveRunRouteFromStorage,
+  clearRunStorage
+} from '../persistence/storage.js';
 import { createRouteSegmentElement, createRouteSubSegmentElement, createSidebarSegmentItem, createRunCompleteComparisonsHtml, createComparisonsHtml } from '../ui/ui.js';
 
 class RouteLoader {
@@ -27,6 +36,8 @@ class RouteLoader {
     this.renameSidebarItemTarget = null;
     this.expandedSidebarSegmentIds = new Set();
     this.routeStorageKey = 'stopwatch:routeData';
+    this.baselineRouteStorageKey = 'stopwatch:baselineRouteData';
+    this.activeRunRouteStorageKey = 'stopwatch:activeRunRouteData';
     this.runSessionStorageKey = 'stopwatch:runSession';
     this.storageProvider = options.storageProvider || (typeof globalThis !== 'undefined' && globalThis.localStorage ? globalThis.localStorage : null);
   }
@@ -53,7 +64,11 @@ class RouteLoader {
       this.renderComparisonsPanel();
       this.refreshEditorSegmentOptions();
       this.initScrollObserver();
-      this.persistRouteDataToStorage();
+
+      // On fresh app load, treat the JSON file as the clean source of truth.
+      // Clear any old active-run storage, then save the loaded route as the baseline.
+      this.clearRunStorage();
+      this.saveCleanRouteState();
     } catch (error) {
       console.error('Failed to initialize route loader:', error);
     }
@@ -88,6 +103,72 @@ class RouteLoader {
 
   persistRouteDataToStorage() {
     persistRouteDataToStorageHelper(this.routeData, this.routeStorageKey, this.storageProvider);
+  }
+
+  saveBaselineRouteToStorage() {
+    saveBaselineRouteToStorage(
+      this.routeData,
+      this.baselineRouteStorageKey,
+      this.storageProvider
+    );
+  }
+
+  restoreBaselineRouteFromStorage() {
+    return restoreBaselineRouteFromStorage(
+      this.baselineRouteStorageKey,
+      this.storageProvider
+    );
+  }
+
+  saveActiveRunRouteToStorage() {
+    saveActiveRunRouteToStorage(
+      this.routeData,
+      this.activeRunRouteStorageKey,
+      this.storageProvider
+    );
+  }
+
+  restoreActiveRunRouteFromStorage() {
+    return restoreActiveRunRouteFromStorage(
+      this.activeRunRouteStorageKey,
+      this.storageProvider
+    );
+  }
+
+  clearRunStorage() {
+    clearRunStorage(
+      [
+        this.runSessionStorageKey,
+        this.activeRunRouteStorageKey
+      ],
+      this.storageProvider
+    );
+  }
+
+  clearAllRouteStorage() {
+    clearRunStorage(
+      [
+        this.routeStorageKey,
+        this.baselineRouteStorageKey,
+        this.activeRunRouteStorageKey,
+        this.runSessionStorageKey
+      ],
+      this.storageProvider
+    );
+  }
+
+  async saveActiveRunState(options = {}) {
+    this.persistRouteDataToStorage();
+    this.saveActiveRunRouteToStorage();
+    this.saveRunSessionToStorage();
+    await this.saveRouteDataToFile(options);
+  }
+
+  async saveCleanRouteState(options = {}) {
+    this.persistRouteDataToStorage();
+    this.saveBaselineRouteToStorage();
+    this.saveActiveRunRouteToStorage();
+    await this.saveRouteDataToFile(options);
   }
 
   ensureRunSnapshotCaptured() {
@@ -144,7 +225,7 @@ class RouteLoader {
     this.sessionSetSegments.clear();
     this.sessionBestBySegment.clear();
     this.clearRunSnapshot();
-    localStorage.removeItem(this.runSessionStorageKey);
+    this.clearRunStorage();
 
     const firstSegment = this.routeData && Array.isArray(this.routeData.segments)
       ? this.routeData.segments[0]
@@ -170,7 +251,7 @@ class RouteLoader {
     this.sessionSetSegments.clear();
     this.sessionBestBySegment.clear();
     this.clearRunSnapshot();
-    localStorage.removeItem(this.runSessionStorageKey);
+    this.clearRunStorage();
 
     const firstSegment = this.routeData && Array.isArray(this.routeData.segments)
       ? this.routeData.segments[0]
@@ -240,7 +321,7 @@ class RouteLoader {
     this.sessionGoldSplits.clear();
     this.sessionSetSegments.clear();
     this.sessionBestBySegment.clear();
-    localStorage.removeItem(this.runSessionStorageKey);
+    this.clearRunStorage();
 
     window.dispatchEvent(new CustomEvent('stopwatch:clear'));
     this.renderComparisonsPanel();
@@ -273,7 +354,7 @@ class RouteLoader {
     this.sessionSetSegments.clear();
     this.sessionBestBySegment.clear();
     this.clearRunSnapshot();
-    localStorage.removeItem(this.runSessionStorageKey);
+    this.clearRunStorage();
 
     const firstSegment = this.routeData && Array.isArray(this.routeData.segments)
       ? this.routeData.segments[0]
@@ -296,8 +377,12 @@ class RouteLoader {
     this.updateSegmentDurations();
     this.populateSidebar();
     this.renderComparisonsPanel();
-    this.persistRouteDataToStorage();
-    await this.saveRouteDataToFile();
+
+    if (this.hasRunStarted || this.sessionSetSegments.size > 0) {
+      await this.saveActiveRunState();
+    } else {
+      await this.saveCleanRouteState();
+    }
   }
 
   async handleRouteStructureChanged() {
@@ -782,7 +867,7 @@ class RouteLoader {
       this.sessionBestBySegment.clear();
       this.runComplete = null;
       this.hasRunStarted = false;
-      localStorage.removeItem(this.runSessionStorageKey);
+      this.clearRunStorage();
 
       // Reset to first segment
       const firstSegment = this.routeData && Array.isArray(this.routeData.segments)
@@ -898,6 +983,7 @@ class RouteLoader {
     saveRunSessionToStorageHelper(
       {
         hasRunStarted: this.hasRunStarted,
+        currentRouteFilename: this.currentRouteFilename,
         sessionSetSegments: this.sessionSetSegments,
         sessionGoldSplits: this.sessionGoldSplits,
         sessionBestBySegment: this.sessionBestBySegment
@@ -1227,7 +1313,7 @@ class RouteLoader {
       this.renderComparisonsPanel();
 
       this.hasRunStarted = false;
-      localStorage.removeItem(this.runSessionStorageKey);
+      this.clearRunStorage();
 
       return;
     }
