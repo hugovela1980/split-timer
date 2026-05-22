@@ -234,30 +234,32 @@ class RouteLoader {
     this.routeData.currentSegmentName = firstSegment.name;
   }
 
-  async resetRouteProgressToFirstSegmentAndRender({ scroll = false, save = false } = {}) {
-    this.resetRouteProgressToFirstSegment();
+  async syncUiToCurrentSegment({ scroll = true } = {}) {
+    const currentSegmentId = Number(this.routeData?.currentSegmentId);
 
-    const firstSegment = this.routeData && Array.isArray(this.routeData.segments)
-      ? this.routeData.segments[0]
-      : null;
+    if (!currentSegmentId) return;
 
-    if (!firstSegment) return;
-
-    const firstSegmentDomId = `segment-${firstSegment.id}`;
+    const segmentDomId = `segment-${currentSegmentId}`;
 
     this.suppressObserverUntil = Date.now() + 1500;
 
     this.populateSidebar();
     this.renderComparisonsPanel();
 
-    await this.setActiveSidebarButton(firstSegmentDomId, false);
+    await this.setActiveSidebarButton(segmentDomId, false);
 
     if (scroll) {
-      const target = document.getElementById(firstSegmentDomId);
+      const target = document.getElementById(segmentDomId);
+
       if (target) {
         target.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     }
+  }
+
+  async resetRouteProgressToFirstSegmentAndRender({ scroll = true, save = false } = {}) {
+    this.resetRouteProgressToFirstSegment();
+    await this.syncUiToCurrentSegment({ scroll });
 
     if (save) {
       await this.saveCleanRouteState({ force: true });
@@ -290,12 +292,11 @@ class RouteLoader {
   async deleteCompletedRunData() {
     this.restoreBaselineRouteState();
     this.resetRunSessionState();
-    this.resetRouteProgressToFirstSegment();
 
     this.populateRoute();
-    this.populateSidebar();
+    await this.resetRouteProgressToFirstSegmentAndRender({ scroll: true, save: false });
+
     window.dispatchEvent(new CustomEvent('stopwatch:clear'));
-    this.renderComparisonsPanel();
 
     await this.saveCleanRouteState({ force: true });
   }
@@ -303,7 +304,6 @@ class RouteLoader {
   async restartRun() {
     this.resetRunSessionState();
     this.restoreBaselineRouteState();
-    this.resetRouteProgressToFirstSegment();
 
     this.populateRoute();
     await this.resetRouteProgressToFirstSegmentAndRender({ scroll: true, save: true });
@@ -390,11 +390,9 @@ class RouteLoader {
     }
 
     this.resetRunSessionState();
-    this.resetRouteProgressToFirstSegment();
 
     this.populateRoute();
-    this.populateSidebar();
-    this.renderComparisonsPanel();
+    await this.resetRouteProgressToFirstSegmentAndRender({ scroll: true, save: false });
 
     window.dispatchEvent(new CustomEvent('stopwatch:clear'));
 
