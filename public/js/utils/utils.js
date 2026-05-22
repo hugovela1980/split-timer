@@ -78,3 +78,56 @@ export function formatDurationDelta(currentDuration, bestDuration) {
     state: difference > 0 ? 'behind' : 'ahead'
   };
 }
+
+export function getSegmentPbSplitTime(segment) {
+  return segment?.pbSplitTime ?? segment?.time ?? '';
+}
+
+export function setSegmentPbSplitTime(segment, value) {
+  if (!segment) return;
+
+  segment.pbSplitTime = value;
+  segment.time = value; // backwards compatibility
+}
+
+export function getSegmentPbSegmentDuration(segment) {
+  return segment?.pbSegmentDuration ?? segment?.duration ?? '';
+}
+
+export function setSegmentPbSegmentDuration(segment, value) {
+  if (!segment) return;
+
+  segment.pbSegmentDuration = value;
+  segment.duration = value; // backwards compatibility
+}
+
+export function getSegmentGoldSplit(segment) {
+  return segment?.goldSplit ?? segment?.bestTime ?? '';
+}
+
+export function setSegmentGoldSplit(segment, value) {
+  if (!segment) return;
+
+  segment.goldSplit = value;
+  segment.bestTime = value; // backwards compatibility
+}
+
+export function normalizeSegmentTimingFields(segment) {
+  if (!segment) return;
+
+  const pbSplitTime = getSegmentPbSplitTime(segment);
+  const pbSegmentDuration = getSegmentPbSegmentDuration(segment);
+  const goldSplit = getSegmentGoldSplit(segment);
+
+  setSegmentPbSplitTime(segment, pbSplitTime);
+  setSegmentPbSegmentDuration(segment, pbSegmentDuration);
+  setSegmentGoldSplit(segment, goldSplit);
+}
+
+export function normalizeRouteTimingFields(routeData) {
+  if (!routeData || !Array.isArray(routeData.segments)) return;
+
+  routeData.segments.forEach((segment) => {
+    normalizeSegmentTimingFields(segment);
+  });
+}

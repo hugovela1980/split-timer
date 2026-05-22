@@ -1,5 +1,21 @@
 // Route Loader - Dynamically loads and populates route data from JSON
-import { deepClone, timeToSeconds, isBetterTime, secondsToTime, escapeHtml, toKebabCase, formatDurationDelta } from '../utils/utils.js';
+import {
+  deepClone,
+  timeToSeconds,
+  isBetterTime,
+  secondsToTime,
+  escapeHtml,
+  toKebabCase,
+  formatDurationDelta,
+  getSegmentPbSplitTime,
+  setSegmentPbSplitTime,
+  getSegmentPbSegmentDuration,
+  setSegmentPbSegmentDuration,
+  getSegmentGoldSplit,
+  setSegmentGoldSplit,
+  normalizeSegmentTimingFields,
+  normalizeRouteTimingFields
+} from '../utils/utils.js';
 import {
   persistRouteDataToStorage as persistRouteDataToStorageHelper,
   saveRunSessionToStorage as saveRunSessionToStorageHelper,
@@ -97,6 +113,8 @@ class RouteLoader {
       if (!this.routeData || !Array.isArray(this.routeData.segments)) {
         throw new Error(`Invalid ${filename} format: missing route segments`);
       }
+      
+      normalizeRouteTimingFields(this.routeData);
     } catch (error) {
       this.clearRunSnapshot();
       throw error;
@@ -1009,7 +1027,7 @@ class RouteLoader {
     if (!this.routeData || !Array.isArray(this.routeData.segments)) return;
 
     this.routeData.segments.forEach((segment) => {
-      this.sessionBestBySegment.set(Number(segment.id), segment.bestTime || '');
+      this.sessionBestBySegment.set(Number(segment.id), getSegmentGoldSplit(segment));
     });
 
     this.saveRunSessionToStorage();
@@ -1047,7 +1065,7 @@ class RouteLoader {
       return this.sessionBestBySegment.get(segmentId) || '';
     }
 
-    return segment.bestTime || '';
+    return getSegmentGoldSplit(segment);
   }
 
   updateSegmentDurations() {
@@ -1098,13 +1116,13 @@ class RouteLoader {
     if (!this.routeData || !Array.isArray(this.routeData.segments)) return;
 
     const lastSegment = this.routeData.segments[this.routeData.segments.length - 1];
-    const lastSegmentTime = lastSegment ? lastSegment.time : null;
+    const lastSegmentTime = lastSegment ? getSegmentPbSplitTime(lastSegment) : null;
     if (isBetterTime(lastSegmentTime, this.routeData.personalBest)) {
       this.routeData.personalBest = lastSegmentTime;
     }
 
     const sumOfBestSeconds = this.routeData.segments.reduce((total, segment) => {
-      const bestTimeSeconds = timeToSeconds(segment.bestTime);
+      const bestTimeSeconds = timeToSeconds(getSegmentGoldSplit(segment));
       return total + (bestTimeSeconds === null ? 0 : bestTimeSeconds);
     }, 0);
 
@@ -1131,9 +1149,7 @@ class RouteLoader {
     }
 
     this.routeData.segments.forEach((segment) => {
-      if (typeof segment.bestTime !== 'string') {
-        segment.bestTime = segment.duration || '';
-      }
+      normalizeSegmentTimingFields(segment);
 
       if (Object.prototype.hasOwnProperty.call(segment, 'isCurrent')) {
         delete segment.isCurrent;
@@ -1296,10 +1312,13 @@ class RouteLoader {
       this.ensureRunSnapshotCaptured();
 
       const currentTime = this.getCurrentStopwatchTime();
-      data.time = currentTime;
+
+      setSegmentPbSplitTime(data, currentTime);
+
       this.sessionSetSegments.add(Number(data.id));
       this.saveRunSessionToStorage();
       timeDisplay.textContent = currentTime;
+
       await this.handleRouteDataChanged();
       await this.advanceToNextSegment(data.id);
     });
