@@ -64,29 +64,35 @@ class RouteLoader {
       await this.loadRouteData(this.currentRouteFilename);
       this.ensureRouteStatsStructure();
       this.updateSegmentDurations();
-      this.restoreRunSessionFromStorage();
+
+      // Fresh page load should always start clean.
+      // Do not restore stale active-run state from localStorage.
+      this.resetRunSessionState();
 
       this.routeContainer = document.querySelector('.route');
       this.sidebarList = document.querySelector('.sidebar__list');
       this.comparisonsContainer = document.querySelector('.comparisons');
 
       this.resetRouteProgressToFirstSegment();
+
       this.initStopwatchSync();
       this.initEditorControls();
       this.initSidebarContextMenu();
       this.initRouteSelector();
+
       this.populateRoute();
-      this.resetRouteProgressToFirstSegment();
       this.populateSidebar();
       this.renderComparisonsPanel();
       this.refreshEditorSegmentOptions();
       this.initScrollObserver();
-      await this.resetRouteProgressToFirstSegmentAndRender({ scroll: false, save: false });
+
+      await this.resetRouteProgressToFirstSegmentAndRender({
+        scroll: false,
+        save: false
+      });
 
       // On fresh app load, treat the JSON file as the clean source of truth.
-      // Clear any old active-run storage, then save the loaded route as the baseline.
-      this.clearRunStorage();
-      this.saveCleanRouteState();
+      await this.saveCleanRouteState();
     } catch (error) {
       console.error('Failed to initialize route loader:', error);
     }
