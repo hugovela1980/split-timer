@@ -33,7 +33,7 @@ body {
 .timer__topbar {
     width: min(92%, 1100px);
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     gap: 1rem;
     margin-bottom: 1.35rem;
@@ -393,11 +393,6 @@ input {
     font-size: 1rem;
 }
 
-.autosave-btn {
-    margin-bottom: 0;
-    font-size: 1.5rem;
-}
-
 .route-picker {
     display: flex;
     align-items: center;
@@ -441,12 +436,6 @@ input {
         min-width: 0;
         width: 70%;
     }
-}
-
-.autosave-btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    background-color: #666;
 }
 
 /* Create Route Modal */

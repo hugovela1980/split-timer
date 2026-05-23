@@ -1,25 +1,10 @@
-// FileSaver - Handles file saving and data persistence
+// FileSaver - Handles route file saving through the local Node server
 
 class FileSaver {
   constructor() {
-    this.isAutosaveEnabled = true;
     this.isServerOnline = false;
     this.saveEndpoint = '/api/save-route';
     this.healthEndpoint = '/api/health';
-  }
-
-  updateAutosaveButtonState() {
-    const button = document.getElementById('enable-autosave');
-    if (!button) return;
-
-    button.disabled = false;
-
-    if (!this.isServerOnline) {
-      button.textContent = 'Autosave: Off (Server Down)';
-      return;
-    }
-
-    button.textContent = this.isAutosaveEnabled ? 'Autosave: On' : 'Autosave: Off';
   }
 
   async isServerAvailable() {
@@ -31,36 +16,21 @@ class FileSaver {
     }
   }
 
-  async enableAutosave() {
-    try {
-      const available = await this.isServerAvailable();
-      this.isServerOnline = available;
+  async checkServerStatus() {
+    this.isServerOnline = await this.isServerAvailable();
 
-      if (!available) {
-        throw new Error('Server is not reachable. Start server.js and open http://localhost:3000');
-      }
-
-      this.isAutosaveEnabled = true;
-      this.updateAutosaveButtonState();
-    } catch (error) {
-      console.error('❌ Failed to enable autosave:', error);
-      this.isAutosaveEnabled = false;
-      this.updateAutosaveButtonState();
-    }
-  }
-
-  async toggleAutosave() {
-    if (this.isAutosaveEnabled) {
-      this.isAutosaveEnabled = false;
-      this.updateAutosaveButtonState();
-      return;
+    if (!this.isServerOnline) {
+      console.warn('⚠️ File saving is unavailable. Start server.js and open http://localhost:3000');
     }
 
-    await this.enableAutosave();
+    return this.isServerOnline;
   }
 
-  async saveRouteData(routeData, routeFilename = 'act-1-100-percent.json', options = {}) {
-    if (!this.isAutosaveEnabled && options.force !== true) {
+  async saveRouteData(routeData, routeFilename = 'act-1-100-percent.json') {
+    const serverAvailable = this.isServerOnline || await this.checkServerStatus();
+
+    if (!serverAvailable) {
+      console.error('❌ Save failed: local server is not available.');
       return;
     }
 
@@ -80,12 +50,9 @@ class FileSaver {
       }
 
       this.isServerOnline = true;
-      this.updateAutosaveButtonState();
     } catch (error) {
-      console.error('❌ Autosave failed while writing route data:', error);
+      console.error('❌ Failed while writing route data:', error);
       this.isServerOnline = false;
-      this.isAutosaveEnabled = false;
-      this.updateAutosaveButtonState();
     }
   }
 }
@@ -94,18 +61,11 @@ class FileSaver {
 if (typeof document !== 'undefined' && document.addEventListener) {
   document.addEventListener('DOMContentLoaded', () => {
     const fileSaver = new FileSaver();
+
     if (typeof window !== 'undefined') {
       window.fileSaver = fileSaver;
     }
 
-    // Add event listener for enable autosave button
-    const enableButton = document.getElementById('enable-autosave');
-    if (enableButton) {
-      enableButton.addEventListener('click', async () => {
-        await fileSaver.toggleAutosave();
-      });
-    }
-
-    fileSaver.enableAutosave();
+    fileSaver.checkServerStatus();
   });
 }
