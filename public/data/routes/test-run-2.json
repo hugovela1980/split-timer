@@ -1,0 +1,48 @@
+{
+  "name": "Test Run 2",
+  "personalBest": "00:00:09",
+  "sumOfBest": "00:00:09",
+  "segments": [
+    {
+      "id": 1,
+      "name": "s1",
+      "time": "00:00:03",
+      "duration": "00:00:03",
+      "bestTime": "00:00:03",
+      "allowSetTime": true,
+      "completed": false,
+      "subSegments": [],
+      "pbSplitTime": "00:00:03",
+      "pbSegmentDuration": "00:00:03",
+      "goldSplit": "00:00:03"
+    },
+    {
+      "id": 2,
+      "name": "s2",
+      "time": "00:00:06",
+      "duration": "00:00:03",
+      "bestTime": "00:00:03",
+      "allowSetTime": true,
+      "completed": false,
+      "subSegments": [],
+      "pbSplitTime": "00:00:06",
+      "pbSegmentDuration": "00:00:03",
+      "goldSplit": "00:00:03"
+    },
+    {
+      "id": 3,
+      "name": "s3",
+      "time": "00:00:09",
+      "duration": "00:00:03",
+      "bestTime": "00:00:03",
+      "allowSetTime": true,
+      "completed": false,
+      "subSegments": [],
+      "pbSplitTime": "00:00:09",
+      "pbSegmentDuration": "00:00:03",
+      "goldSplit": "00:00:03"
+    }
+  ],
+  "currentSegmentId": 1,
+  "currentSegmentName": "s1"
+}

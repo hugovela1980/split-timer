@@ -359,7 +359,7 @@ class RouteLoader {
         isBetterTime(activeBest, baselineBest);
 
       if (shouldKeepGoldSplit) {
-        baselineSegment.bestTime = activeBest;
+        setSegmentGoldSplit(baselineSegment, activeBest);
       }
     });
 

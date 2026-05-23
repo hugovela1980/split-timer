@@ -32,7 +32,10 @@
       ],
       "duration": "00:06:15",
       "bestTime": "00:05:55",
-      "segmentDuration": "00:05:55"
+      "segmentDuration": "00:05:55",
+      "pbSplitTime": "00:06:15",
+      "pbSegmentDuration": "00:06:15",
+      "goldSplit": "00:05:55"
     },
     {
       "id": 2,
@@ -83,7 +86,10 @@
       ],
       "duration": "00:08:16",
       "bestTime": "00:08:16",
-      "segmentDuration": "00:08:54"
+      "segmentDuration": "00:08:54",
+      "pbSplitTime": "00:14:31",
+      "pbSegmentDuration": "00:08:16",
+      "goldSplit": "00:08:16"
     },
     {
       "id": 3,
@@ -134,7 +140,10 @@
       ],
       "duration": "00:08:53",
       "bestTime": "00:08:22",
-      "segmentDuration": "00:08:58"
+      "segmentDuration": "00:08:58",
+      "pbSplitTime": "00:23:24",
+      "pbSegmentDuration": "00:08:53",
+      "goldSplit": "00:08:22"
     },
     {
       "id": 4,
@@ -160,7 +169,10 @@
       ],
       "duration": "00:04:36",
       "bestTime": "00:03:50",
-      "segmentDuration": "00:03:50"
+      "segmentDuration": "00:03:50",
+      "pbSplitTime": "00:28:00",
+      "pbSegmentDuration": "00:04:36",
+      "goldSplit": "00:03:50"
     },
     {
       "id": 5,
@@ -206,7 +218,10 @@
       ],
       "duration": "00:06:49",
       "bestTime": "00:06:49",
-      "segmentDuration": "00:08:18"
+      "segmentDuration": "00:08:18",
+      "pbSplitTime": "00:34:49",
+      "pbSegmentDuration": "00:06:49",
+      "goldSplit": "00:06:49"
     },
     {
       "id": 6,
@@ -242,7 +257,10 @@
       ],
       "duration": "00:01:52",
       "bestTime": "00:01:52",
-      "segmentDuration": "00:01:57"
+      "segmentDuration": "00:01:57",
+      "pbSplitTime": "00:36:41",
+      "pbSegmentDuration": "00:01:52",
+      "goldSplit": "00:01:52"
     },
     {
       "id": 7,
@@ -283,7 +301,10 @@
       ],
       "duration": "00:06:17",
       "bestTime": "00:06:17",
-      "segmentDuration": "00:06:40"
+      "segmentDuration": "00:06:40",
+      "pbSplitTime": "00:42:58",
+      "pbSegmentDuration": "00:06:17",
+      "goldSplit": "00:06:17"
     },
     {
       "id": 8,
@@ -319,7 +340,10 @@
       ],
       "duration": "00:06:30",
       "bestTime": "00:06:30",
-      "segmentDuration": "00:07:49"
+      "segmentDuration": "00:07:49",
+      "pbSplitTime": "00:49:28",
+      "pbSegmentDuration": "00:06:30",
+      "goldSplit": "00:06:30"
     },
     {
       "id": 9,
@@ -360,7 +384,10 @@
       ],
       "duration": "00:03:31",
       "bestTime": "00:03:31",
-      "segmentDuration": "00:05:30"
+      "segmentDuration": "00:05:30",
+      "pbSplitTime": "00:52:59",
+      "pbSegmentDuration": "00:03:31",
+      "goldSplit": "00:03:31"
     },
     {
       "id": 10,
@@ -416,7 +443,10 @@
       ],
       "duration": "00:05:54",
       "bestTime": "00:05:54",
-      "segmentDuration": "00:07:12"
+      "segmentDuration": "00:07:12",
+      "pbSplitTime": "00:58:53",
+      "pbSegmentDuration": "00:05:54",
+      "goldSplit": "00:05:54"
     },
     {
       "id": 11,
@@ -447,7 +477,10 @@
       ],
       "duration": "00:05:44",
       "bestTime": "00:05:44",
-      "segmentDuration": "00:09:57"
+      "segmentDuration": "00:09:57",
+      "pbSplitTime": "01:04:37",
+      "pbSegmentDuration": "00:05:44",
+      "goldSplit": "00:05:44"
     }
   ],
   "currentSegmentId": 1,
