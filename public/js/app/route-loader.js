@@ -1074,28 +1074,31 @@ class RouteLoader {
     this.ensureRouteStatsStructure();
 
     this.routeData.segments.forEach((segment, index) => {
-      const currentSeconds = timeToSeconds(segment.time);
+      const currentSeconds = timeToSeconds(getSegmentPbSplitTime(segment));
+
       if (currentSeconds === null) {
-        segment.duration = '';
+        setSegmentPbSegmentDuration(segment, '');
         return;
       }
 
       const previousSeconds = index === 0
         ? 0
-        : timeToSeconds(this.routeData.segments[index - 1].time);
+        : timeToSeconds(getSegmentPbSplitTime(this.routeData.segments[index - 1]));
 
       if (previousSeconds === null || currentSeconds < previousSeconds) {
-        segment.duration = '';
+        setSegmentPbSegmentDuration(segment, '');
         return;
       }
 
-      segment.duration = secondsToTime(currentSeconds - previousSeconds);
+      const segmentDuration = secondsToTime(currentSeconds - previousSeconds);
+      setSegmentPbSegmentDuration(segment, segmentDuration);
 
-      const previousBestSeconds = timeToSeconds(segment.bestTime);
-      const durationSeconds = timeToSeconds(segment.duration);
+      const goldSplit = getSegmentGoldSplit(segment);
+      const previousBestSeconds = timeToSeconds(goldSplit);
+      const durationSeconds = timeToSeconds(segmentDuration);
 
-      if (isBetterTime(segment.duration, segment.bestTime)) {
-        segment.bestTime = segment.duration;
+      if (isBetterTime(segmentDuration, goldSplit)) {
+        setSegmentGoldSplit(segment, segmentDuration);
 
         if (
           this.sessionSetSegments.has(Number(segment.id)) &&
@@ -1103,7 +1106,7 @@ class RouteLoader {
           durationSeconds !== null &&
           durationSeconds < previousBestSeconds
         ) {
-          this.sessionGoldSplits.add(segment.id);
+          this.sessionGoldSplits.add(Number(segment.id));
           this.saveRunSessionToStorage();
         }
       }
@@ -1117,13 +1120,14 @@ class RouteLoader {
 
     const lastSegment = this.routeData.segments[this.routeData.segments.length - 1];
     const lastSegmentTime = lastSegment ? getSegmentPbSplitTime(lastSegment) : null;
+    
     if (isBetterTime(lastSegmentTime, this.routeData.personalBest)) {
       this.routeData.personalBest = lastSegmentTime;
     }
 
     const sumOfBestSeconds = this.routeData.segments.reduce((total, segment) => {
-      const bestTimeSeconds = timeToSeconds(getSegmentGoldSplit(segment));
-      return total + (bestTimeSeconds === null ? 0 : bestTimeSeconds);
+      const goldSplitSeconds = timeToSeconds(getSegmentGoldSplit(segment));
+      return total + (goldSplitSeconds === null ? 0 : goldSplitSeconds);
     }, 0);
 
     this.routeData.sumOfBest = secondsToTime(sumOfBestSeconds);

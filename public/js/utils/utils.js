@@ -80,7 +80,7 @@ export function formatDurationDelta(currentDuration, bestDuration) {
 }
 
 export function getSegmentPbSplitTime(segment) {
-  return segment?.pbSplitTime ?? segment?.time ?? '';
+  return segment?.pbSplitTime || segment?.time || '';
 }
 
 export function setSegmentPbSplitTime(segment, value) {
@@ -91,7 +91,7 @@ export function setSegmentPbSplitTime(segment, value) {
 }
 
 export function getSegmentPbSegmentDuration(segment) {
-  return segment?.pbSegmentDuration ?? segment?.duration ?? '';
+  return segment?.pbSegmentDuration || segment?.duration || '';
 }
 
 export function setSegmentPbSegmentDuration(segment, value) {
@@ -102,7 +102,7 @@ export function setSegmentPbSegmentDuration(segment, value) {
 }
 
 export function getSegmentGoldSplit(segment) {
-  return segment?.goldSplit ?? segment?.bestTime ?? '';
+  return segment?.goldSplit || segment?.bestTime || '';
 }
 
 export function setSegmentGoldSplit(segment, value) {
