@@ -182,6 +182,8 @@ export function createSidebarSegmentItem({
 }
 
 export function createRunCompleteComparisonsHtml({ finalTime, isNewPB, previousPersonalBest, runDelta, sumOfBest }) {
+  const primaryActionText = isNewPB ? 'Save New PB' : 'Save Gold Splits';
+
   return `
     <h3 class="comparisons__title">Run Complete</h3>
     <div class="comparisons__cards">
@@ -189,7 +191,7 @@ export function createRunCompleteComparisonsHtml({ finalTime, isNewPB, previousP
         ${isNewPB ? '<p class="comparisons__pb-banner">New Personal Best!</p>' : ''}
         <div class="comparisons__row">
           <span class="comparisons__label">Final Time</span>
-          <span class="comparisons__value ${isNewPB ? 'comparisons__value--gold' : ''}'>${escapeHtml(finalTime)}</span>
+          <span class="comparisons__value ${isNewPB ? 'comparisons__value--gold' : ''}">${escapeHtml(finalTime)}</span>
         </div>
         <div class="comparisons__row">
           <span class="comparisons__label">Previous PB</span>
@@ -207,7 +209,7 @@ export function createRunCompleteComparisonsHtml({ finalTime, isNewPB, previousP
           <span class="comparisons__value">${escapeHtml(sumOfBest)}</span>
         </div>
         <div class="comparisons__actions">
-          <button class="comparisons__end-run-btn btn-blue" type="button">End Run & Save Gold</button>
+          <button class="comparisons__end-run-btn btn-blue" type="button">${escapeHtml(primaryActionText)}</button>
           <button class="comparisons__delete-run-btn btn-red" type="button">Delete Run Data</button>
         </div>
       </section>
