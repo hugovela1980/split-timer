@@ -183,11 +183,13 @@ class RouteLoader {
     );
   }
 
-  async saveActiveRunState(options = {}) {
+  async saveActiveRunState() {
+    // Active run data is temporary.
+    // For now, keep it in localStorage only.
+    // Later, this can be replaced with a temporary run-session file save.
     this.persistRouteDataToStorage();
     this.saveActiveRunRouteToStorage();
     this.saveRunSessionToStorage();
-    await this.saveRouteDataToFile(options);
   }
 
   async saveCleanRouteState(options = {}) {
@@ -1365,15 +1367,18 @@ class RouteLoader {
       const baselinePersonalBest = this.personalBestAtRunStart || this.routeData.personalBest;
       const isNewPB = isBetterTime(finalTime, baselinePersonalBest);
 
-      if (isNewPB) {
-        await this.saveRouteDataToFile();
-      }
-
+      // Do not write to the official route JSON here.
+      // Finishing a run should only show the Run Complete card.
+      // The file should update only after the user confirms:
+      // - Save New PB
+      // - Save Gold Splits
+      // - Delete Run Data
       this.runComplete = {
         finalTime,
         isNewPB,
         previousPB: baselinePersonalBest || '--:--:--'
       };
+
       window.dispatchEvent(new CustomEvent('run:complete', { detail: { finalTime, isNewPB } }));
       this.renderComparisonsPanel();
 
@@ -1381,7 +1386,7 @@ class RouteLoader {
 
       // Do not clear run storage here.
       // The Run Complete card still needs active run/session data so the user can
-      // choose either "End Run & Save Gold" or "Delete Run Info".
+      // choose either "Save New PB", "Save Gold Splits", or "Delete Run Data".
 
       return;
     }
