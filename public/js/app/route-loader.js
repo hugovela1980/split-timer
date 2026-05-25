@@ -105,7 +105,10 @@ class RouteLoader {
       });
 
       // On fresh app load, treat the JSON file as the clean source of truth.
-      await this.saveCleanRouteState();
+      // Do not write the loaded route back to disk.
+      this.persistRouteDataToStorage();
+      this.saveBaselineRouteToStorage();
+      this.saveActiveRunRouteToStorage();
     } catch (error) {
       console.error('Failed to initialize route loader:', error);
     }
@@ -1115,7 +1118,7 @@ class RouteLoader {
       this.refreshEditorSegmentOptions();
       this.initScrollObserver();
 
-      await this.resetRouteProgressToFirstSegmentAndRender({ scroll: true, save: true });
+      await this.resetRouteProgressToFirstSegmentAndRender({ scroll: true, save: false });
       
       window.dispatchEvent(new CustomEvent('stopwatch:clear'));
     } catch (error) {

@@ -9,7 +9,6 @@ const PORT = Number(process.env.PORT || 3000);
 const ROOT_DIR = path.join(__dirname, '..', 'public');
 const TESTS_DIR = path.join(__dirname, '..', 'tests');
 const ROUTES_DIR = path.join(ROOT_DIR, 'data', 'routes');
-const ROUTE_BACKUP_FILE = path.join(ROOT_DIR, 'data', 'route-data-backup.json');
 
 const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8',
@@ -58,29 +57,6 @@ function collectRequestBody(req, maxBytes = 5 * 1024 * 1024) {
   });
 }
 
-async function syncRoutesBackupFile() {
-  const files = await fs.promises.readdir(ROUTES_DIR);
-  const routes = {};
-
-  for (const file of files) {
-    if (!file.endsWith('.json')) continue;
-
-    try {
-      const routeContent = await fs.promises.readFile(path.join(ROUTES_DIR, file), 'utf8');
-      routes[file] = JSON.parse(routeContent);
-    } catch {
-      // Skip unreadable/invalid route files and continue backing up the rest.
-    }
-  }
-
-  const backup = {
-    updatedAt: new Date().toISOString(),
-    routes
-  };
-
-  await fs.promises.writeFile(ROUTE_BACKUP_FILE, `${JSON.stringify(backup, null, 2)}\n`, 'utf8');
-}
-
 async function handleApiRoutes(req, res, pathname) {
   if (req.method === 'GET' && pathname === '/api/health') {
     sendJson(res, 200, { ok: true });
@@ -101,12 +77,6 @@ async function handleApiRoutes(req, res, pathname) {
         } catch {
           // Skip unreadable/invalid files
         }
-      }
-
-      try {
-        await syncRoutesBackupFile();
-      } catch (backupError) {
-        console.error('Failed to sync route backup:', backupError);
       }
 
       sendJson(res, 200, { ok: true, routes });
@@ -146,7 +116,6 @@ async function handleApiRoutes(req, res, pathname) {
       };
 
       await fs.promises.writeFile(routeFile, `${JSON.stringify(template, null, 2)}\n`, 'utf8');
-      await syncRoutesBackupFile();
       sendJson(res, 200, { ok: true });
     } catch (error) {
       if (error instanceof SyntaxError) {
@@ -177,7 +146,6 @@ async function handleApiRoutes(req, res, pathname) {
       const routeFile = path.join(ROUTES_DIR, routeFilename);
       const json = `${JSON.stringify(routeData, null, 2)}\n`;
       await fs.promises.writeFile(routeFile, json, 'utf8');
-      await syncRoutesBackupFile();
       sendJson(res, 200, { ok: true });
     } catch (error) {
       if (error && error.message === 'Payload too large') {
