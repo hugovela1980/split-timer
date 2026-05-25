@@ -390,6 +390,10 @@ input {
     font-size: 1rem;
 }
 
+.sub-segment__set[hidden] {
+    display: none;
+}
+
 .route-picker {
     display: flex;
     align-items: center;

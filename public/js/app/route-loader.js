@@ -109,6 +109,13 @@ class RouteLoader {
     }
   }
 
+  disableSubsegmentTimingControls() {
+    document.querySelectorAll('.sub-segment__set').forEach((button) => {
+      button.hidden = true;
+      button.disabled = true;
+    });
+  }
+
   initStartScreen() {
     if (!this.startRouteButton ||!this.startRouteSelector ||!this.startScreen ||!this.appShell) {
       return;
@@ -1305,6 +1312,8 @@ class RouteLoader {
       const segmentElement = this.createSegment(segment);
       this.routeContainer.appendChild(segmentElement);
     });
+
+    this.disableSubsegmentTimingControls();
   }
 
   populateSidebar() {
@@ -1460,20 +1469,13 @@ class RouteLoader {
   }
 
   addSubSegmentEventListeners(element, data) {
-    const setButton = element.querySelector('.sub-segment__set');
-    const timeDisplay = element.querySelector('.sub-segment__time-value');
-    if (!setButton || !timeDisplay) return;
+  const setButton = element.querySelector('.sub-segment__set');
 
-    // Set button click handler
-    setButton.addEventListener('click', async (e) => {
-      this.ensureRunSnapshotCaptured();
-
-      const currentTime = this.getCurrentStopwatchTime();
-      setSegmentPbSplitTime(data, currentTime);
-      timeDisplay.textContent = currentTime;
-      await this.handleRouteDataChanged();
-    });
+  if (setButton) {
+    setButton.hidden = true;
+    setButton.disabled = true;
   }
+}
 
   getCurrentStopwatchTime() {
     const stopwatchElement = document.querySelector('.timer__stopwatch');
