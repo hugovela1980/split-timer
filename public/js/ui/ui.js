@@ -1,5 +1,5 @@
 // UI helper functions for building route and sub-segment DOM
-import { escapeHtml } from '../utils/utils.js';
+import { escapeHtml, getSegmentPbSplitTime } from '../utils/utils.js';
 
 export function createRouteSegmentElement(segmentData) {
   const segmentDiv = document.createElement('div');
@@ -135,7 +135,7 @@ export function createSidebarSegmentItem({
 
   const duration = document.createElement('span');
   duration.className = 'sidebar__duration';
-  duration.textContent = segmentWasSet ? (segment.time || '--:--:--') : '--:--:--';
+  duration.textContent = segmentWasSet ? ((getSegmentPbSplitTime(segment)) || '--:--:--') : '--:--:--';
 
   const time = document.createElement('span');
   time.className = 'sidebar__time';
