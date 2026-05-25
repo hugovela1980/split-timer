@@ -34,6 +34,27 @@ function sendJson(res, statusCode, payload) {
   res.end(body);
 }
 
+async function writeJsonFileIfChanged(filePath, data) {
+  const nextJson = `${JSON.stringify(data, null, 2)}\n`;
+
+  try {
+    const currentJson = await fs.promises.readFile(filePath, 'utf8');
+
+    const currentData = JSON.parse(currentJson);
+    const currentComparable = JSON.stringify(currentData);
+    const nextComparable = JSON.stringify(data);
+
+    if (currentComparable === nextComparable) {
+      return { changed: false };
+    }
+  } catch {
+    // If the file does not exist or cannot be parsed, fall through and write it.
+  }
+
+  await fs.promises.writeFile(filePath, nextJson, 'utf8');
+  return { changed: true };
+}
+
 function collectRequestBody(req, maxBytes = 5 * 1024 * 1024) {
   return new Promise((resolve, reject) => {
     const chunks = [];
@@ -142,11 +163,14 @@ async function handleApiRoutes(req, res, pathname) {
         sendJson(res, 400, { ok: false, message: 'Invalid filename' });
         return true;
       }
-      
+
       const routeFile = path.join(ROUTES_DIR, routeFilename);
-      const json = `${JSON.stringify(routeData, null, 2)}\n`;
-      await fs.promises.writeFile(routeFile, json, 'utf8');
-      sendJson(res, 200, { ok: true });
+      const result = await writeJsonFileIfChanged(routeFile, routeData);
+
+      sendJson(res, 200, {
+        ok: true,
+        changed: result.changed
+      });
     } catch (error) {
       if (error && error.message === 'Payload too large') {
         sendJson(res, 413, { ok: false, message: 'Payload too large' });
