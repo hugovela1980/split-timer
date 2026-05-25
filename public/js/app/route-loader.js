@@ -405,6 +405,46 @@ class RouteLoader {
     window.dispatchEvent(new CustomEvent('stopwatch:clear'));
   }
 
+  updateGoldSplitsFromCompletedRun(targetRouteData, activeRunRouteData, baselineRouteData) {
+    if (
+      !targetRouteData ||
+      !activeRunRouteData ||
+      !baselineRouteData ||
+      !Array.isArray(targetRouteData.segments) ||
+      !Array.isArray(activeRunRouteData.segments) ||
+      !Array.isArray(baselineRouteData.segments)
+    ) {
+      return;
+    }
+
+    targetRouteData.segments.forEach((targetSegment) => {
+      const segmentId = Number(targetSegment.id);
+
+      if (!this.sessionSetSegments.has(segmentId)) {
+        return;
+      }
+
+      const activeSegment = activeRunRouteData.segments.find(
+        (segment) => Number(segment.id) === segmentId
+      );
+
+      const baselineSegment = baselineRouteData.segments.find(
+        (segment) => Number(segment.id) === segmentId
+      );
+
+      if (!activeSegment || !baselineSegment) return;
+
+      const activeDuration = getSegmentPbSegmentDuration(activeSegment);
+      const baselineGoldSplit = getSegmentGoldSplit(baselineSegment);
+
+      if (activeDuration && isBetterTime(activeDuration, baselineGoldSplit)) {
+        setSegmentGoldSplit(targetSegment, activeDuration);
+      } else {
+        setSegmentGoldSplit(targetSegment, baselineGoldSplit);
+      }
+    });
+  }
+
   async endRunWithGoldSegments() {
     const activeRunRouteData = this.restoreActiveRunRouteFromStorage()
       || deepClone(this.routeData);
@@ -418,28 +458,13 @@ class RouteLoader {
 
     const mergedRouteData = deepClone(baselineRouteData);
 
-    mergedRouteData.segments.forEach((baselineSegment) => {
-      const segmentId = Number(baselineSegment.id);
-      const activeSegment = activeRunRouteData.segments.find(
-        (segment) => Number(segment.id) === segmentId
-      );
+    this.updateGoldSplitsFromCompletedRun(
+      mergedRouteData,
+      activeRunRouteData,
+      baselineRouteData
+    );
 
-      if (!activeSegment) return;
-
-      const activeBest = activeSegment.bestTime || '';
-      const baselineBest = baselineSegment.bestTime || '';
-
-      const shouldKeepGoldSplit =
-        this.sessionSetSegments.has(segmentId) &&
-        activeBest &&
-        isBetterTime(activeBest, baselineBest);
-
-      if (shouldKeepGoldSplit) {
-        setSegmentGoldSplit(baselineSegment, activeBest);
-      }
-    });
-
-    // Non-PB run: keep previous PB, but recalculate sum of best after gold split updates.
+    // Non-PB run: keep previous PB/splits, but recalculate sum of best after gold updates.
     mergedRouteData.personalBest = this.personalBestAtRunStart || mergedRouteData.personalBest || '';
 
     this.routeData = mergedRouteData;
@@ -480,6 +505,21 @@ class RouteLoader {
     if (!this.runComplete.isNewPB) {
       await this.endRunWithGoldSegments();
     } else {
+      const activeRunRouteData = this.restoreActiveRunRouteFromStorage()
+        || deepClone(this.routeData);
+
+      const baselineRouteData = this.restoreBaselineRouteFromStorage()
+        || this.runDataSnapshot;
+
+      if (baselineRouteData && Array.isArray(baselineRouteData.segments)) {
+        this.updateGoldSplitsFromCompletedRun(
+          this.routeData,
+          activeRunRouteData,
+          baselineRouteData
+        );
+      }
+
+      this.updateRouteRunStats();
       await this.saveCleanRouteState({ force: true });
     }
 
@@ -1230,24 +1270,6 @@ class RouteLoader {
 
       const segmentDuration = secondsToTime(currentSeconds - previousSeconds);
       setSegmentPbSegmentDuration(segment, segmentDuration);
-
-      const goldSplit = getSegmentGoldSplit(segment);
-      const previousBestSeconds = timeToSeconds(goldSplit);
-      const durationSeconds = timeToSeconds(segmentDuration);
-
-      if (isBetterTime(segmentDuration, goldSplit)) {
-        setSegmentGoldSplit(segment, segmentDuration);
-
-        if (
-          this.sessionSetSegments.has(Number(segment.id)) &&
-          previousBestSeconds !== null &&
-          durationSeconds !== null &&
-          durationSeconds < previousBestSeconds
-        ) {
-          this.sessionGoldSplits.add(Number(segment.id));
-          this.saveRunSessionToStorage();
-        }
-      }
     });
 
     this.updateRouteRunStats();

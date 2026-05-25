@@ -1,0 +1,48 @@
+{
+  "name": "Test Gold Split Fix",
+  "personalBest": "00:00:18",
+  "sumOfBest": "00:00:15",
+  "segments": [
+    {
+      "id": 1,
+      "name": "Segment 1",
+      "time": "00:00:05",
+      "duration": "00:00:05",
+      "bestTime": "00:00:04",
+      "allowSetTime": true,
+      "completed": false,
+      "subSegments": [],
+      "pbSplitTime": "00:00:05",
+      "pbSegmentDuration": "00:00:05",
+      "goldSplit": "00:00:04"
+    },
+    {
+      "id": 2,
+      "name": "Segment 2",
+      "time": "00:00:11",
+      "duration": "00:00:06",
+      "bestTime": "00:00:05",
+      "allowSetTime": true,
+      "completed": false,
+      "subSegments": [],
+      "pbSplitTime": "00:00:11",
+      "pbSegmentDuration": "00:00:06",
+      "goldSplit": "00:00:05"
+    },
+    {
+      "id": 3,
+      "name": "Segment 3",
+      "time": "00:00:18",
+      "duration": "00:00:07",
+      "bestTime": "00:00:06",
+      "allowSetTime": true,
+      "completed": false,
+      "subSegments": [],
+      "pbSplitTime": "00:00:18",
+      "pbSegmentDuration": "00:00:07",
+      "goldSplit": "00:00:06"
+    }
+  ],
+  "currentSegmentId": 1,
+  "currentSegmentName": "Segment 1"
+}
