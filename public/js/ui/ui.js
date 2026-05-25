@@ -18,7 +18,7 @@ export function createRouteSegmentElement(segmentData) {
 
   const timeP = document.createElement('p');
   timeP.className = 'segment__title--time';
-  timeP.textContent = segmentData.time;
+  timeP.textContent = getSegmentPbSplitTime(segmentData) || '';
 
   const setButton = document.createElement('button');
   setButton.className = 'segment__title--set btn-blue';

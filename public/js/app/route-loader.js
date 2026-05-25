@@ -1601,7 +1601,7 @@ class RouteLoader {
 
     const segmentWasSet = this.sessionSetSegments.has(Number(currentSegment.id));
     const savedDuration = segmentWasSet
-      ? (currentSegment.duration || '--:--:--')
+      ? (getSegmentPbSegmentDuration(currentSegment) || '--:--:--')
       : '--:--:--';
 
     if (!this.hasRunStarted && !this.isStopwatchRunning) {
@@ -1622,7 +1622,7 @@ class RouteLoader {
 
     const previousSegmentTime = segmentIndex === 0
       ? '00:00:00'
-      : this.routeData.segments[segmentIndex - 1].time;
+      : getSegmentPbSplitTime(this.routeData.segments[segmentIndex - 1]);
 
     const previousSeconds = timeToSeconds(previousSegmentTime);
     const liveSeconds = timeToSeconds(this.liveStopwatchTime);
