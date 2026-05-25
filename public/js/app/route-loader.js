@@ -121,6 +121,7 @@ class RouteLoader {
       const selectedRoute = this.startRouteSelector.value;
       if (!selectedRoute) return;
   
+      if (!this.confirmRouteSwitchIfRunActive()) return;
       await this.switchRoute(selectedRoute);
   
       this.showMainApp();
@@ -931,12 +932,19 @@ class RouteLoader {
 
     routeSelector.addEventListener('change', async (event) => {
       const selectedFile = event.target.value;
+
       if (selectedFile === '__create_new__') {
         // Revert dropdown to current route while modal is open
         routeSelector.value = this.currentRouteFilename;
         this.showCreateRouteModal();
         return;
       }
+
+      if (!this.confirmRouteSwitchIfRunActive()) {
+        routeSelector.value = this.currentRouteFilename;
+        return;
+      }
+
       await this.switchRoute(selectedFile);
     });
   }
@@ -1028,6 +1036,15 @@ class RouteLoader {
       await this.loadRouteData(filename);
       this.ensureRouteStatsStructure();
       this.updateSegmentDurations();
+
+      const routeSelector = document.getElementById('route-selector');
+      if (routeSelector) {
+        routeSelector.value = filename;
+      }
+
+      if (this.startRouteSelector) {
+        this.startRouteSelector.value = filename;
+      }
       
       // Clear session state when switching routes
       this.sessionGoldSplits.clear();
@@ -1046,9 +1063,29 @@ class RouteLoader {
       this.initScrollObserver();
 
       await this.resetRouteProgressToFirstSegmentAndRender({ scroll: true, save: true });
+      
+      window.dispatchEvent(new CustomEvent('stopwatch:clear'));
     } catch (error) {
       console.error('Failed to switch route:', error);
     }
+  }
+
+  confirmRouteSwitchIfRunActive() {
+    const hasActiveRunData = 
+      this.hasRunStarted ||
+      this.isStopwatchRunning ||
+      this.runComplete ||
+      this.sessionSetSegments.size > 0;
+
+    if (!hasActiveRunData) {
+      return true;
+    }
+
+    window.dispatchEvent(new CustomEvent('stopwatch:stop'));
+
+    return confirm(
+      'You have an active or unfinished run.  Switching routes will dicard the current run data.  Continue?'
+    );
   }
 
   refreshEditorSegmentOptions() {

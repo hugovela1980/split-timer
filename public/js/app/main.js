@@ -134,6 +134,10 @@
       startTimer();
     });
 
+    window.addEventListener('stopwatch:stop', () => {
+      stopTimer();
+    });
+
     startBtn.addEventListener('click', startTimer);
     stopBtn.addEventListener('click', stopTimer);
     resetBtn.addEventListener('click', resetTimer);
