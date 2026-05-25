@@ -1,6 +1,6 @@
 {
-  "name": "Test Gold Split Fix",
-  "personalBest": "00:00:18",
+  "name": "Test Timer Color Pace",
+  "personalBest": "00:00:15",
   "sumOfBest": "00:00:15",
   "segments": [
     {
@@ -8,39 +8,39 @@
       "name": "Segment 1",
       "time": "00:00:05",
       "duration": "00:00:05",
-      "bestTime": "00:00:04",
+      "bestTime": "00:00:05",
       "allowSetTime": true,
       "completed": false,
       "subSegments": [],
       "pbSplitTime": "00:00:05",
       "pbSegmentDuration": "00:00:05",
-      "goldSplit": "00:00:04"
+      "goldSplit": "00:00:05"
     },
     {
       "id": 2,
       "name": "Segment 2",
-      "time": "00:00:11",
-      "duration": "00:00:06",
+      "time": "00:00:10",
+      "duration": "00:00:05",
       "bestTime": "00:00:05",
       "allowSetTime": true,
       "completed": false,
       "subSegments": [],
-      "pbSplitTime": "00:00:11",
-      "pbSegmentDuration": "00:00:06",
+      "pbSplitTime": "00:00:10",
+      "pbSegmentDuration": "00:00:05",
       "goldSplit": "00:00:05"
     },
     {
       "id": 3,
       "name": "Segment 3",
-      "time": "00:00:18",
-      "duration": "00:00:07",
-      "bestTime": "00:00:06",
+      "time": "00:00:15",
+      "duration": "00:00:05",
+      "bestTime": "00:00:05",
       "allowSetTime": true,
       "completed": false,
       "subSegments": [],
-      "pbSplitTime": "00:00:18",
-      "pbSegmentDuration": "00:00:07",
-      "goldSplit": "00:00:06"
+      "pbSplitTime": "00:00:15",
+      "pbSegmentDuration": "00:00:05",
+      "goldSplit": "00:00:05"
     }
   ],
   "currentSegmentId": 1,
