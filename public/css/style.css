@@ -660,7 +660,7 @@ input {
     line-height: 1.3;
 }
 
-.sidebar__duration {
+.sidebar__split-time {
     color: #ffffff;
     font-size: 1.12rem;
     font-weight: 800;
@@ -731,7 +731,7 @@ input {
     color: #7d9bff;
 }
 
-.sidebar__duration--subsegment,
+.sidebar__split-time--subsegment,
 .sidebar__time--subsegment {
     font-size: 0.95rem;
     font-weight: 700;

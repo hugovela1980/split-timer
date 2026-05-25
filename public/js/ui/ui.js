@@ -92,7 +92,7 @@ export function createSidebarSubsegmentItem({ segmentId, subSegment, subSegmentI
   subSegmentButton.dataset.segmentId = `segment-${segmentId}`;
 
   const subSegmentTime = document.createElement('span');
-  subSegmentTime.className = 'sidebar__duration sidebar__duration--subsegment';
+  subSegmentTime.className = 'sidebar__split-time sidebar__split-time--subsegment';
   subSegmentTime.textContent = subSegment.time || '--:--:--';
 
   const subSegmentPlaceholder = document.createElement('span');
@@ -133,9 +133,9 @@ export function createSidebarSegmentItem({
   btn.textContent = segment.name;
   btn.dataset.segmentId = `segment-${segment.id}`;
 
-  const duration = document.createElement('span');
-  duration.className = 'sidebar__duration';
-  duration.textContent = segmentWasSet ? ((getSegmentPbSplitTime(segment)) || '--:--:--') : '--:--:--';
+  const splitTime = document.createElement('span');
+  splitTime.className = 'sidebar__split-time';
+  splitTime.textContent = segmentWasSet ? ((getSegmentPbSplitTime(segment)) || '--:--:--') : '--:--:--';
 
   const time = document.createElement('span');
   time.className = 'sidebar__time';
@@ -160,7 +160,7 @@ export function createSidebarSegmentItem({
   row.addEventListener('contextmenu', onSegmentContextMenu);
 
   row.appendChild(btn);
-  row.appendChild(duration);
+  row.appendChild(splitTime);
   row.appendChild(time);
   li.appendChild(row);
 
