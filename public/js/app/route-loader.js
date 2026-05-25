@@ -35,6 +35,10 @@ class RouteLoader {
     this.routeContainer = null;
     this.sidebarList = null;
     this.comparisonsContainer = null;
+    this.startScreen = null;
+    this.appShell = null;
+    this.startRouteSelector = null;
+    this.startRouteButton = null;
     this.liveStopwatchTime = '00:00:00';
     this.isStopwatchRunning = false;
     this.hasRunStarted = false;
@@ -72,6 +76,10 @@ class RouteLoader {
       this.routeContainer = document.querySelector('.route');
       this.sidebarList = document.querySelector('.sidebar__list');
       this.comparisonsContainer = document.querySelector('.comparisons');
+      this.startScreen = document.getElementById('start-screen');
+      this.appShell = document.getElementById('app-shell');
+      this.startRouteSelector = document.getElementById('start-route-selector');
+      this.startRouteButton = document.getElementById('start-route-btn');
 
       this.resetRouteProgressToFirstSegment();
 
@@ -79,6 +87,7 @@ class RouteLoader {
       this.initEditorControls();
       this.initSidebarContextMenu();
       this.initRouteSelector();
+      this.initStartScreen();
 
       this.populateRoute();
       this.populateSidebar();
@@ -96,6 +105,36 @@ class RouteLoader {
     } catch (error) {
       console.error('Failed to initialize route loader:', error);
     }
+  }
+
+  initStartScreen() {
+    if (!this.startRouteButton ||!this.startRouteSelector ||!this.startScreen ||!this.appShell) {
+      return;
+    }
+
+    this.populateStartRouteSelectorFromMainSelector();
+    this.startRouteSelector.focus();
+
+    const openSelectedRoute = async () => {
+      const selectedRoute = this.startRouteSelector.value;
+      if (!selectedRoute) return;
+  
+      await this.switchRoute(selectedRoute);
+  
+      this.startScreen.hidden = true;
+      this.appShell.hidden = false;
+  
+      window.dispatchEvent(new CustomEvent('stopwatch:clear'));
+    };
+
+    this.startRouteButton.addEventListener('click', openSelectedRoute);
+
+    this.startRouteSelector.addEventListener('keydown', async (event) => {
+      if (event.key !== 'Enter') return;
+
+      event.preventDefault();
+      await openSelectedRoute();
+    })
   }
 
   async loadRouteData(filename = 'act-1-100-percent.json') {
@@ -810,6 +849,26 @@ class RouteLoader {
     this.rerenderRouteUI();
     this.persistRouteDataToStorage();
     await this.saveRouteDataToFile({ force: true });
+  }
+
+  populateStartRouteSelectorFromMainSelector() {
+    const mainSelector = document.getElementById('route-selector');
+    if(!this.startRouteSelector || !mainSelector) return;
+
+    this.startRouteSelector.innerHTML = '';
+
+    Array.from(mainSelector.options)
+      .filter((option) => option.value !== '__create_new__')
+      .forEach((option) => {
+        const startOption = document.createElement('option');
+        startOption.value = option.value;
+        startOption.textContent = option.textContent;
+        this.startRouteSelector.appendChild(startOption);
+      });
+
+    if (this.currentRouteFilename) {
+      this.startRouteSelector.value = this.currentRouteFilename
+    }
   }
 
   async populateRouteSelectorFromServer() {

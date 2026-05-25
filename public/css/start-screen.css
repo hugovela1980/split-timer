@@ -1,0 +1,74 @@
+.app-shell {
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+}
+
+.app-shell[hidden] {
+    display: none;
+}
+
+.start-screen {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #333;
+    color: #f4f4f4;
+}
+
+.start-screen[hidden] {
+    display: none;
+}
+
+.start-screen__card {
+    width: min(520px, 92vw);
+    padding: 2rem;
+    background-color: rgba(0, 0, 0, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 14px;
+    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.35);
+}
+
+.start-screen__title {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+}
+
+.start-screen__subtitle {
+    color: #d6d6d6;
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+}
+
+.start-screen__route-picker {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    margin-bottom: 1.5rem;
+}
+
+.start-screen__label {
+    text-align: left;
+    color: #ddd;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.start-screen__select {
+    font-size: 1.2rem;
+    padding: 0.55rem 0.75rem;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 6px;
+    background-color: rgba(0, 0, 0, 0.45);
+    color: #fff;
+}
+
+.start-screen__button {
+    width: 100%;
+    margin: 0;
+}
