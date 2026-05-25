@@ -39,6 +39,7 @@ class RouteLoader {
     this.appShell = null;
     this.startRouteSelector = null;
     this.startRouteButton = null;
+    this.startCreateRouteButton = null;
     this.liveStopwatchTime = '00:00:00';
     this.isStopwatchRunning = false;
     this.hasRunStarted = false;
@@ -80,6 +81,7 @@ class RouteLoader {
       this.appShell = document.getElementById('app-shell');
       this.startRouteSelector = document.getElementById('start-route-selector');
       this.startRouteButton = document.getElementById('start-route-btn');
+      this.startCreateRouteButton = document.getElementById('start-create-route-btn');
 
       this.resetRouteProgressToFirstSegment();
 
@@ -121,8 +123,7 @@ class RouteLoader {
   
       await this.switchRoute(selectedRoute);
   
-      this.startScreen.hidden = true;
-      this.appShell.hidden = false;
+      this.showMainApp();
   
       window.dispatchEvent(new CustomEvent('stopwatch:clear'));
     };
@@ -134,7 +135,27 @@ class RouteLoader {
 
       event.preventDefault();
       await openSelectedRoute();
-    })
+    });
+
+    if (this.startCreateRouteButton) {
+      this.startCreateRouteButton.addEventListener('click', () => {
+        this.showCreateRouteModal({
+          onRouteCreated: () => {
+            this.showMainApp();
+          }
+        });
+      });
+    }
+  }
+
+  showMainApp() {
+    if (this.startScreen) {
+      this.startScreen.hidden = true;
+    }
+
+    if (this.appShell) {
+      this.appShell.hidden = false;
+    }
   }
 
   async loadRouteData(filename = 'act-1-100-percent.json') {
@@ -920,7 +941,7 @@ class RouteLoader {
     });
   }
 
-  showCreateRouteModal() {
+  showCreateRouteModal(options = {}) {
     const modal = document.getElementById('create-route-modal');
     const form = document.getElementById('create-route-form');
     const input = document.getElementById('new-route-name');
@@ -977,6 +998,11 @@ class RouteLoader {
         // Switch to new route and open editor
         routeSelector.value = filename;
         await this.switchRoute(filename);
+
+        if (typeof options.onRouteCreated === 'function') {
+          options.onRouteCreated(filename);
+        }
+
         const editorPanel = document.querySelector('.sidebar__editor-panel');
         if (editorPanel) editorPanel.open = true;
 

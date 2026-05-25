@@ -72,3 +72,7 @@
     width: 100%;
     margin: 0;
 }
+
+.start-screen__button + .start-screen__button {
+    margin-top: 0.75rem;
+}
