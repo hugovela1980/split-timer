@@ -1299,7 +1299,15 @@ class RouteLoader {
     });
   }
 
+  getCurrentSegmentPbSplitTime() {
+    const currentSegment = this.getCurrentSegmentData();
 
+    if (!currentSegment) {
+      return '';
+    }
+
+    return getSegmentPbSplitTime(currentSegment);
+  }
 
   populateRoute() {
     if (!this.routeData || !this.routeContainer) return;
@@ -1488,7 +1496,7 @@ class RouteLoader {
     const isLastSegment = currentIndex === segments.length - 1;
 
     if (isLastSegment) {
-      const finalTime = segments[currentIndex].time || '--:--:--';
+      const finalTime = getSegmentPbSplitTime(segments[currentIndex]) || '--:--:--';
       const baselinePersonalBest = this.personalBestAtRunStart || this.routeData.personalBest;
       const isNewPB = isBetterTime(finalTime, baselinePersonalBest);
 
@@ -1628,12 +1636,13 @@ class RouteLoader {
     if (!timerElement || !this.routeData) return;
 
     const currentRunTime = this.liveStopwatchTime || this.getCurrentStopwatchTime();
-    const personalBest = this.routeData && typeof this.routeData.personalBest === 'string'
-      ? this.routeData.personalBest
+
+    const comparisonTarget = (this.hasRunStarted || this.isStopwatchRunning)
+      ? this.getCurrentSegmentPbSplitTime()
       : '';
 
-    const comparisonState = (this.hasRunStarted || this.isStopwatchRunning)
-      ? this.getMainTimerComparisonState(currentRunTime, personalBest)
+    const comparisonState = comparisonTarget
+      ? this.getMainTimerComparisonState(currentRunTime, comparisonTarget)
       : 'neutral';
 
     timerElement.classList.toggle('timer__stopwatch--ahead', comparisonState === 'ahead');
