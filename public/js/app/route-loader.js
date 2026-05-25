@@ -412,6 +412,20 @@ class RouteLoader {
     window.dispatchEvent(new CustomEvent('stopwatch:clear'));
   }
 
+  updateSessionGoldSplitState(segment) {
+    const segmentId = Number(segment.id);
+    const activeDuration = getSegmentPbSegmentDuration(segment);
+    const baselineBest = this.sessionBestBySegment.get(segmentId) || '';
+
+    if (activeDuration && isBetterTime(activeDuration, baselineBest)) {
+      this.sessionGoldSplits.add(segmentId);
+    } else {
+      this.sessionGoldSplits.delete(segmentId);
+    }
+
+    this.saveRunSessionToStorage();
+  }
+
   updateGoldSplitsFromCompletedRun(targetRouteData, activeRunRouteData, baselineRouteData) {
     if (
       !targetRouteData ||
@@ -1505,6 +1519,11 @@ class RouteLoader {
       timeDisplay.textContent = currentTime;
 
       await this.handleRouteDataChanged();
+
+      this.updateSessionGoldSplitState(data);
+      this.populateSidebar();
+      this.renderComparisonsPanel();
+
       this.updateMainTimerColor();
       await this.advanceToNextSegment(data.id);
     });
