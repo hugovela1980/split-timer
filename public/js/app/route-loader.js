@@ -791,9 +791,10 @@ class RouteLoader {
       return;
     }
 
-    segment.time = '';
-    segment.duration = '';
-    segment.bestTime = '';
+    setSegmentPbSplitTime(segment, '');
+    setSegmentPbSegmentDuration(segment, '');
+    setSegmentGoldSplit(segment, '');
+
     if (Object.prototype.hasOwnProperty.call(segment, 'segmentDuration')) {
       segment.segmentDuration = '';
     }
@@ -1193,7 +1194,7 @@ class RouteLoader {
       const segmentWasSet = this.sessionSetSegments.has(Number(segment.id));
       const comparisonBestDuration = this.getComparisonBestDuration(segment);
       const sidebarDelta = segmentWasSet
-        ? formatDurationDelta(segment.duration || '', comparisonBestDuration)
+        ? formatDurationDelta(getSegmentPbSegmentDuration(segment), comparisonBestDuration)
         : { text: '--:--:--', state: 'neutral' };
       const isGoldSplit = segmentWasSet && this.sessionGoldSplits.has(Number(segment.id));
 
@@ -1346,7 +1347,7 @@ class RouteLoader {
       this.ensureRunSnapshotCaptured();
 
       const currentTime = this.getCurrentStopwatchTime();
-      data.time = currentTime;
+      setSegmentPbSplitTime(data, currentTime);
       timeDisplay.textContent = currentTime;
       await this.handleRouteDataChanged();
     });
