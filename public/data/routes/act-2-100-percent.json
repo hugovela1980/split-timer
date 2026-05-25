@@ -1,13 +1,13 @@
 {
   "name": "Act 2, 100 Percent",
-  "personalBest": "01:20:40",
-  "sumOfBest": "01:20:40",
+  "personalBest": "01:08:26",
+  "sumOfBest": "01:05:18",
   "segments": [
     {
       "id": 1,
       "name": "Get Whiteward Key",
-      "time": "00:04:35",
-      "duration": "00:04:35",
+      "time": "00:04:57",
+      "duration": "00:04:57",
       "bestTime": "00:04:35",
       "allowSetTime": true,
       "completed": false,
@@ -43,15 +43,15 @@
           "allowSetTime": false
         }
       ],
-      "pbSplitTime": "00:04:35",
-      "pbSegmentDuration": "00:04:35",
+      "pbSplitTime": "00:04:57",
+      "pbSegmentDuration": "00:04:57",
       "goldSplit": "00:04:35"
     },
     {
       "id": 2,
       "name": "Open Slab Bellway",
-      "time": "00:08:28",
-      "duration": "00:03:53",
+      "time": "00:09:24",
+      "duration": "00:04:27",
       "bestTime": "00:03:53",
       "allowSetTime": true,
       "completed": false,
@@ -87,16 +87,16 @@
           "allowSetTime": false
         }
       ],
-      "pbSplitTime": "00:08:28",
-      "pbSegmentDuration": "00:03:53",
+      "pbSplitTime": "00:09:24",
+      "pbSegmentDuration": "00:04:27",
       "goldSplit": "00:03:53"
     },
     {
       "id": 3,
       "name": "Get Clawline",
-      "time": "00:12:24",
-      "duration": "00:03:56",
-      "bestTime": "00:03:56",
+      "time": "00:13:19",
+      "duration": "00:03:55",
+      "bestTime": "00:03:55",
       "allowSetTime": true,
       "completed": false,
       "subSegments": [
@@ -137,16 +137,16 @@
           "allowSetTime": false
         }
       ],
-      "pbSplitTime": "00:12:24",
-      "pbSegmentDuration": "00:03:56",
-      "goldSplit": "00:03:56"
+      "pbSplitTime": "00:13:19",
+      "pbSegmentDuration": "00:03:55",
+      "goldSplit": "00:03:55"
     },
     {
       "id": 4,
       "name": "Get Faydown Cloak, Mount Fay",
-      "time": "00:20:51",
-      "duration": "00:08:27",
-      "bestTime": "00:08:27",
+      "time": "00:21:40",
+      "duration": "00:08:21",
+      "bestTime": "00:08:21",
       "allowSetTime": true,
       "completed": false,
       "subSegments": [
@@ -193,16 +193,16 @@
           "allowSetTime": false
         }
       ],
-      "pbSplitTime": "00:20:51",
-      "pbSegmentDuration": "00:08:27",
-      "goldSplit": "00:08:27"
+      "pbSplitTime": "00:21:40",
+      "pbSegmentDuration": "00:08:21",
+      "goldSplit": "00:08:21"
     },
     {
       "id": 5,
       "name": "Ring Songclave Bell",
-      "time": "00:24:57",
-      "duration": "00:04:06",
-      "bestTime": "00:04:06",
+      "time": "00:25:20",
+      "duration": "00:03:40",
+      "bestTime": "00:03:40",
       "allowSetTime": true,
       "completed": false,
       "subSegments": [
@@ -249,15 +249,15 @@
           "allowSetTime": false
         }
       ],
-      "pbSplitTime": "00:24:57",
-      "pbSegmentDuration": "00:04:06",
-      "goldSplit": "00:04:06"
+      "pbSplitTime": "00:25:20",
+      "pbSegmentDuration": "00:03:40",
+      "goldSplit": "00:03:40"
     },
     {
       "id": 6,
       "name": "Memoriam, Get Spool Fragment 6",
-      "time": "00:29:21",
-      "duration": "00:04:24",
+      "time": "00:31:32",
+      "duration": "00:06:12",
       "bestTime": "00:04:24",
       "allowSetTime": true,
       "completed": false,
@@ -299,16 +299,16 @@
           "allowSetTime": false
         }
       ],
-      "pbSplitTime": "00:29:21",
-      "pbSegmentDuration": "00:04:24",
+      "pbSplitTime": "00:31:32",
+      "pbSegmentDuration": "00:06:12",
       "goldSplit": "00:04:24"
     },
     {
       "id": 7,
       "name": "Architect's Melody",
-      "time": "00:39:34",
-      "duration": "00:10:13",
-      "bestTime": "00:10:13",
+      "time": "00:40:35",
+      "duration": "00:09:03",
+      "bestTime": "00:09:03",
       "allowSetTime": true,
       "completed": false,
       "subSegments": [
@@ -361,16 +361,16 @@
           "allowSetTime": false
         }
       ],
-      "pbSplitTime": "00:39:34",
-      "pbSegmentDuration": "00:10:13",
-      "goldSplit": "00:10:13"
+      "pbSplitTime": "00:40:35",
+      "pbSegmentDuration": "00:09:03",
+      "goldSplit": "00:09:03"
     },
     {
       "id": 8,
       "name": "Needle Upgrade 2",
-      "time": "00:55:00",
-      "duration": "00:15:26",
-      "bestTime": "00:15:26",
+      "time": "00:48:50",
+      "duration": "00:08:15",
+      "bestTime": "00:08:15",
       "allowSetTime": true,
       "completed": false,
       "subSegments": [
@@ -429,15 +429,15 @@
           "allowSetTime": false
         }
       ],
-      "pbSplitTime": "00:55:00",
-      "pbSegmentDuration": "00:15:26",
-      "goldSplit": "00:15:26"
+      "pbSplitTime": "00:48:50",
+      "pbSegmentDuration": "00:08:15",
+      "goldSplit": "00:08:15"
     },
     {
       "id": 9,
       "name": "Get Needle Strike",
-      "time": "01:00:06",
-      "duration": "00:05:06",
+      "time": "00:54:20",
+      "duration": "00:05:30",
       "bestTime": "00:05:06",
       "allowSetTime": true,
       "completed": false,
@@ -479,16 +479,16 @@
           "allowSetTime": false
         }
       ],
-      "pbSplitTime": "01:00:06",
-      "pbSegmentDuration": "00:05:06",
+      "pbSplitTime": "00:54:20",
+      "pbSegmentDuration": "00:05:30",
       "goldSplit": "00:05:06"
     },
     {
       "id": 10,
       "name": "Get Volt Filament, Sands of Karak",
-      "time": "01:20:40",
-      "duration": "00:20:34",
-      "bestTime": "00:20:34",
+      "time": "01:08:26",
+      "duration": "00:14:06",
+      "bestTime": "00:14:06",
       "allowSetTime": true,
       "completed": false,
       "subSegments": [
@@ -553,9 +553,9 @@
           "allowSetTime": false
         }
       ],
-      "pbSplitTime": "01:20:40",
-      "pbSegmentDuration": "00:20:34",
-      "goldSplit": "00:20:34"
+      "pbSplitTime": "01:08:26",
+      "pbSegmentDuration": "00:14:06",
+      "goldSplit": "00:14:06"
     }
   ],
   "currentSegmentId": 1,
