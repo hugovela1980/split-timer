@@ -42,6 +42,8 @@ class RouteLoader {
     this.startCreateRouteButton = null;
     this.liveStopwatchTime = '00:00:00';
     this.isStopwatchRunning = false;
+    this.runPaceState = 'neutral'
+    this.lastCompletedSegmentId = null;
     this.hasRunStarted = false;
     this.runComplete = null;
     this.sessionGoldSplits = new Set();
@@ -310,6 +312,8 @@ class RouteLoader {
   resetRunSessionState() {
     this.runComplete = null;
     this.hasRunStarted = false;
+    this.runPaceState = 'neutral';
+    this.lastCompletedSegmentId = null;
     this.sessionGoldSplits.clear();
     this.sessionSetSegments.clear();
     this.sessionBestBySegment.clear();
@@ -1097,6 +1101,8 @@ class RouteLoader {
       this.sessionGoldSplits.clear();
       this.sessionSetSegments.clear();
       this.sessionBestBySegment.clear();
+      this.runPaceState = 'neutral';
+      this.lastCompletedSegmentId = null;
       this.runComplete = null;
       this.hasRunStarted = false;
       this.clearRunStorage();
@@ -1489,11 +1495,14 @@ class RouteLoader {
 
       setSegmentPbSplitTime(data, currentTime);
 
+      this.updateRunPaceStateFromCompletedSegment(data);
+
       this.sessionSetSegments.add(Number(data.id));
       this.saveRunSessionToStorage();
       timeDisplay.textContent = currentTime;
 
       await this.handleRouteDataChanged();
+      this.updateMainTimerColor();
       await this.advanceToNextSegment(data.id);
     });
   }
@@ -1634,6 +1643,40 @@ class RouteLoader {
     ) || null;
   }
 
+  getBaselineSegmentById(segmentId) {
+    const baselineRouteData = this.runDataSnapshot || this.restoreBaselineRouteFromStorage();
+
+    if (!baselineRouteData || !Array.isArray(baselineRouteData.segments)) {
+      return null;
+    }
+
+    return baselineRouteData.segments.find(
+      (segment) => Number(segment.id) === Number(segmentId)
+    ) || null;
+  }
+
+  updateRunPaceStateFromCompletedSegment(segment) {
+    if (!segment) {
+      this.runPaceState = 'neutral';
+      this.lastCompletedSegmentId = null;
+      return;
+    }
+
+    const baselineSegment = this.getBaselineSegmentById(segment.id);
+
+    if (!baselineSegment) {
+      this.runPaceState = 'neutral';
+      this.lastCompletedSegmentId = Number(segment.id);
+      return;
+    }
+
+    const actualSplit = getSegmentPbSplitTime(segment);
+    const baselineSplit = getSegmentPbSplitTime(baselineSegment);
+
+    this.runPaceState = this.getMainTimerComparisonState(actualSplit, baselineSplit);
+    this.lastCompletedSegmentId = Number(segment.id);
+  }
+
   getMainTimerComparisonState(currentRunTime, personalBest) {
     const currentSeconds = timeToSeconds(currentRunTime);
     const bestSeconds = timeToSeconds(personalBest);
@@ -1657,19 +1700,39 @@ class RouteLoader {
     const timerElement = document.querySelector('.timer__stopwatch');
     if (!timerElement || !this.routeData) return;
 
-    const currentRunTime = this.liveStopwatchTime || this.getCurrentStopwatchTime();
+    if (!this.hasRunStarted && !this.isStopwatchRunning) {
+      timerElement.classList.remove('timer__stopwatch--ahead', 'timer__stopwatch--behind');
+      timerElement.classList.add('timer__stopwatch--neutral');
+      return;
+    }
 
-    const comparisonTarget = (this.hasRunStarted || this.isStopwatchRunning)
-      ? this.getCurrentSegmentPbSplitTime()
-      : '';
+    let comparisonState = this.runPaceState || 'neutral';
 
-    const comparisonState = comparisonTarget
-      ? this.getMainTimerComparisonState(currentRunTime, comparisonTarget)
-      : 'neutral';
+    // If we are already behind at the last completed split,
+    // stay red until the next completed split changes the pace state.
+    if (this.runPaceState !== 'behind') {
+      const currentSegment = this.getCurrentSegmentData();
+      const baselineSegment = currentSegment
+        ? this.getBaselineSegmentById(currentSegment.id)
+        : null;
+
+      const currentTargetSplit = baselineSegment
+        ? getSegmentPbSplitTime(baselineSegment)
+        : '';
+
+      const currentRunTime = this.liveStopwatchTime || this.getCurrentStopwatchTime();
+
+      if (currentTargetSplit) {
+        comparisonState = this.getMainTimerComparisonState(currentRunTime, currentTargetSplit);
+      }
+    }
 
     timerElement.classList.toggle('timer__stopwatch--ahead', comparisonState === 'ahead');
     timerElement.classList.toggle('timer__stopwatch--behind', comparisonState === 'behind');
-    timerElement.classList.toggle('timer__stopwatch--neutral', comparisonState === 'neutral');
+    timerElement.classList.toggle(
+      'timer__stopwatch--neutral',
+      comparisonState === 'neutral' || comparisonState === 'even'
+    );
   }
 
   renderComparisonsPanel() {
