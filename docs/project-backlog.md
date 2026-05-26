@@ -9,12 +9,15 @@
 
 ## Current Focus
 
-- [ ] Build vanilla JavaScript test runner with Vitest-style syntax
+- [ ] Build lightweight vanilla JavaScript test runner inspired by Vitest
+  - Goal: understand testing fundamentals while keeping the project dependency-light
+  - Structure it so it can later be migrated to TypeScript
   - Support `tester.describe()`
   - Support `tester.it()` / `tester.test()`
   - Support `tester.expect()`
   - Support basic matchers like `toBe()`, `toEqual()`, `toBeTruthy()`, and `toBeFalsy()`
   - Support simple mock/spying behavior with `tester.mock()` or `tester.fn()`
+  - Print readable pass/fail results
 
 ## Next Up
 
@@ -102,3 +105,9 @@
 - [x] Merge timing-field compatibility work into `develop`
 - [x] Merge `develop` into `main`
 - [x] Release `v1.1.0`
+
+## Testing Strategy
+
+This project will use a lightweight vanilla JavaScript test runner inspired by Vitest. The goal is to understand testing fundamentals while keeping the project dependency-light. The runner will use familiar testing patterns such as `describe`, `it`, `expect`, and mock functions, but it will stay small enough to be understandable and maintainable.
+
+The test runner will be structured in a TypeScript-friendly way so it can later become a migration exercise if the project moves toward TypeScript.
