@@ -47,7 +47,7 @@ tester.describe('RouteLoader route file write behavior', () => {
                 this.detail = options.detail;
             }
         };
-        
+
         globalThis.document = {
             querySelector() {
                 return null;
@@ -174,5 +174,77 @@ tester.describe('RouteLoader route file write behavior', () => {
         tester.expect(routeLoader.lastCompletedSegmentId).toBe(null);
 
         tester.expect(saveRouteDataMock).toHaveBeenCalledTimes(1);
+    });
+
+    tester.it('restartRun restores baseline route data without writing route file', async () => {
+        const baselineRoute = cloneFixture(createTimerColorPaceRoute());
+
+        const modifiedRoute = cloneFixture(createTimerColorPaceRoute());
+        modifiedRoute.personalBest = '00:00:12';
+        modifiedRoute.sumOfBest = '00:00:12';
+        modifiedRoute.segments[0].time = '00:00:03';
+        modifiedRoute.segments[0].pbSplitTime = '00:00:03';
+        modifiedRoute.segments[0].duration = '00:00:03';
+        modifiedRoute.segments[0].pbSegmentDuration = '00:00:03';
+
+        routeLoader.routeData = modifiedRoute;
+        routeLoader.runDataSnapshot = baselineRoute;
+        routeLoader.currentRouteFilename = 'test-timer-color-pace.json';
+
+        routeLoader.populateRoute = tester.fn();
+        routeLoader.populateSidebar = tester.fn();
+        routeLoader.renderComparisonsPanel = tester.fn();
+        routeLoader.resetRouteProgressToFirstSegment = tester.fn(() => {
+            routeLoader.routeData.currentSegmentId = 1;
+            routeLoader.routeData.currentSegmentName = 'Segment 1';
+        });
+
+        await routeLoader.restartRun();
+
+        tester.expect(routeLoader.routeData.personalBest).toBe('00:00:15');
+        tester.expect(routeLoader.routeData.sumOfBest).toBe('00:00:15');
+        tester.expect(routeLoader.routeData.segments[0].pbSplitTime).toBe('00:00:05');
+        tester.expect(routeLoader.routeData.segments[0].pbSegmentDuration).toBe('00:00:05');
+
+        tester.expect(saveRouteDataMock).toHaveBeenCalledTimes(0);
+    });
+
+    tester.it('restartRun clears active run session state', async () => {
+        const baselineRoute = cloneFixture(createTimerColorPaceRoute());
+
+        routeLoader.routeData = cloneFixture(createTimerColorPaceRoute());
+        routeLoader.runDataSnapshot = baselineRoute;
+        routeLoader.runComplete = {
+            finalTime: '00:00:18',
+            isNewPB: false,
+            previousPB: '00:00:15'
+        };
+        routeLoader.hasRunStarted = true;
+        routeLoader.sessionGoldSplits.add(2);
+        routeLoader.sessionSetSegments.add(1);
+        routeLoader.sessionSetSegments.add(2);
+        routeLoader.sessionBestBySegment.set(2, '00:00:04');
+        routeLoader.runPaceState = 'behind';
+        routeLoader.lastCompletedSegmentId = 2;
+
+        routeLoader.populateRoute = tester.fn();
+        routeLoader.populateSidebar = tester.fn();
+        routeLoader.renderComparisonsPanel = tester.fn();
+        routeLoader.resetRouteProgressToFirstSegment = tester.fn(() => {
+            routeLoader.routeData.currentSegmentId = 1;
+            routeLoader.routeData.currentSegmentName = 'Segment 1';
+        });
+
+        await routeLoader.restartRun();
+
+        tester.expect(routeLoader.runComplete).toBe(null);
+        tester.expect(routeLoader.hasRunStarted).toBe(false);
+        tester.expect(routeLoader.sessionGoldSplits.size).toBe(0);
+        tester.expect(routeLoader.sessionSetSegments.size).toBe(0);
+        tester.expect(routeLoader.sessionBestBySegment.size).toBe(0);
+        tester.expect(routeLoader.runPaceState).toBe('neutral');
+        tester.expect(routeLoader.lastCompletedSegmentId).toBe(null);
+
+        tester.expect(saveRouteDataMock).toHaveBeenCalledTimes(0);
     });
 });

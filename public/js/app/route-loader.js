@@ -403,11 +403,11 @@ class RouteLoader {
   }
 
   async restartRun() {
-    this.resetRunSessionState();
     this.restoreBaselineRouteState();
+    this.resetRunSessionState();
 
     this.populateRoute();
-    await this.resetRouteProgressToFirstSegmentAndRender({ scroll: true, save: true });
+    await this.resetRouteProgressToFirstSegmentAndRender({ scroll: true, save: false });
 
     window.dispatchEvent(new CustomEvent('stopwatch:clear'));
   }
