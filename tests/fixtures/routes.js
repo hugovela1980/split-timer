@@ -1,0 +1,54 @@
+export function createTimerColorPaceRoute() {
+  return {
+    name: 'Test Timer Color Pace',
+    personalBest: '00:00:15',
+    sumOfBest: '00:00:15',
+    segments: [
+      {
+        id: 1,
+        name: 'Segment 1',
+        time: '00:00:05',
+        duration: '00:00:05',
+        bestTime: '00:00:05',
+        allowSetTime: true,
+        completed: false,
+        subSegments: [],
+        pbSplitTime: '00:00:05',
+        pbSegmentDuration: '00:00:05',
+        goldSplit: '00:00:05'
+      },
+      {
+        id: 2,
+        name: 'Segment 2',
+        time: '00:00:10',
+        duration: '00:00:05',
+        bestTime: '00:00:05',
+        allowSetTime: true,
+        completed: false,
+        subSegments: [],
+        pbSplitTime: '00:00:10',
+        pbSegmentDuration: '00:00:05',
+        goldSplit: '00:00:05'
+      },
+      {
+        id: 3,
+        name: 'Segment 3',
+        time: '00:00:15',
+        duration: '00:00:05',
+        bestTime: '00:00:05',
+        allowSetTime: true,
+        completed: false,
+        subSegments: [],
+        pbSplitTime: '00:00:15',
+        pbSegmentDuration: '00:00:05',
+        goldSplit: '00:00:05'
+      }
+    ],
+    currentSegmentId: 1,
+    currentSegmentName: 'Segment 1'
+  };
+}
+
+export function cloneFixture(value) {
+  return structuredClone(value);
+}
