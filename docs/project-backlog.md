@@ -12,8 +12,8 @@
 - [ ] Add workflow regression tests for route/run behavior
   - [x] Add route file write behavior tests
   - [x] Add delete completed run data workflow tests
-  - [ ] Add restart run workflow tests
-  - [ ] Add Save New PB workflow tests
+  - [x] Add restart run workflow tests
+  - [x] Add Save New PB workflow tests
   - [ ] Add Save Gold Splits workflow tests
 
 ## Next Up

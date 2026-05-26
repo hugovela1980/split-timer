@@ -1,6 +1,10 @@
 import { tester } from './test-runner/tester.js';
 import { RouteLoader } from '../public/js/app/route-loader.js';
-import { createTimerColorPaceRoute, cloneFixture } from './fixtures/routes.js';
+import {
+    createTimerColorPaceRoute,
+    createCompletedPbRunRoute,
+    cloneFixture
+} from './fixtures/routes.js';
 
 function createMemoryStorage() {
     const store = new Map();
