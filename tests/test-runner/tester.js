@@ -47,7 +47,29 @@ function expect(actual) {
           `Expected ${formatValue(actual)} to be falsy`
         );
       }
-    }
+    },
+
+    toHaveBeenCalled() {
+          if (!actual || !Array.isArray(actual.calls)) {
+              throw createAssertionError('Expected value to be a mock function.');
+          }
+
+          if (actual.calls.length === 0) {
+              throw createAssertionError('Expected mock function to have been called.');
+          }
+      },
+
+      toHaveBeenCalledTimes(expectedCallCount) {
+          if (!actual || !Array.isArray(actual.calls)) {
+              throw createAssertionError('Expected value to be a mock function.');
+          }
+
+          if (actual.calls.length !== expectedCallCount) {
+              throw createAssertionError(
+                  `Expected mock function to have been called ${expectedCallCount} times, but it was called ${actual.calls.length} times.`
+              );
+          }
+      }
   };
 }
 
@@ -88,6 +110,21 @@ function it(name, callback) {
 }
 
 const test = it;
+
+function fn(implementation = () => undefined) {
+    const mockFunction = (...args) => {
+        mockFunction.calls.push(args);
+        return implementation(...args);
+    };
+
+    mockFunction.calls = [];
+
+    mockFunction.mockClear = () => {
+        mockFunction.calls = [];
+    };
+
+    return mockFunction;
+}
 
 async function run() {
   let total = 0;
@@ -135,10 +172,11 @@ async function run() {
 }
 
 export const tester = {
-    describe,
-    it,
-    test,
-    beforeEach,
-    expect,
-    run
+  describe,
+  it,
+  test,
+  beforeEach,
+  expect,
+  fn,
+  run
 };
