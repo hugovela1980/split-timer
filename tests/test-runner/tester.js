@@ -54,7 +54,8 @@ function expect(actual) {
 function describe(name, callback) {
   const suite = {
     name,
-    tests: []
+    tests: [],
+    beforeEachCallbacks: []
   };
 
   testSuites.push(suite);
@@ -65,6 +66,14 @@ function describe(name, callback) {
   callback();
 
   currentSuite = previousSuite;
+}
+
+function beforeEach(callback) {
+  if (!currentSuite) {
+    throw new Error('tester.beforeEach() must be inside tester.describe().');
+  }
+
+  currentSuite.beforeEachCallbacks.push(callback);
 }
 
 function it(name, callback) {
@@ -93,11 +102,15 @@ async function run() {
     for (const testCase of suite.tests) {
       total += 1;
 
-      try {
-        await testCase.callback();
-        passed += 1;
-        console.log(`  ✓ ${testCase.name}`);
-      } catch (error) {
+        try {
+            for (const beforeEachCallback of suite.beforeEachCallbacks) {
+                await beforeEachCallback();
+            }
+
+            await testCase.callback();
+            passed += 1;
+            console.log(`  ✓ ${testCase.name}`);
+        } catch (error) {
         failed += 1;
         console.log(`  ✗ ${testCase.name}`);
         console.log(`    ${error.message}`);
@@ -122,9 +135,10 @@ async function run() {
 }
 
 export const tester = {
-  describe,
-  it,
-  test,
-  expect,
-  run
+    describe,
+    it,
+    test,
+    beforeEach,
+    expect,
+    run
 };
