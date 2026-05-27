@@ -5,7 +5,7 @@
 - Current stable release: `v1.1.0`
 - Stable branch: `main`
 - Development branch: `develop`
-- Current feature branch: `feature/vanilla-test-runner`
+- Next planned branch: `feature/start-screen-route-tests`
 
 ## Current Focus
 - [ ] Add tests for route switching and start screen behavior
@@ -63,7 +63,7 @@
 - [x] Add run pace timer color behavior
 - [x] Disable subsegment timing controls
 - [x] Add short test routes for regression testing
-- [x] Run regression tests for PB saves, non-PB gold saves, interrupted runs, and route file writes
+- [x] Run manual regression tests for PB saves, non-PB gold saves, interrupted runs, and route file writes
 - [x] Merge timing-field compatibility work into `develop`
 - [x] Merge `develop` into `main`
 - [x] Release `v1.1.0`
