@@ -556,6 +556,174 @@
       "pbSplitTime": "01:08:26",
       "pbSegmentDuration": "00:14:06",
       "goldSplit": "00:14:06"
+    },
+    {
+      "id": 11,
+      "name": "Sharpdart",
+      "time": "",
+      "duration": "",
+      "bestTime": "",
+      "allowSetTime": true,
+      "completed": false,
+      "subSegments": [
+        {
+          "description": "Get Dead Bug's Purse",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Flea 16, Wormways",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Mask Shard 5, Wormways",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Get Sharpdart",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        }
+      ],
+      "pbSplitTime": "",
+      "pbSegmentDuration": "",
+      "goldSplit": ""
+    },
+    {
+      "id": 12,
+      "name": "Wanderer Crest",
+      "time": "",
+      "duration": "",
+      "bestTime": "",
+      "allowSetTime": true,
+      "completed": false,
+      "subSegments": [
+        {
+          "description": "Get 3 Plasmium samples",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Memory Locket 4, Wormways, Quit Out",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Plasmium Phial",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Mossberry 2, Bonegrave",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Get Wanderer Crest",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        }
+      ],
+      "pbSplitTime": "",
+      "pbSegmentDuration": "",
+      "goldSplit": ""
+    },
+    {
+      "id": 13,
+      "name": "Get Weavelight",
+      "time": "",
+      "duration": "",
+      "bestTime": "",
+      "allowSetTime": true,
+      "completed": false,
+      "subSegments": [
+        {
+          "description": "Get Mossberry 3, Bone Bottom",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Grant Bone Bottom Repairs, Accept Berry Picking, Garb of the Pilgrims and Terrible Tyrant",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Buy Magnetite Brooch",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Unlock Wanderer Crest, Equip Magnetite Brooch, Silkspeed Anklets, Sawtooth Circlet, Volt Filament and Flea Brew",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Mossberry 4, Moss Grotto",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Get Map of Weavenest Atla",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Mask Shard 6, Weavenest Atla",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Spool Fragment 7, Weavenest Atla",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Snare Setter",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Mossberry 4, Weavenest Atla",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Moss Mothers",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Weavelight, Quit Out",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        }
+      ],
+      "pbSplitTime": "",
+      "pbSegmentDuration": "",
+      "goldSplit": ""
     }
   ],
   "currentSegmentId": 1,
