@@ -5,55 +5,48 @@
 - Current stable release: `v1.1.0`
 - Stable branch: `main`
 - Development branch: `develop`
-- Next planned branch: `feature/vanilla-test-runner`
+- Current feature branch: `feature/vanilla-test-runner`
 
 ## Current Focus
-
+- [ ] Add tests for route switching and start screen behavior
+  - [ ] Loading a route from the start screen should not write route files
+  - [ ] Switching routes should keep selectors synced
+  - [ ] Switching routes during active/unfinished runs should require confirmation
+  - [ ] Canceling route switch should preserve current route/run state
+  - [ ] Confirming route switch should discard temporary run data safely
 
 ## Next Up
 
-- Add restart run workflow tests
-  - Restarting a run should restore baseline route data
-  - Restarting a run should clear active run/session state
-  - Restarting a run should reset timer and current segment state
-  - Restarting a run should not create unnecessary route file writes
+- [ ] Add Back to Start button
+  - [ ] Return from main timer view to start screen
+  - [ ] Reset timer and route session state
+  - [ ] Confirm before leaving if active/unfinished run data exists
 
-- Add Save New PB workflow tests
-  - PB run updates `personalBest`
-  - PB run updates `pbSplitTime` / `time`
-  - PB run updates `pbSegmentDuration` / `duration`
-  - PB run updates improved `goldSplit` / `bestTime` values only when appropriate
-  - PB run recalculates `sumOfBest` from `goldSplit`
+- [ ] Decide future subsegment timing behavior
 
-- Add Save Gold Splits workflow tests
-  - Non-PB run preserves `personalBest`
-  - Non-PB run preserves PB split/duration fields
-  - Non-PB run updates only improved `goldSplit` / `bestTime` values
-  - Non-PB run recalculates `sumOfBest` from `goldSplit`
-
-- Add Back to Start button
-  - Return from main timer view to start screen
-  - Reset timer and route session state
-  - Confirm before leaving if active/unfinished run data exists
+- [ ] Add project documentation / architecture notes
+  - [ ] Explain client-side SPA structure
+  - [ ] Explain lightweight Node file server
+  - [ ] Explain confirmed route data vs temporary active-run data
+  - [ ] Explain custom vanilla JavaScript test runner
+  - [ ] Explain timing-field compatibility layer
 
 ## Backlog
 
-- Decide future subsegment timing behavior
-- Improve Run Complete preview
-- Migrate active run state from localStorage to temporary files
-- Plan full route data schema cleanup
-- Remove compatibility layer after route files fully migrate
-- Evaluate GitHub Projects for issue tracking and project board workflow
-- Add project documentation / architecture notes
+- [ ] Plan full route data schema cleanup
+- [ ] Improve Run Complete preview
+- [ ] Migrate active run state from localStorage to temporary files
+- [ ] Remove compatibility layer after route files fully migrate
+- [ ] Evaluate GitHub Projects for issue tracking and project board workflow
+- [ ] Add TypeScript-friendly JSDoc comments to test runner
+- [ ] Consider future TypeScript migration for test runner
+- [ ] Consider future TypeScript migration for app modules
 
 ## Completed
 
 - [x] Create stable `v1.0.0` baseline
 - [x] Add `main`, `develop`, and feature branch workflow
 - [x] Add timing-field compatibility layer
-  - `time` → `pbSplitTime`
-  - `duration` → `pbSegmentDuration`
-  - `bestTime` → `goldSplit`
 - [x] Replace direct top-level segment timing reads with compatibility helpers
 - [x] Add start screen route selector
 - [x] Add create route action from start screen
@@ -75,10 +68,9 @@
 - [x] Merge `develop` into `main`
 - [x] Release `v1.1.0`
 - [x] Build lightweight vanilla JavaScript test runner inspired by Vitest
+- [x] Add route test fixtures
+- [x] Add timing compatibility regression tests
+- [x] Add route timing recalculation regression tests
+- [x] Add run save behavior tests
+- [x] Add route-file write behavior tests
 - [x] Add workflow regression tests for route/run behavior
-
-## Testing Strategy
-
-This project will use a lightweight vanilla JavaScript test runner inspired by Vitest. The goal is to understand testing fundamentals while keeping the project dependency-light. The runner will use familiar testing patterns such as `describe`, `it`, `expect`, and mock functions, but it will stay small enough to be understandable and maintainable.
-
-The test runner will be structured in a TypeScript-friendly way so it can later become a migration exercise if the project moves toward TypeScript.
