@@ -20,21 +20,16 @@
 ## Next Up
 - [ ] Plan full route data schema cleanup
 
-- [ ] Add Back to Start button
-  - [ ] Return from main timer view to start screen
-  - [ ] Reset timer and route session state
-  - [ ] Confirm before leaving if active/unfinished run data exists
-
-- [ ] Decide future subsegment timing behavior
-
-## Future Refactors
-
 - [ ] Split `RouteLoader` into smaller modules/classes
   - [ ] Separate route loading/fetching logic
   - [ ] Separate start screen and route selection behavior
   - [ ] Separate run save / PB / gold split behavior
   - [ ] Separate editor-related behavior
   - [ ] Separate comparison / pacing / timing recalculation behavior
+
+- [ ] Decide future subsegment timing behavior
+
+## Future Refactors
 
 - [ ] Extract stopwatch logic from `public/js/app/main.js` into a dedicated stopwatch module
   - [ ] Preserve current event contract first (`stopwatch:start`, `stopwatch:stop`, `stopwatch:clear`, `run:complete`)
@@ -46,6 +41,10 @@
 
 ## Backlog
 
+- [ ] Add Back to Start button
+  - [ ] Return from main timer view to start screen
+  - [ ] Reset timer and route session state
+  - [ ] Confirm before leaving if active/unfinished run data exists
 - [ ] Improve Run Complete preview
 - [ ] Migrate active run state from localStorage to temporary files
 - [ ] Remove compatibility layer after route files fully migrate
