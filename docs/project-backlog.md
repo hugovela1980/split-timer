@@ -9,17 +9,14 @@
 
 ## Current Focus
 
-- [ ] Plan full route data schema cleanup
-  - [ ] Inventory current route JSON fields
-  - [ ] Identify confirmed route data vs temporary run/session data
-  - [ ] Identify legacy/compatibility timing fields
-  - [ ] Design final route JSON shape
-  - [ ] Plan migration steps
-  - [ ] Decide when compatibility layer can be removed
+- [ ] Begin route schema cleanup implementation
+  - [ ] Add schema normalization tests
+  - [ ] Define canonical in-memory timing shape
+  - [ ] Normalize legacy route fields to canonical `Ms` fields
+  - [ ] Keep existing route files working
+  - [ ] Do not remove compatibility fields yet
 
 ## Next Up
-
-- [ ] Decide future subsegment timing behavior
 
 - [ ] Split `RouteLoader` into smaller modules/classes
   - [ ] Separate route loading/fetching logic
@@ -56,6 +53,7 @@
 
 ## Completed
 
+- [x] Plan full route data schema cleanup / implementation pending
 - [x] Create stable `v1.0.0` baseline
 - [x] Add `main`, `develop`, and feature branch workflow
 - [x] Add timing-field compatibility layer
