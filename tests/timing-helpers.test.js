@@ -84,4 +84,35 @@ tester.describe('timing field compatibility helpers', () => {
     tester.expect(segment.pbSegmentDuration).toBe('00:00:06');
     tester.expect(segment.goldSplit).toBe('00:00:03');
   });
+
+    tester.it('normalizes legacy timing strings into canonical millisecond fields', () => {
+    const segment = {
+      pbSplitTime: '00:10:00',
+      pbSegmentDuration: '00:02:00',
+      goldSplit: '00:01:50'
+    };
+
+    normalizeSegmentTimingFields(segment);
+
+    tester.expect(segment.pbSplitMs).toBe(600000);
+    tester.expect(segment.pbSegmentMs).toBe(120000);
+    tester.expect(segment.goldSegmentMs).toBe(110000);
+  });
+
+  tester.it('does not overwrite existing canonical millisecond fields during normalization', () => {
+    const segment = {
+      pbSplitTime: '00:10:00',
+      pbSegmentDuration: '00:02:00',
+      goldSplit: '00:01:50',
+      pbSplitMs: 123,
+      pbSegmentMs: 456,
+      goldSegmentMs: 789
+    };
+
+    normalizeSegmentTimingFields(segment);
+
+    tester.expect(segment.pbSplitMs).toBe(123);
+    tester.expect(segment.pbSegmentMs).toBe(456);
+    tester.expect(segment.goldSegmentMs).toBe(789);
+  });
 });

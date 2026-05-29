@@ -20,6 +20,24 @@ export function timeToSeconds(timeString) {
   return (hours * 3600) + (minutes * 60) + seconds;
 }
 
+export function timeToMilliseconds(timeValue) {
+  if (timeValue === null || timeValue === undefined || timeValue === '') {
+    return null;
+  }
+
+  if (typeof timeValue === 'number') {
+    return timeValue * 1000;
+  }
+
+  const seconds = timeToSeconds(timeValue);
+
+  if (Number.isNaN(seconds)) {
+    return null;
+  }
+
+  return seconds * 1000;
+}
+
 export function isBetterTime(candidateTime, referenceTime) {
   const candidateSeconds = timeToSeconds(candidateTime);
   if (candidateSeconds === null) return false;
@@ -122,6 +140,18 @@ export function normalizeSegmentTimingFields(segment) {
   setSegmentPbSplitTime(segment, pbSplitTime);
   setSegmentPbSegmentDuration(segment, pbSegmentDuration);
   setSegmentGoldSplit(segment, goldSplit);
+
+  if (segment.pbSplitMs === undefined) {
+    segment.pbSplitMs = timeToMilliseconds(pbSplitTime);
+  }
+
+  if (segment.pbSegmentMs === undefined) {
+    segment.pbSegmentMs = timeToMilliseconds(pbSegmentDuration);
+  }
+
+  if (segment.goldSegmentMs === undefined) {
+    segment.goldSegmentMs = timeToMilliseconds(goldSplit);
+  }
 }
 
 export function normalizeRouteTimingFields(routeData) {
