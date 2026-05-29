@@ -6,7 +6,8 @@ import {
   setSegmentPbSegmentDuration,
   getSegmentGoldSplit,
   setSegmentGoldSplit,
-  normalizeSegmentTimingFields
+  normalizeSegmentTimingFields,
+  normalizeRouteTimingFields
 } from '../public/js/utils/utils.js';
 
 tester.describe('timing field compatibility helpers', () => {
@@ -85,7 +86,7 @@ tester.describe('timing field compatibility helpers', () => {
     tester.expect(segment.goldSplit).toBe('00:00:03');
   });
 
-    tester.it('normalizes legacy timing strings into canonical millisecond fields', () => {
+  tester.it('normalizes legacy timing strings into canonical millisecond fields', () => {
     const segment = {
       pbSplitTime: '00:10:00',
       pbSegmentDuration: '00:02:00',
@@ -114,5 +115,33 @@ tester.describe('timing field compatibility helpers', () => {
     tester.expect(segment.pbSplitMs).toBe(123);
     tester.expect(segment.pbSegmentMs).toBe(456);
     tester.expect(segment.goldSegmentMs).toBe(789);
+  });
+
+  tester.it('normalizes route-level timing strings into canonical millisecond fields', () => {
+    const routeData = {
+      personalBest: '00:10:00',
+      sumOfBest: '00:09:30',
+      segments: []
+    };
+
+    normalizeRouteTimingFields(routeData);
+
+    tester.expect(routeData.personalBestMs).toBe(600000);
+    tester.expect(routeData.sumOfBestMs).toBe(570000);
+  });
+
+  tester.it('does not overwrite existing route-level millisecond fields during normalization', () => {
+    const routeData = {
+      personalBest: '00:10:00',
+      sumOfBest: '00:09:30',
+      personalBestMs: 123,
+      sumOfBestMs: 456,
+      segments: []
+    };
+
+    normalizeRouteTimingFields(routeData);
+
+    tester.expect(routeData.personalBestMs).toBe(123);
+    tester.expect(routeData.sumOfBestMs).toBe(456);
   });
 });

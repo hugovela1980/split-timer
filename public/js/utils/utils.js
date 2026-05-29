@@ -155,7 +155,17 @@ export function normalizeSegmentTimingFields(segment) {
 }
 
 export function normalizeRouteTimingFields(routeData) {
-  if (!routeData || !Array.isArray(routeData.segments)) return;
+  if (!routeData) return;
+
+  if (routeData.personalBestMs === undefined) {
+    routeData.personalBestMs = timeToMilliseconds(routeData.personalBest);
+  }
+
+  if (routeData.sumOfBestMs === undefined) {
+    routeData.sumOfBestMs = timeToMilliseconds(routeData.sumOfBest);
+  }
+
+  if (!Array.isArray(routeData.segments)) return;
 
   routeData.segments.forEach((segment) => {
     normalizeSegmentTimingFields(segment);
