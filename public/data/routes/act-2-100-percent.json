@@ -724,8 +724,82 @@
       "pbSplitTime": "",
       "pbSegmentDuration": "",
       "goldSplit": ""
+    },
+    {
+      "id": 14,
+      "name": "seg14",
+      "time": "",
+      "duration": "",
+      "bestTime": "",
+      "allowSetTime": true,
+      "completed": false,
+      "subSegments": [
+        {
+          "description": "Farm pilgrim garbs",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "get mossberry tear, and sell extra mossberries",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Farm more garbs",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "get shard pendent",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Craftmetal, The Marrow",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Skull Tyrant",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Turn in Garbs and Skull Tyrant",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Shard Donation",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Buy Craftmetal and Mask Shard",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        },
+        {
+          "description": "Equip volt vessel, circlet, volt filament, anklets, brooch and thief's mark",
+          "time": "",
+          "completed": false,
+          "allowSetTime": false
+        }
+      ],
+      "pbSplitTime": "",
+      "pbSegmentDuration": "",
+      "goldSplit": ""
     }
   ],
-  "currentSegmentId": 1,
-  "currentSegmentName": "Get Whiteward Key"
+  "currentSegmentId": 14,
+  "currentSegmentName": "seg14"
 }
