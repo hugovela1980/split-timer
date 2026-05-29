@@ -31,6 +31,20 @@
   - [ ] Explain custom vanilla JavaScript test runner
   - [ ] Explain timing-field compatibility layer
 
+## Future Refactors
+
+- [ ] Split `RouteLoader` into smaller modules/classes
+  - [ ] Separate route loading/fetching logic
+  - [ ] Separate start screen and route selection behavior
+  - [ ] Separate run save / PB / gold split behavior
+  - [ ] Separate editor-related behavior
+  - [ ] Separate comparison / pacing / timing recalculation behavior
+
+- [ ] Extract stopwatch logic from `public/js/app/main.js` into a dedicated stopwatch module
+  - [ ] Preserve current event contract first (`stopwatch:start`, `stopwatch:stop`, `stopwatch:clear`, `run:complete`)
+  - [ ] Add tests around stopwatch start/stop/clear behavior before refactoring
+  - [ ] Keep `RouteLoader` communicating through events instead of direct stopwatch internals
+
 ## Backlog
 
 - [ ] Plan full route data schema cleanup
