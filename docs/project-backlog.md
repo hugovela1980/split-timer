@@ -8,21 +8,6 @@
 - Next planned branch: `feature/start-screen-route-tests`
 
 ## Current Focus
-- [ ] Add tests for route switching and start screen behavior
-  - [ ] Loading a route from the start screen should not write route files
-  - [ ] Switching routes should keep selectors synced
-  - [ ] Switching routes during active/unfinished runs should require confirmation
-  - [ ] Canceling route switch should preserve current route/run state
-  - [ ] Confirming route switch should discard temporary run data safely
-
-## Next Up
-
-- [ ] Add Back to Start button
-  - [ ] Return from main timer view to start screen
-  - [ ] Reset timer and route session state
-  - [ ] Confirm before leaving if active/unfinished run data exists
-
-- [ ] Decide future subsegment timing behavior
 
 - [ ] Add project documentation / architecture notes
   - [ ] Explain client-side SPA structure
@@ -30,6 +15,17 @@
   - [ ] Explain confirmed route data vs temporary active-run data
   - [ ] Explain custom vanilla JavaScript test runner
   - [ ] Explain timing-field compatibility layer
+  - [ ] Map current `RouteLoader` responsibilities before refactoring
+
+## Next Up
+- [ ] Plan full route data schema cleanup
+
+- [ ] Add Back to Start button
+  - [ ] Return from main timer view to start screen
+  - [ ] Reset timer and route session state
+  - [ ] Confirm before leaving if active/unfinished run data exists
+
+- [ ] Decide future subsegment timing behavior
 
 ## Future Refactors
 
@@ -45,9 +41,11 @@
   - [ ] Add tests around stopwatch start/stop/clear behavior before refactoring
   - [ ] Keep `RouteLoader` communicating through events instead of direct stopwatch internals
 
+- [ ] Fix confirmation message typo: “dicard” → “discard”
+- [ ] Review duplicate stopwatch:clear dispatch during confirmed route switch
+
 ## Backlog
 
-- [ ] Plan full route data schema cleanup
 - [ ] Improve Run Complete preview
 - [ ] Migrate active run state from localStorage to temporary files
 - [ ] Remove compatibility layer after route files fully migrate
@@ -88,3 +86,4 @@
 - [x] Add run save behavior tests
 - [x] Add route-file write behavior tests
 - [x] Add workflow regression tests for route/run behavior
+- [x] Add tests for route switching and start screen behavior
