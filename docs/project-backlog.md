@@ -9,16 +9,17 @@
 
 ## Current Focus
 
-- [ ] Add project documentation / architecture notes
-  - [ ] Explain client-side SPA structure
-  - [ ] Explain lightweight Node file server
-  - [ ] Explain confirmed route data vs temporary active-run data
-  - [ ] Explain custom vanilla JavaScript test runner
-  - [ ] Explain timing-field compatibility layer
-  - [ ] Map current `RouteLoader` responsibilities before refactoring
+- [ ] Plan full route data schema cleanup
+  - [ ] Inventory current route JSON fields
+  - [ ] Identify confirmed route data vs temporary run/session data
+  - [ ] Identify legacy/compatibility timing fields
+  - [ ] Design final route JSON shape
+  - [ ] Plan migration steps
+  - [ ] Decide when compatibility layer can be removed
 
 ## Next Up
-- [ ] Plan full route data schema cleanup
+
+- [ ] Decide future subsegment timing behavior
 
 - [ ] Split `RouteLoader` into smaller modules/classes
   - [ ] Separate route loading/fetching logic
@@ -27,24 +28,24 @@
   - [ ] Separate editor-related behavior
   - [ ] Separate comparison / pacing / timing recalculation behavior
 
-- [ ] Decide future subsegment timing behavior
-
-## Future Refactors
-
 - [ ] Extract stopwatch logic from `public/js/app/main.js` into a dedicated stopwatch module
   - [ ] Preserve current event contract first (`stopwatch:start`, `stopwatch:stop`, `stopwatch:clear`, `run:complete`)
   - [ ] Add tests around stopwatch start/stop/clear behavior before refactoring
   - [ ] Keep `RouteLoader` communicating through events instead of direct stopwatch internals
+
+- [ ] Add Back to Start button
+  - [ ] Return from main timer view to start screen
+  - [ ] Reset timer and route session state
+  - [ ] Confirm before leaving if active/unfinished run data exists
+
+## Future Refactors
+
 
 - [ ] Fix confirmation message typo: “dicard” → “discard”
 - [ ] Review duplicate stopwatch:clear dispatch during confirmed route switch
 
 ## Backlog
 
-- [ ] Add Back to Start button
-  - [ ] Return from main timer view to start screen
-  - [ ] Reset timer and route session state
-  - [ ] Confirm before leaving if active/unfinished run data exists
 - [ ] Improve Run Complete preview
 - [ ] Migrate active run state from localStorage to temporary files
 - [ ] Remove compatibility layer after route files fully migrate
