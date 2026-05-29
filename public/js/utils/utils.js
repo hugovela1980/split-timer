@@ -188,12 +188,20 @@ export function normalizeRouteTimingFields(routeData) {
       segment.id = createSegmentId(segment, segmentIndex);
     }
 
+    if (segment.order === undefined) {
+      segment.order = segmentIndex + 1;
+    }
+
     normalizeSegmentTimingFields(segment);
 
     if (Array.isArray(segment.subSegments)) {
       segment.subSegments.forEach((subSegment, subSegmentIndex) => {
         if (subSegment.id === undefined) {
           subSegment.id = createSubSegmentId(subSegment, subSegmentIndex);
+        }
+
+        if (subSegment.order === undefined) {
+          subSegment.order = subSegmentIndex + 1;
         }
 
         normalizeSubSegmentTimingFields(subSegment);

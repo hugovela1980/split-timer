@@ -314,4 +314,72 @@ tester.describe('timing field compatibility helpers', () => {
     tester.expect(routeData.segments[0].id).toBe('custom-segment-id');
     tester.expect(routeData.segments[0].subSegments[0].id).toBe('custom-subsegment-id');
   });
+
+  tester.it('adds order fields to segments when missing', () => {
+    const routeData = {
+      name: 'Act 1 100%',
+      segments: [
+        {
+          name: 'First Segment',
+          subSegments: []
+        },
+        {
+          name: 'Second Segment',
+          subSegments: []
+        }
+      ]
+    };
+
+    normalizeRouteTimingFields(routeData);
+
+    tester.expect(routeData.segments[0].order).toBe(1);
+    tester.expect(routeData.segments[1].order).toBe(2);
+  });
+
+  tester.it('adds order fields to subsegments when missing', () => {
+    const routeData = {
+      name: 'Act 1 100%',
+      segments: [
+        {
+          name: 'Get Silk Spear',
+          subSegments: [
+            {
+              description: 'Enter room'
+            },
+            {
+              description: 'Pick up item'
+            }
+          ]
+        }
+      ]
+    };
+
+    normalizeRouteTimingFields(routeData);
+
+    tester.expect(routeData.segments[0].subSegments[0].order).toBe(1);
+    tester.expect(routeData.segments[0].subSegments[1].order).toBe(2);
+  });
+
+  tester.it('does not overwrite existing segment or subsegment order fields during normalization', () => {
+    const routeData = {
+      name: 'Act 1 100%',
+      segments: [
+        {
+          name: 'Get Silk Spear',
+          order: 10,
+          subSegments: [
+            {
+              description: 'Enter room',
+              order: 20
+            }
+          ]
+        }
+      ]
+    };
+
+    normalizeRouteTimingFields(routeData);
+
+    tester.expect(routeData.segments[0].order).toBe(10);
+    tester.expect(routeData.segments[0].subSegments[0].order).toBe(20);
+  });
 });
