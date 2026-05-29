@@ -165,6 +165,10 @@ export function normalizeSubSegmentTimingFields(subSegment) {
 export function normalizeRouteTimingFields(routeData) {
   if (!routeData) return;
 
+  if (routeData.schemaVersion === undefined) {
+    routeData.schemaVersion = 2;
+  }
+
   if (routeData.personalBestMs === undefined) {
     routeData.personalBestMs = timeToMilliseconds(routeData.personalBest);
   }

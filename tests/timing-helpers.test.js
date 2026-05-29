@@ -193,4 +193,28 @@ tester.describe('timing field compatibility helpers', () => {
 
     tester.expect(subSegment.setTimeMs).toBe(123);
   });
+
+
+  tester.it('adds schemaVersion when route data is missing one', () => {
+    const routeData = {
+      name: 'Act 1 100%',
+      segments: []
+    };
+
+    normalizeRouteTimingFields(routeData);
+
+    tester.expect(routeData.schemaVersion).toBe(2);
+  });
+
+  tester.it('does not overwrite an existing schemaVersion during normalization', () => {
+    const routeData = {
+      schemaVersion: 1,
+      name: 'Legacy Route',
+      segments: []
+    };
+
+    normalizeRouteTimingFields(routeData);
+
+    tester.expect(routeData.schemaVersion).toBe(1);
+  });
 });
