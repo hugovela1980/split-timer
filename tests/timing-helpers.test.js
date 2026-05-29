@@ -144,4 +144,53 @@ tester.describe('timing field compatibility helpers', () => {
     tester.expect(routeData.personalBestMs).toBe(123);
     tester.expect(routeData.sumOfBestMs).toBe(456);
   });
+
+  tester.it('normalizes subsegment time into canonical setTimeMs field', () => {
+    const routeData = {
+      segments: [
+        {
+          id: 1,
+          name: 'Get Silk Spear',
+          subSegments: [
+            {
+              description: 'Enter room',
+              time: '00:01:15',
+              allowSetTime: true
+            }
+          ]
+        }
+      ]
+    };
+
+    normalizeRouteTimingFields(routeData);
+
+    const subSegment = routeData.segments[0].subSegments[0];
+
+    tester.expect(subSegment.setTimeMs).toBe(75000);
+  });
+
+  tester.it('does not overwrite existing subsegment setTimeMs during normalization', () => {
+    const routeData = {
+      segments: [
+        {
+          id: 1,
+          name: 'Get Silk Spear',
+          subSegments: [
+            {
+              description: 'Enter room',
+              time: '00:01:15',
+              allowSetTime: true,
+              setTimeMs: 123
+            }
+          ]
+        }
+      ]
+    };
+
+    normalizeRouteTimingFields(routeData);
+
+    const subSegment = routeData.segments[0].subSegments[0];
+
+    tester.expect(subSegment.setTimeMs).toBe(123);
+  });
 });

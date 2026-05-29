@@ -154,6 +154,14 @@ export function normalizeSegmentTimingFields(segment) {
   }
 }
 
+export function normalizeSubSegmentTimingFields(subSegment) {
+  if (!subSegment) return;
+
+  if (subSegment.setTimeMs === undefined) {
+    subSegment.setTimeMs = timeToMilliseconds(subSegment.time);
+  }
+}
+
 export function normalizeRouteTimingFields(routeData) {
   if (!routeData) return;
 
@@ -169,5 +177,11 @@ export function normalizeRouteTimingFields(routeData) {
 
   routeData.segments.forEach((segment) => {
     normalizeSegmentTimingFields(segment);
+
+    if (Array.isArray(segment.subSegments)) {
+      segment.subSegments.forEach((subSegment) => {
+        normalizeSubSegmentTimingFields(subSegment);
+      });
+    }
   });
 }
