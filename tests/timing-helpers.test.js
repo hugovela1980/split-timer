@@ -217,4 +217,101 @@ tester.describe('timing field compatibility helpers', () => {
 
     tester.expect(routeData.schemaVersion).toBe(1);
   });
+
+  tester.it('adds a routeId when route data is missing one', () => {
+    const routeData = {
+      name: 'Act 1 100%',
+      segments: []
+    };
+
+    normalizeRouteTimingFields(routeData);
+
+    tester.expect(routeData.routeId).toBe('act-1-100');
+  });
+
+  tester.it('adds stable string IDs to segments when missing', () => {
+    const routeData = {
+      name: 'Act 1 100%',
+      segments: [
+        {
+          name: 'Get Silk Spear',
+          subSegments: []
+        }
+      ]
+    };
+
+    normalizeRouteTimingFields(routeData);
+
+    tester.expect(routeData.segments[0].id).toBe('segment-get-silk-spear');
+  });
+
+  tester.it('adds stable string IDs to subsegments when missing', () => {
+    const routeData = {
+      name: 'Act 1 100%',
+      segments: [
+        {
+          name: 'Get Silk Spear',
+          subSegments: [
+            {
+              description: 'Enter room'
+            }
+          ]
+        }
+      ]
+    };
+
+    normalizeRouteTimingFields(routeData);
+
+    tester.expect(routeData.segments[0].subSegments[0].id).toBe('subsegment-enter-room');
+  });
+
+  tester.it('does not overwrite existing route, segment, or subsegment IDs during normalization', () => {
+    const routeData = {
+      routeId: 'custom-route-id',
+      name: 'Act 1 100%',
+      segments: [
+        {
+          id: 'custom-segment-id',
+          name: 'Get Silk Spear',
+          subSegments: [
+            {
+              id: 'custom-subsegment-id',
+              description: 'Enter room'
+            }
+          ]
+        }
+      ]
+    };
+
+    normalizeRouteTimingFields(routeData);
+
+    tester.expect(routeData.routeId).toBe('custom-route-id');
+    tester.expect(routeData.segments[0].id).toBe('custom-segment-id');
+    tester.expect(routeData.segments[0].subSegments[0].id).toBe('custom-subsegment-id');
+  });
+
+  tester.it('does not overwrite existing route, segment, or subsegment IDs during normalization', () => {
+    const routeData = {
+      routeId: 'custom-route-id',
+      name: 'Act 1 100%',
+      segments: [
+        {
+          id: 'custom-segment-id',
+          name: 'Get Silk Spear',
+          subSegments: [
+            {
+              id: 'custom-subsegment-id',
+              description: 'Enter room'
+            }
+          ]
+        }
+      ]
+    };
+
+    normalizeRouteTimingFields(routeData);
+
+    tester.expect(routeData.routeId).toBe('custom-route-id');
+    tester.expect(routeData.segments[0].id).toBe('custom-segment-id');
+    tester.expect(routeData.segments[0].subSegments[0].id).toBe('custom-subsegment-id');
+  });
 });

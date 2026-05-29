@@ -169,6 +169,10 @@ export function normalizeRouteTimingFields(routeData) {
     routeData.schemaVersion = 2;
   }
 
+  if (routeData.routeId === undefined) {
+    routeData.routeId = createRouteId(routeData);
+  }
+
   if (routeData.personalBestMs === undefined) {
     routeData.personalBestMs = timeToMilliseconds(routeData.personalBest);
   }
@@ -179,13 +183,35 @@ export function normalizeRouteTimingFields(routeData) {
 
   if (!Array.isArray(routeData.segments)) return;
 
-  routeData.segments.forEach((segment) => {
+  routeData.segments.forEach((segment, segmentIndex) => {
+    if (segment.id === undefined) {
+      segment.id = createSegmentId(segment, segmentIndex);
+    }
+
     normalizeSegmentTimingFields(segment);
 
     if (Array.isArray(segment.subSegments)) {
-      segment.subSegments.forEach((subSegment) => {
+      segment.subSegments.forEach((subSegment, subSegmentIndex) => {
+        if (subSegment.id === undefined) {
+          subSegment.id = createSubSegmentId(subSegment, subSegmentIndex);
+        }
+
         normalizeSubSegmentTimingFields(subSegment);
       });
     }
   });
+}
+
+export function createRouteId(routeData) {
+  return toKebabCase(routeData?.name || 'untitled-route');
+}
+
+export function createSegmentId(segment, index) {
+  const baseName = segment?.name || `segment-${index + 1}`;
+  return `segment-${toKebabCase(baseName)}`;
+}
+
+export function createSubSegmentId(subSegment, index) {
+  const baseDescription = subSegment?.description || `subsegment-${index + 1}`;
+  return `subsegment-${toKebabCase(baseDescription)}`;
 }
