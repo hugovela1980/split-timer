@@ -40,6 +40,7 @@
 
 - [ ] Fix confirmation message typo: “dicard” → “discard”
 - [ ] Review duplicate stopwatch:clear dispatch during confirmed route switch
+- [ ] Improve slug generation for percent symbols in route names
 
 ## Backlog
 
