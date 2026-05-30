@@ -382,4 +382,36 @@ tester.describe('timing field compatibility helpers', () => {
     tester.expect(routeData.segments[0].order).toBe(10);
     tester.expect(routeData.segments[0].subSegments[0].order).toBe(20);
   });
+
+  tester.it('preserves temporary run-progress fields during normalization without creating canonical replacements', () => {
+    const routeData = {
+      name: 'Act 1 100%',
+      currentSegmentId: 2,
+      currentSegmentName: 'Get Silk Spear',
+      segments: [
+        {
+          name: 'Get Silk Spear',
+          completed: true,
+          subSegments: [
+            {
+              description: 'Enter room',
+              completed: true
+            }
+          ]
+        }
+      ]
+    };
+
+    normalizeRouteTimingFields(routeData);
+
+    tester.expect(routeData.currentSegmentId).toBe(2);
+    tester.expect(routeData.currentSegmentName).toBe('Get Silk Spear');
+    tester.expect(routeData.segments[0].completed).toBe(true);
+    tester.expect(routeData.segments[0].subSegments[0].completed).toBe(true);
+
+    tester.expect(routeData.activeSegmentId).toBe(undefined);
+    tester.expect(routeData.activeSegmentName).toBe(undefined);
+    tester.expect(routeData.segments[0].isCompleted).toBe(undefined);
+    tester.expect(routeData.segments[0].subSegments[0].isCompleted).toBe(undefined);
+  });
 });
