@@ -1,7 +1,7 @@
 import { normalizeRouteTimingFields } from '../utils/utils.js';
 
 export class RouteDataService {
-  constructor({ fetchProvider = globalThis.fetch } = {}) {
+  constructor({ fetchProvider = globalThis.fetch.bind(globalThis) } = {}) {
     this.fetchProvider = fetchProvider;
   }
 
