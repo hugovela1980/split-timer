@@ -9,11 +9,13 @@
 
 ## Current Focus
 
-- [ ] Split RouteLoader route-loading responsibilities
-  - [ ] Extract route fetching/loading into a smaller module or service
-  - [ ] Keep schema normalization applied during route loading
-  - [ ] Preserve existing RouteLoader public behavior
-  - [ ] Run route loading and schema normalization tests after each extraction
+- [ ] Split RouteLoader start screen and route selection behavior
+  - [ ] Identify start screen and route selection responsibilities currently handled by `RouteLoader`
+  - [ ] Extract start screen / route selection behavior into a smaller module or controller
+  - [ ] Preserve existing start screen route loading behavior
+  - [ ] Preserve route selector sync behavior
+  - [ ] Preserve active/unfinished run confirmation behavior during route switches
+  - [ ] Run start screen and route switching tests after each extraction
 
 ## Next Up
 
@@ -89,3 +91,5 @@
   Added the first route data normalization layer: canonical millisecond timing fields, schema versioning, stable IDs, and order fields are now created during normalization while legacy fields and current route files remain supported.
 - [x] Add route loading tests for schema normalization  
   Added RouteLoader integration tests confirming that legacy route data receives the new normalized schema fields when loaded, while existing canonical schema fields are preserved and not overwritten.
+- [x] Split RouteLoader route-loading responsibilities  
+  Extracted route fetching, route response unwrapping, route validation, and schema normalization into `RouteDataService`. `RouteLoader` now delegates route data loading to the service while preserving its public route-loading behavior.
