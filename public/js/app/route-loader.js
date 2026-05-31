@@ -1,5 +1,6 @@
 // Route Loader - Dynamically loads and populates route data from JSON
 import { StartScreenController } from '../controllers/start-screen-controller.js';
+import { RouteSelectorService } from '../services/route-selector-service.js';
 import { RouteDataService } from '../services/route-data-service.js';
 import {
   deepClone,
@@ -66,6 +67,7 @@ class RouteLoader {
     this.startScreenController = options.startScreenController || null;
     this.storageProvider = options.storageProvider || (typeof globalThis !== 'undefined' && globalThis.localStorage ? globalThis.localStorage : null);
     this.routeDataService = options.routeDataService || new RouteDataService();
+    this.routeSelectorService = options.routeSelectorService || new RouteSelectorService();
   }
 
   async init() {
@@ -903,57 +905,27 @@ class RouteLoader {
   }
 
   populateStartRouteSelectorFromMainSelector() {
-    const mainSelector = document.getElementById('route-selector');
-    if (!this.startRouteSelector || !mainSelector) return;
+    const routeSelector = document.getElementById('route-selector');
 
-    this.startRouteSelector.innerHTML = '';
-
-    Array.from(mainSelector.options)
-      .filter((option) => option.value !== '__create_new__')
-      .forEach((option) => {
-        const startOption = document.createElement('option');
-        startOption.value = option.value;
-        startOption.textContent = option.textContent;
-        this.startRouteSelector.appendChild(startOption);
-      });
-
-    if (this.currentRouteFilename) {
-      this.startRouteSelector.value = this.currentRouteFilename
-    }
+    this.routeSelectorService.populateStartRouteSelectorFromMainSelector({
+      mainSelector: routeSelector,
+      startRouteSelector: this.startRouteSelector,
+      currentRouteFilename: this.currentRouteFilename
+    });
   }
 
   async populateRouteSelectorFromServer() {
+  try {
     const routeSelector = document.getElementById('route-selector');
-    if (!routeSelector) return;
 
-    try {
-      const response = await fetch('/api/list-routes');
-      if (!response.ok) throw new Error('Failed to fetch route list');
-      const { routes } = await response.json();
-
-      // Clear existing route options (keep the create-new sentinel if present)
-      Array.from(routeSelector.options)
-        .filter(o => o.value !== '__create_new__')
-        .forEach(o => o.remove());
-
-      const createOption = routeSelector.querySelector('option[value="__create_new__"]');
-
-      routes.forEach(({ filename, name }) => {
-        const option = document.createElement('option');
-        option.value = filename;
-        option.textContent = name;
-        routeSelector.insertBefore(option, createOption);
-      });
-
-      // Default selection to first route
-      if (routes.length > 0) {
-        this.currentRouteFilename = routes[0].filename;
-        routeSelector.value = this.currentRouteFilename;
-      }
-    } catch (error) {
-      console.error('Failed to populate route selector:', error);
-    }
+    this.currentRouteFilename = await this.routeSelectorService.populateRouteSelectorFromServer({
+      routeSelector,
+      currentRouteFilename: this.currentRouteFilename
+    });
+  } catch (error) {
+    console.error('Failed to populate route selector:', error);
   }
+}
 
   initRouteSelector() {
     const routeSelector = document.getElementById('route-selector');
