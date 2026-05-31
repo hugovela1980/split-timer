@@ -7,7 +7,14 @@
 - Development branch: `develop`
 - Next planned branch: `feature/start-screen-route-tests`
 
+## Current Focus
 
+- [ ] Fix Run Complete UI being lost after scrolling completed route
+  - [ ] Reproduce completed-run UI disappearing after scrolling route container
+  - [ ] Add regression test for preserving Run Complete UI state
+  - [ ] Prevent segment scroll/selection behavior from replacing Run Complete card while unsaved completed-run data exists
+  - [ ] Preserve Save New PB / Save Gold Splits / Delete Run Data controls until user saves, deletes, restarts, or switches routes
+  - [ ] Verify route JSON is not written unless user explicitly saves
 
 ## Next Up
 
@@ -38,8 +45,6 @@
 
 ## Backlog
 
-- [ ] Fix Run Complete UI being lost after scrolling completed route  
-  After a run is completed but before saving or deleting run data, scrolling the route can replace the Run Complete card with normal segment comparison cards and remove the save/delete controls. Preserve the completed-run UI state until the user saves, deletes, restarts, or switches routes.
 - [ ] Clean up route file saving service integration
   - [ ] Review `public/js/services/file-saver.js` and its current `window.fileSaver` global usage
   - [ ] Decide whether to rename it to a clearer service name such as `RouteFileSaveService`
@@ -107,3 +112,5 @@
   Extracted route data, baseline route, active-run route, run-session, and route-storage clearing behavior into `RouteStorageService`. `RouteLoader` now delegates storage persistence and restoration to the service while preserving existing localStorage behavior, run session persistence, and route save workflows.
 - [x] Split RouteLoader run save / PB / gold split behavior  
   Extracted gold split update logic, sum of best recalculation, and personal best update logic into `RunSaveService`. `RouteLoader` now delegates core run-save calculations to the service while preserving existing Save New PB, Save Gold Splits, route file write, and run session behavior.
+- [x] Fix Run Complete UI being lost after scrolling completed route  
+  Fixed a completed-run state bug where scrolling the route after run completion could trigger current-segment progress updates, clear the Run Complete state, and remove the save/delete controls. Scroll-driven segment updates now preserve the Run Complete UI while unsaved completed-run data exists.
