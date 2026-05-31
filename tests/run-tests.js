@@ -2,6 +2,7 @@ import './test-runner.test.js';
 import './timing-helpers.test.js';
 import './route-data-service.test.js';
 import './route-selector-service.test.js';
+import './route-storage-service.test.js';
 import './start-screen-controller.test.js';
 import './route-loader-timing.test.js';
 import './route-loader-schema-normalization.test.js';
