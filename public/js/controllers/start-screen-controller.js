@@ -1,85 +1,85 @@
 export class StartScreenController {
-  constructor({
-    startRouteButton,
-    startRouteSelector,
-    startScreen,
-    appShell,
-    startCreateRouteButton = null,
-    populateStartRouteSelector = () => {},
-    confirmRouteSwitch = () => true,
-    switchRoute = async () => {},
-    showCreateRouteModal = () => {},
-    dispatchEvent = (event) => window.dispatchEvent(event),
-    CustomEventClass = globalThis.CustomEvent
-  } = {}) {
-    this.startRouteButton = startRouteButton;
-    this.startRouteSelector = startRouteSelector;
-    this.startScreen = startScreen;
-    this.appShell = appShell;
-    this.startCreateRouteButton = startCreateRouteButton;
-    this.populateStartRouteSelector = populateStartRouteSelector;
-    this.confirmRouteSwitch = confirmRouteSwitch;
-    this.switchRoute = switchRoute;
-    this.showCreateRouteModal = showCreateRouteModal;
-    this.dispatchEvent = dispatchEvent;
-    this.CustomEventClass = CustomEventClass;
-  }
-
-  init() {
-    if (
-      !this.startRouteButton ||
-      !this.startRouteSelector ||
-      !this.startScreen ||
-      !this.appShell
-    ) {
-      return;
+    constructor({
+        startRouteButton,
+        startRouteSelector,
+        startScreen,
+        appShell,
+        startCreateRouteButton = null,
+        populateStartRouteSelector = () => { },
+        confirmRouteSwitch = () => true,
+        switchRoute = async () => { },
+        showCreateRouteModal = () => { },
+        dispatchEvent = (event) => window.dispatchEvent(event),
+        CustomEventClass = globalThis.CustomEvent
+    } = {}) {
+        this.startRouteButton = startRouteButton;
+        this.startRouteSelector = startRouteSelector;
+        this.startScreen = startScreen;
+        this.appShell = appShell;
+        this.startCreateRouteButton = startCreateRouteButton;
+        this.populateStartRouteSelector = populateStartRouteSelector;
+        this.confirmRouteSwitch = confirmRouteSwitch;
+        this.switchRoute = switchRoute;
+        this.showCreateRouteModal = showCreateRouteModal;
+        this.dispatchEvent = dispatchEvent;
+        this.CustomEventClass = CustomEventClass;
     }
 
-    this.populateStartRouteSelector();
+    init() {
+        if (
+            !this.startRouteButton ||
+            !this.startRouteSelector ||
+            !this.startScreen ||
+            !this.appShell
+        ) {
+            return;
+        }
 
-    if (typeof this.startRouteSelector.focus === 'function') {
-      this.startRouteSelector.focus();
-    }
+        this.populateStartRouteSelector();
 
-    const openSelectedRoute = async () => {
-      const selectedRoute = this.startRouteSelector.value;
+        if (typeof this.startRouteSelector.focus === 'function') {
+            this.startRouteSelector.focus();
+        }
 
-      if (!selectedRoute) return;
-      if (!this.confirmRouteSwitch()) return;
+        const openSelectedRoute = async () => {
+            const selectedRoute = this.startRouteSelector.value;
 
-      await this.switchRoute(selectedRoute);
-      this.showMainApp();
+            if (!selectedRoute) return;
+            if (!this.confirmRouteSwitch()) return;
 
-      this.dispatchEvent(new this.CustomEventClass('stopwatch:clear'));
-    };
-
-    this.startRouteButton.addEventListener('click', openSelectedRoute);
-
-    this.startRouteSelector.addEventListener('keydown', async (event) => {
-      if (event.key !== 'Enter') return;
-
-      event.preventDefault();
-      await openSelectedRoute();
-    });
-
-    if (this.startCreateRouteButton) {
-      this.startCreateRouteButton.addEventListener('click', () => {
-        this.showCreateRouteModal({
-          onRouteCreated: () => {
+            await this.switchRoute(selectedRoute);
             this.showMainApp();
-          }
+
+            this.dispatchEvent(new this.CustomEventClass('stopwatch:clear'));
+        };
+
+        this.startRouteButton.addEventListener('click', openSelectedRoute);
+
+        this.startRouteSelector.addEventListener('keydown', async (event) => {
+            if (event.key !== 'Enter') return;
+
+            event.preventDefault();
+            await openSelectedRoute();
         });
-      });
-    }
-  }
 
-  showMainApp() {
-    if (this.startScreen) {
-      this.startScreen.hidden = true;
+        if (this.startCreateRouteButton) {
+            this.startCreateRouteButton.addEventListener('click', () => {
+                this.showCreateRouteModal({
+                    onRouteCreated: () => {
+                        this.showMainApp();
+                    }
+                });
+            });
+        }
     }
 
-    if (this.appShell) {
-      this.appShell.hidden = false;
+    showMainApp() {
+        if (this.startScreen) {
+            this.startScreen.hidden = true;
+        }
+
+        if (this.appShell) {
+            this.appShell.hidden = false;
+        }
     }
-  }
 }
