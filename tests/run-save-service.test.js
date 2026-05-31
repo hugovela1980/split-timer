@@ -106,4 +106,32 @@ tester.describe('RunSaveService', () => {
 
         tester.expect(routeData.sumOfBest).toBe('00:01:00');
     });
+
+    tester.it('updates personalBest from the final segment when it is better', () => {
+        const routeData = {
+            personalBest: '00:00:20',
+            segments: [
+                { pbSplitTime: '00:00:05' },
+                { pbSplitTime: '00:00:15' }
+            ]
+        };
+
+        runSaveService.updatePersonalBestFromFinalSegment(routeData);
+
+        tester.expect(routeData.personalBest).toBe('00:00:15');
+    });
+
+    tester.it('keeps personalBest when the final segment is not better', () => {
+        const routeData = {
+            personalBest: '00:00:10',
+            segments: [
+                { pbSplitTime: '00:00:05' },
+                { pbSplitTime: '00:00:15' }
+            ]
+        };
+
+        runSaveService.updatePersonalBestFromFinalSegment(routeData);
+
+        tester.expect(routeData.personalBest).toBe('00:00:10');
+    });
 });

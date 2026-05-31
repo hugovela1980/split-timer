@@ -2,12 +2,26 @@ import {
     isBetterTime,
     timeToSeconds,
     secondsToTime,
+    getSegmentPbSplitTime,
     getSegmentPbSegmentDuration,
     getSegmentGoldSplit,
     setSegmentGoldSplit
 } from '../utils/utils.js';
 
 export class RunSaveService {
+    updatePersonalBestFromFinalSegment(routeData) {
+        if (!routeData || !Array.isArray(routeData.segments)) {
+            return;
+        }
+
+        const lastSegment = routeData.segments[routeData.segments.length - 1];
+        const lastSegmentTime = lastSegment ? getSegmentPbSplitTime(lastSegment) : null;
+
+        if (isBetterTime(lastSegmentTime, routeData.personalBest)) {
+            routeData.personalBest = lastSegmentTime;
+        }
+    }
+
     updateGoldSplitsFromCompletedRun({
         targetRouteData,
         activeRunRouteData,
