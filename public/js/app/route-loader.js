@@ -1168,22 +1168,17 @@ class RouteLoader {
   }
 
   updateRouteRunStats() {
-    if (!this.routeData || !Array.isArray(this.routeData.segments)) return;
+  if (!this.routeData || !Array.isArray(this.routeData.segments)) return;
 
-    const lastSegment = this.routeData.segments[this.routeData.segments.length - 1];
-    const lastSegmentTime = lastSegment ? getSegmentPbSplitTime(lastSegment) : null;
+  const lastSegment = this.routeData.segments[this.routeData.segments.length - 1];
+  const lastSegmentTime = lastSegment ? getSegmentPbSplitTime(lastSegment) : null;
 
-    if (isBetterTime(lastSegmentTime, this.routeData.personalBest)) {
-      this.routeData.personalBest = lastSegmentTime;
-    }
-
-    const sumOfBestSeconds = this.routeData.segments.reduce((total, segment) => {
-      const goldSplitSeconds = timeToSeconds(getSegmentGoldSplit(segment));
-      return total + (goldSplitSeconds === null ? 0 : goldSplitSeconds);
-    }, 0);
-
-    this.routeData.sumOfBest = secondsToTime(sumOfBestSeconds);
+  if (isBetterTime(lastSegmentTime, this.routeData.personalBest)) {
+    this.routeData.personalBest = lastSegmentTime;
   }
+
+  this.runSaveService.recalculateSumOfBest(this.routeData);
+}
 
   ensureRouteStatsStructure() {
     if (!this.routeData || !Array.isArray(this.routeData.segments)) return;
