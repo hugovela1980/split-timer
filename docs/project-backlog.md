@@ -6,6 +6,15 @@
 - Stable branch: `main`
 - Development branch: `develop`
 
+## Current Focus
+
+- [ ] Continue splitting RouteLoader completed-run workflow
+  - [ ] Review remaining completed-run save/delete/restart responsibilities in `RouteLoader`
+  - [ ] Identify which logic belongs in `RunSaveService` versus UI/controller code
+  - [ ] Preserve Save New PB behavior
+  - [ ] Preserve Save Gold Splits behavior
+  - [ ] Preserve Delete Run Data and Restart Run behavior
+  - [ ] Keep run save, route file write, and completed-run UI tests passing
 
 ## Next Up
 
@@ -35,7 +44,7 @@
 - [ ] Improve slug generation for percent symbols in route names
 
 ## Backlog
-
+- [ ] Build support for 'not' in tester
 - [ ] Clean up route file saving service integration
   - [ ] Review `public/js/services/file-saver.js` and its current `window.fileSaver` global usage
   - [ ] Decide whether to rename it to a clearer service name such as `RouteFileSaveService`
@@ -105,3 +114,5 @@
   Extracted gold split update logic, sum of best recalculation, and personal best update logic into `RunSaveService`. `RouteLoader` now delegates core run-save calculations to the service while preserving existing Save New PB, Save Gold Splits, route file write, and run session behavior.
 - [x] Fix Run Complete UI being lost after scrolling completed route  
   Fixed a completed-run state bug where scrolling the route after run completion could trigger current-segment progress updates, clear the Run Complete state, and remove the save/delete controls. Scroll-driven segment updates now preserve the Run Complete UI while unsaved completed-run data exists.
+- [x] Split RouteLoader run save / PB / gold split behavior  
+  Extracted core run-save calculations into `RunSaveService`, including gold split updates, sum of best recalculation, personal best updates, and gold split save route creation. Also fixed canonical timing sync so saved route data keeps legacy timing fields and millisecond fields aligned during Save Gold Splits / run-save workflows.
