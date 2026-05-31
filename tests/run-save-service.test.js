@@ -75,4 +75,35 @@ tester.describe('RunSaveService', () => {
         tester.expect(getSegmentPbSegmentDuration(targetRoute.segments[1])).toBe('00:00:05');
         tester.expect(getSegmentPbSegmentDuration(targetRoute.segments[2])).toBe('00:00:05');
     });
+
+    tester.it('recalculates sumOfBest from gold splits', () => {
+        const routeData = {
+            sumOfBest: '00:00:00',
+            segments: [
+                {
+                    goldSplit: '00:00:03'
+                },
+                {
+                    goldSplit: '00:00:04'
+                },
+                {
+                    goldSplit: '00:00:05'
+                }
+            ]
+        };
+
+        runSaveService.recalculateSumOfBest(routeData);
+
+        tester.expect(routeData.sumOfBest).toBe('00:00:12');
+    });
+
+    tester.it('does not recalculate sumOfBest when route data is missing segments', () => {
+        const routeData = {
+            sumOfBest: '00:01:00'
+        };
+
+        runSaveService.recalculateSumOfBest(routeData);
+
+        tester.expect(routeData.sumOfBest).toBe('00:01:00');
+    });
 });

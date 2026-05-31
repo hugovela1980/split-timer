@@ -1,5 +1,7 @@
 import {
     isBetterTime,
+    timeToSeconds,
+    secondsToTime,
     getSegmentPbSegmentDuration,
     getSegmentGoldSplit,
     setSegmentGoldSplit
@@ -49,5 +51,19 @@ export class RunSaveService {
                 setSegmentGoldSplit(targetSegment, baselineGoldSplit);
             }
         });
+    }
+
+    recalculateSumOfBest(routeData) {
+        if (!routeData || !Array.isArray(routeData.segments)) {
+            return;
+        }
+
+        const sumOfBestSeconds = routeData.segments.reduce((total, segment) => {
+            const goldSplitSeconds = timeToSeconds(getSegmentGoldSplit(segment));
+
+            return total + goldSplitSeconds;
+        }, 0);
+
+        routeData.sumOfBest = secondsToTime(sumOfBestSeconds);
     }
 }
