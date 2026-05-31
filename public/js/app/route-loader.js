@@ -2,6 +2,7 @@
 import { StartScreenController } from '../controllers/start-screen-controller.js';
 import { RouteSelectorService } from '../services/route-selector-service.js';
 import { RouteDataService } from '../services/route-data-service.js';
+import { RouteStorageService } from '../services/route-storage-service.js';
 import {
   deepClone,
   timeToSeconds,
@@ -18,16 +19,6 @@ import {
   setSegmentGoldSplit,
   normalizeSegmentTimingFields,
 } from '../utils/utils.js';
-import {
-  persistRouteDataToStorage as persistRouteDataToStorageHelper,
-  saveRunSessionToStorage as saveRunSessionToStorageHelper,
-  restoreRunSessionFromStorage as restoreRunSessionFromStorageHelper,
-  saveBaselineRouteToStorage,
-  restoreBaselineRouteFromStorage,
-  saveActiveRunRouteToStorage,
-  restoreActiveRunRouteFromStorage,
-  clearRunStorage
-} from '../persistence/storage.js';
 import { createRouteSegmentElement, createRouteSubSegmentElement, createSidebarSegmentItem, createRunCompleteComparisonsHtml, createComparisonsHtml } from '../ui/ui.js';
 
 class RouteLoader {
@@ -66,6 +57,15 @@ class RouteLoader {
     this.runSessionStorageKey = 'stopwatch:runSession';
     this.startScreenController = options.startScreenController || null;
     this.storageProvider = options.storageProvider || (typeof globalThis !== 'undefined' && globalThis.localStorage ? globalThis.localStorage : null);
+    this.routeStorageService = options.routeStorageService || new RouteStorageService({
+      storageProvider: this.storageProvider,
+      keys: {
+        routeData: this.routeStorageKey,
+        baselineRouteData: this.baselineRouteStorageKey,
+        activeRunRouteData: this.activeRunRouteStorageKey,
+        runSession: this.runSessionStorageKey
+      }
+    });
     this.routeDataService = options.routeDataService || new RouteDataService();
     this.routeSelectorService = options.routeSelectorService || new RouteSelectorService();
   }
@@ -166,59 +166,31 @@ class RouteLoader {
   }
 
   persistRouteDataToStorage() {
-    persistRouteDataToStorageHelper(this.routeData, this.routeStorageKey, this.storageProvider);
+    this.routeStorageService.persistRouteData(this.routeData);
   }
 
   saveBaselineRouteToStorage() {
-    saveBaselineRouteToStorage(
-      this.routeData,
-      this.baselineRouteStorageKey,
-      this.storageProvider
-    );
+    this.routeStorageService.saveBaselineRoute(this.routeData);
   }
 
   restoreBaselineRouteFromStorage() {
-    return restoreBaselineRouteFromStorage(
-      this.baselineRouteStorageKey,
-      this.storageProvider
-    );
+    return this.routeStorageService.restoreBaselineRoute();
   }
 
   saveActiveRunRouteToStorage() {
-    saveActiveRunRouteToStorage(
-      this.routeData,
-      this.activeRunRouteStorageKey,
-      this.storageProvider
-    );
+    this.routeStorageService.saveActiveRunRoute(this.routeData);
   }
 
   restoreActiveRunRouteFromStorage() {
-    return restoreActiveRunRouteFromStorage(
-      this.activeRunRouteStorageKey,
-      this.storageProvider
-    );
+    return this.routeStorageService.restoreActiveRunRoute();
   }
 
   clearRunStorage() {
-    clearRunStorage(
-      [
-        this.runSessionStorageKey,
-        this.activeRunRouteStorageKey
-      ],
-      this.storageProvider
-    );
+    this.routeStorageService.clearRunStorage();
   }
 
   clearAllRouteStorage() {
-    clearRunStorage(
-      [
-        this.routeStorageKey,
-        this.baselineRouteStorageKey,
-        this.activeRunRouteStorageKey,
-        this.runSessionStorageKey
-      ],
-      this.storageProvider
-    );
+    this.routeStorageService.clearAllRouteStorage();
   }
 
   async saveActiveRunState() {
@@ -915,17 +887,17 @@ class RouteLoader {
   }
 
   async populateRouteSelectorFromServer() {
-  try {
-    const routeSelector = document.getElementById('route-selector');
+    try {
+      const routeSelector = document.getElementById('route-selector');
 
-    this.currentRouteFilename = await this.routeSelectorService.populateRouteSelectorFromServer({
-      routeSelector,
-      currentRouteFilename: this.currentRouteFilename
-    });
-  } catch (error) {
-    console.error('Failed to populate route selector:', error);
+      this.currentRouteFilename = await this.routeSelectorService.populateRouteSelectorFromServer({
+        routeSelector,
+        currentRouteFilename: this.currentRouteFilename
+      });
+    } catch (error) {
+      console.error('Failed to populate route selector:', error);
+    }
   }
-}
 
   initRouteSelector() {
     const routeSelector = document.getElementById('route-selector');
@@ -1168,27 +1140,21 @@ class RouteLoader {
   }
 
   saveRunSessionToStorage() {
-    saveRunSessionToStorageHelper(
-      {
-        hasRunStarted: this.hasRunStarted,
-        currentRouteFilename: this.currentRouteFilename,
-        sessionSetSegments: this.sessionSetSegments,
-        sessionGoldSplits: this.sessionGoldSplits,
-        sessionBestBySegment: this.sessionBestBySegment
-      },
-      this.runSessionStorageKey,
-      this.storageProvider
-    );
+    this.routeStorageService.saveRunSession({
+      hasRunStarted: this.hasRunStarted,
+      runComplete: this.runComplete,
+      runPaceState: this.runPaceState,
+      lastCompletedSegmentId: this.lastCompletedSegmentId,
+      currentRouteFilename: this.currentRouteFilename,
+      sessionGoldSplits: this.sessionGoldSplits,
+      sessionSetSegments: this.sessionSetSegments,
+      sessionBestBySegment: this.sessionBestBySegment,
+      personalBestAtRunStart: this.personalBestAtRunStart
+    });
   }
 
   restoreRunSessionFromStorage() {
-    const session = restoreRunSessionFromStorageHelper(this.runSessionStorageKey, this.storageProvider);
-    if (!session) return;
-
-    this.hasRunStarted = session.hasRunStarted;
-    this.sessionSetSegments = session.sessionSetSegments;
-    this.sessionGoldSplits = session.sessionGoldSplits;
-    this.sessionBestBySegment = session.sessionBestBySegment;
+    return this.routeStorageService.restoreRunSession();
   }
 
   getComparisonBestDuration(segment) {
