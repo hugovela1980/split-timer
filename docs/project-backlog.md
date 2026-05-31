@@ -7,15 +7,7 @@
 - Development branch: `develop`
 - Next planned branch: `feature/start-screen-route-tests`
 
-## Current Focus
 
-- [ ] Split RouteLoader start screen and route selection behavior
-  - [ ] Identify start screen and route selection responsibilities currently handled by `RouteLoader`
-  - [ ] Extract start screen / route selection behavior into a smaller module or controller
-  - [ ] Preserve existing start screen route loading behavior
-  - [ ] Preserve route selector sync behavior
-  - [ ] Preserve active/unfinished run confirmation behavior during route switches
-  - [ ] Run start screen and route switching tests after each extraction
 
 ## Next Up
 
@@ -93,3 +85,5 @@
   Added RouteLoader integration tests confirming that legacy route data receives the new normalized schema fields when loaded, while existing canonical schema fields are preserved and not overwritten.
 - [x] Split RouteLoader route-loading responsibilities  
   Extracted route fetching, route response unwrapping, route validation, and schema normalization into `RouteDataService`. `RouteLoader` now delegates route data loading to the service while preserving its public route-loading behavior.
+- [x] Split RouteLoader start screen and route selection behavior  
+  Extracted start screen route selection, start-route button behavior, Enter-key route loading, start-screen route creation flow, main app display, and stopwatch clear dispatch into `StartScreenController`. `RouteLoader` now delegates start screen behavior to the controller while preserving existing route switching and active-run confirmation behavior.
