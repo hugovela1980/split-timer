@@ -44,6 +44,11 @@
 - [ ] Improve slug generation for percent symbols in route names
 
 ## Backlog
+- [ ] - [ ] Rename `RouteLoader` to `SplitTimerController`
+  - [ ] Rename `public/js/app/route-loader.js` if appropriate
+  - [ ] Update imports in app and tests
+  - [ ] Preserve existing behavior with tests passing
+  - [ ] Consider whether the old name should remain temporarily as an alias during transition
 - [ ] Build support for 'not' in tester
 - [ ] Clean up route file saving service integration
   - [ ] Review `public/js/services/file-saver.js` and its current `window.fileSaver` global usage
