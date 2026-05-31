@@ -11,6 +11,18 @@ import {
 } from '../utils/utils.js';
 
 export class RunSaveService {
+    createRunCompleteState({
+        finalTime = '--:--:--',
+        isNewPB = false,
+        previousPB = ''
+    } = {}) {
+        return {
+            finalTime,
+            isNewPB,
+            previousPB: previousPB || '--:--:--'
+        };
+    }
+
     updatePersonalBestFromFinalSegment(routeData) {
         if (!routeData || !Array.isArray(routeData.segments)) {
             return;

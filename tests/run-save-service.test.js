@@ -177,4 +177,28 @@ tester.describe('RunSaveService', () => {
 
         tester.expect(mergedRouteData).toBe(null);
     });
+
+    tester.it('creates completed-run state for a new PB run', () => {
+        const runComplete = runSaveService.createRunCompleteState({
+            finalTime: '00:00:08',
+            isNewPB: true,
+            previousPB: '00:00:09'
+        });
+
+        tester.expect(runComplete.finalTime).toBe('00:00:08');
+        tester.expect(runComplete.isNewPB).toBe(true);
+        tester.expect(runComplete.previousPB).toBe('00:00:09');
+    });
+
+    tester.it('creates completed-run state with a fallback previous PB display', () => {
+        const runComplete = runSaveService.createRunCompleteState({
+            finalTime: '00:00:08',
+            isNewPB: false,
+            previousPB: ''
+        });
+
+        tester.expect(runComplete.finalTime).toBe('00:00:08');
+        tester.expect(runComplete.isNewPB).toBe(false);
+        tester.expect(runComplete.previousPB).toBe('--:--:--');
+    });
 });
