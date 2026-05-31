@@ -1,4 +1,5 @@
 // Route Loader - Dynamically loads and populates route data from JSON
+import { RouteDataService } from '../services/route-data-service.js';
 import {
   deepClone,
   timeToSeconds,
@@ -14,7 +15,6 @@ import {
   getSegmentGoldSplit,
   setSegmentGoldSplit,
   normalizeSegmentTimingFields,
-  normalizeRouteTimingFields
 } from '../utils/utils.js';
 import {
   persistRouteDataToStorage as persistRouteDataToStorageHelper,
@@ -63,6 +63,7 @@ class RouteLoader {
     this.activeRunRouteStorageKey = 'stopwatch:activeRunRouteData';
     this.runSessionStorageKey = 'stopwatch:runSession';
     this.storageProvider = options.storageProvider || (typeof globalThis !== 'undefined' && globalThis.localStorage ? globalThis.localStorage : null);
+    this.routeDataService = options.routeDataService || new RouteDataService();
   }
 
   async init() {
@@ -173,27 +174,9 @@ class RouteLoader {
 
   async loadRouteData(filename = 'act-1-100-percent.json') {
     try {
-      // Set the current route filename
       this.currentRouteFilename = filename;
       this.expandedSidebarSegmentIds = new Set();
-
-      // Load data from specified route file
-      const response = await fetch(`./data/routes/${filename}`);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
-
-      // Support both shapes:
-      // 1) { route: { ... } }
-      // 2) { ...routeData }
-      this.routeData = data.route || data;
-
-      if (!this.routeData || !Array.isArray(this.routeData.segments)) {
-        throw new Error(`Invalid ${filename} format: missing route segments`);
-      }
-      
-      normalizeRouteTimingFields(this.routeData);
+      this.routeData = await this.routeDataService.loadRouteData(filename);
     } catch (error) {
       this.clearRunSnapshot();
       throw error;

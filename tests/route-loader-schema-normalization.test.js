@@ -1,5 +1,6 @@
 import { tester } from './test-runner/tester.js';
 import { RouteLoader } from '../public/js/app/route-loader.js';
+import { RouteDataService } from '../public/js/services/route-data-service.js';
 
 function createLegacyRouteData() {
   return {
@@ -32,12 +33,19 @@ tester.describe('RouteLoader schema normalization', () => {
   let routeLoader;
 
   tester.beforeEach(() => {
-    routeLoader = new RouteLoader({ storageProvider: null });
-
-    globalThis.fetch = tester.fn(async () => ({
+    const fetchMock = tester.fn(async () => ({
       ok: true,
       json: async () => createLegacyRouteData()
     }));
+
+    const routeDataService = new RouteDataService({
+      fetchProvider: fetchMock
+    });
+
+    routeLoader = new RouteLoader({
+      storageProvider: null,
+      routeDataService
+    });
   });
 
   tester.it('normalizes route data when loading a route', async () => {
@@ -69,7 +77,7 @@ tester.describe('RouteLoader schema normalization', () => {
   });
 
   tester.it('preserves existing canonical schema fields when loading a route', async () => {
-    globalThis.fetch = tester.fn(async () => ({
+    const fetchMock = tester.fn(async () => ({
       ok: true,
       json: async () => ({
         schemaVersion: 3,
@@ -103,6 +111,10 @@ tester.describe('RouteLoader schema normalization', () => {
         ]
       })
     }));
+
+    routeLoader.routeDataService = new RouteDataService({
+      fetchProvider: fetchMock
+    });
 
     await routeLoader.loadRouteData('canonical-route.json');
 
