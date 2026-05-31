@@ -14,7 +14,8 @@
 - [ ] Split `RouteLoader` into smaller modules/classes
   - [x] Separate route loading/fetching logic
   - [x] Separate start screen and route selection behavior
-  - [ ] Separate run save / PB / gold split behavior
+  - [x] Separate run save behavior
+  - [ ] Separate run PB / gold split behavior
   - [ ] Separate editor-related behavior
   - [ ] Separate comparison / pacing / timing recalculation behavior
 
@@ -37,6 +38,10 @@
 
 ## Backlog
 
+- [ ] Review frontend folder structure after RouteLoader service extractions
+  - [ ] Decide whether `public/js/persistence/storage.js` should remain as a low-level persistence helper
+  - [ ] Consider moving storage helpers into a clearer infrastructure/services folder
+  - [ ] Update imports in a separate cleanup commit after refactors stabilize
 - [ ] Improve Run Complete preview
 - [ ] Migrate active run state from localStorage to temporary files
 - [ ] Remove compatibility layer after route files fully migrate
@@ -89,3 +94,5 @@
   Extracted start screen route selection, start-route button behavior, Enter-key route loading, start-screen route creation flow, main app display, and stopwatch clear dispatch into `StartScreenController`. `RouteLoader` now delegates start screen behavior to the controller while preserving existing route switching and active-run confirmation behavior.
 - [x] Split RouteLoader route selector population behavior  
   Extracted route list fetching and selector population into `RouteSelectorService`. `RouteLoader` now delegates main route selector population and start screen selector syncing to the service while preserving route dropdown loading and selector sync behavior.
+- [x] Split RouteLoader storage and session persistence behavior  
+  Extracted route data, baseline route, active-run route, run-session, and route-storage clearing behavior into `RouteStorageService`. `RouteLoader` now delegates storage persistence and restoration to the service while preserving existing localStorage behavior, run session persistence, and route save workflows.
