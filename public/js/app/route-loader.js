@@ -1,4 +1,5 @@
 // Route Loader - Dynamically loads and populates route data from JSON
+import { StartScreenController } from '../controllers/start-screen-controller.js';
 import { RouteDataService } from '../services/route-data-service.js';
 import {
   deepClone,
@@ -62,6 +63,7 @@ class RouteLoader {
     this.baselineRouteStorageKey = 'stopwatch:baselineRouteData';
     this.activeRunRouteStorageKey = 'stopwatch:activeRunRouteData';
     this.runSessionStorageKey = 'stopwatch:runSession';
+    this.startScreenController = options.startScreenController || null;
     this.storageProvider = options.storageProvider || (typeof globalThis !== 'undefined' && globalThis.localStorage ? globalThis.localStorage : null);
     this.routeDataService = options.routeDataService || new RouteDataService();
   }
@@ -123,43 +125,21 @@ class RouteLoader {
   }
 
   initStartScreen() {
-    if (!this.startRouteButton ||!this.startRouteSelector ||!this.startScreen ||!this.appShell) {
-      return;
-    }
-
-    this.populateStartRouteSelectorFromMainSelector();
-    this.startRouteSelector.focus();
-
-    const openSelectedRoute = async () => {
-      const selectedRoute = this.startRouteSelector.value;
-      if (!selectedRoute) return;
-  
-      if (!this.confirmRouteSwitchIfRunActive()) return;
-      await this.switchRoute(selectedRoute);
-  
-      this.showMainApp();
-  
-      window.dispatchEvent(new CustomEvent('stopwatch:clear'));
-    };
-
-    this.startRouteButton.addEventListener('click', openSelectedRoute);
-
-    this.startRouteSelector.addEventListener('keydown', async (event) => {
-      if (event.key !== 'Enter') return;
-
-      event.preventDefault();
-      await openSelectedRoute();
+    this.startScreenController = this.startScreenController || new StartScreenController({
+      startRouteButton: this.startRouteButton,
+      startRouteSelector: this.startRouteSelector,
+      startScreen: this.startScreen,
+      appShell: this.appShell,
+      startCreateRouteButton: this.startCreateRouteButton,
+      populateStartRouteSelector: () => this.populateStartRouteSelectorFromMainSelector(),
+      confirmRouteSwitch: () => this.confirmRouteSwitchIfRunActive(),
+      switchRoute: (selectedRoute) => this.switchRoute(selectedRoute),
+      showCreateRouteModal: (options) => this.showCreateRouteModal(options),
+      dispatchEvent: (event) => window.dispatchEvent(event),
+      CustomEventClass: CustomEvent
     });
 
-    if (this.startCreateRouteButton) {
-      this.startCreateRouteButton.addEventListener('click', () => {
-        this.showCreateRouteModal({
-          onRouteCreated: () => {
-            this.showMainApp();
-          }
-        });
-      });
-    }
+    this.startScreenController.init();
   }
 
   showMainApp() {
@@ -924,7 +904,7 @@ class RouteLoader {
 
   populateStartRouteSelectorFromMainSelector() {
     const mainSelector = document.getElementById('route-selector');
-    if(!this.startRouteSelector || !mainSelector) return;
+    if (!this.startRouteSelector || !mainSelector) return;
 
     this.startRouteSelector.innerHTML = '';
 
@@ -1094,7 +1074,7 @@ class RouteLoader {
       if (this.startRouteSelector) {
         this.startRouteSelector.value = filename;
       }
-      
+
       // Clear session state when switching routes
       this.sessionGoldSplits.clear();
       this.sessionSetSegments.clear();
@@ -1114,7 +1094,7 @@ class RouteLoader {
       this.initScrollObserver();
 
       await this.resetRouteProgressToFirstSegmentAndRender({ scroll: true, save: false });
-      
+
       window.dispatchEvent(new CustomEvent('stopwatch:clear'));
     } catch (error) {
       console.error('Failed to switch route:', error);
@@ -1122,7 +1102,7 @@ class RouteLoader {
   }
 
   confirmRouteSwitchIfRunActive() {
-    const hasActiveRunData = 
+    const hasActiveRunData =
       this.hasRunStarted ||
       this.isStopwatchRunning ||
       this.runComplete ||
@@ -1284,7 +1264,7 @@ class RouteLoader {
 
     const lastSegment = this.routeData.segments[this.routeData.segments.length - 1];
     const lastSegmentTime = lastSegment ? getSegmentPbSplitTime(lastSegment) : null;
-    
+
     if (isBetterTime(lastSegmentTime, this.routeData.personalBest)) {
       this.routeData.personalBest = lastSegmentTime;
     }
@@ -1511,13 +1491,13 @@ class RouteLoader {
   }
 
   addSubSegmentEventListeners(element, data) {
-  const setButton = element.querySelector('.sub-segment__set');
+    const setButton = element.querySelector('.sub-segment__set');
 
-  if (setButton) {
-    setButton.hidden = true;
-    setButton.disabled = true;
+    if (setButton) {
+      setButton.hidden = true;
+      setButton.disabled = true;
+    }
   }
-}
 
   getCurrentStopwatchTime() {
     const stopwatchElement = document.querySelector('.timer__stopwatch');
