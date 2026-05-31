@@ -15,7 +15,7 @@
   - [x] Separate route loading/fetching logic
   - [x] Separate start screen and route selection behavior
   - [x] Separate run save behavior
-  - [ ] Separate run PB / gold split behavior
+  - [x] Separate run PB / gold split behavior
   - [ ] Separate editor-related behavior
   - [ ] Separate comparison / pacing / timing recalculation behavior
 
@@ -38,6 +38,15 @@
 
 ## Backlog
 
+- [ ] Fix Run Complete UI being lost after scrolling completed route  
+  After a run is completed but before saving or deleting run data, scrolling the route can replace the Run Complete card with normal segment comparison cards and remove the save/delete controls. Preserve the completed-run UI state until the user saves, deletes, restarts, or switches routes.
+- [ ] Clean up route file saving service integration
+  - [ ] Review `public/js/services/file-saver.js` and its current `window.fileSaver` global usage
+  - [ ] Decide whether to rename it to a clearer service name such as `RouteFileSaveService`
+  - [ ] Inject the file-saving service into `RouteLoader` instead of reading from `window.fileSaver`
+  - [ ] Preserve `/api/health` server availability checks
+  - [ ] Preserve `/api/save-route` route file write behavior
+  - [ ] Keep route file write behavior tests passing
 - [ ] Review frontend folder structure after RouteLoader service extractions
   - [ ] Decide whether `public/js/persistence/storage.js` should remain as a low-level persistence helper
   - [ ] Consider moving storage helpers into a clearer infrastructure/services folder
@@ -96,3 +105,5 @@
   Extracted route list fetching and selector population into `RouteSelectorService`. `RouteLoader` now delegates main route selector population and start screen selector syncing to the service while preserving route dropdown loading and selector sync behavior.
 - [x] Split RouteLoader storage and session persistence behavior  
   Extracted route data, baseline route, active-run route, run-session, and route-storage clearing behavior into `RouteStorageService`. `RouteLoader` now delegates storage persistence and restoration to the service while preserving existing localStorage behavior, run session persistence, and route save workflows.
+- [x] Split RouteLoader run save / PB / gold split behavior  
+  Extracted gold split update logic, sum of best recalculation, and personal best update logic into `RunSaveService`. `RouteLoader` now delegates core run-save calculations to the service while preserving existing Save New PB, Save Gold Splits, route file write, and run session behavior.
