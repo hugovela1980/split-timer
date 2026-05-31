@@ -127,4 +127,17 @@ export class RunSaveService {
         routeData.sumOfBest = secondsToTime(sumOfBestSeconds);
         routeData.sumOfBestMs = sumOfBestSeconds * 1000;
     }
+
+    syncCanonicalPbTimingFields(routeData) {
+        if (!routeData || !Array.isArray(routeData.segments)) {
+            return;
+        }
+
+        routeData.personalBestMs = timeToMilliseconds(routeData.personalBest);
+
+        routeData.segments.forEach((segment) => {
+            segment.pbSplitMs = timeToMilliseconds(getSegmentPbSplitTime(segment));
+            segment.pbSegmentMs = timeToMilliseconds(getSegmentPbSegmentDuration(segment));
+        });
+    }
 }
