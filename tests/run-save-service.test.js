@@ -177,4 +177,79 @@ tester.describe('RunSaveService', () => {
 
         tester.expect(mergedRouteData).toBe(null);
     });
+
+    tester.it('creates completed-run state for a new PB run', () => {
+        const runComplete = runSaveService.createRunCompleteState({
+            finalTime: '00:00:08',
+            isNewPB: true,
+            previousPB: '00:00:09'
+        });
+
+        tester.expect(runComplete.finalTime).toBe('00:00:08');
+        tester.expect(runComplete.isNewPB).toBe(true);
+        tester.expect(runComplete.previousPB).toBe('00:00:09');
+    });
+
+    tester.it('creates completed-run state with a fallback previous PB display', () => {
+        const runComplete = runSaveService.createRunCompleteState({
+            finalTime: '00:00:08',
+            isNewPB: false,
+            previousPB: ''
+        });
+
+        tester.expect(runComplete.finalTime).toBe('00:00:08');
+        tester.expect(runComplete.isNewPB).toBe(false);
+        tester.expect(runComplete.previousPB).toBe('--:--:--');
+    });
+
+    tester.it('syncs canonical PB millisecond fields from saved PB timing fields', () => {
+        const routeData = {
+            personalBest: '00:00:07',
+            personalBestMs: 9000,
+            segments: [
+                {
+                    pbSplitTime: '00:00:01',
+                    pbSegmentDuration: '00:00:01',
+                    pbSplitMs: 3000,
+                    pbSegmentMs: 3000
+                },
+                {
+                    pbSplitTime: '00:00:05',
+                    pbSegmentDuration: '00:00:04',
+                    pbSplitMs: 6000,
+                    pbSegmentMs: 3000
+                },
+                {
+                    pbSplitTime: '00:00:07',
+                    pbSegmentDuration: '00:00:02',
+                    pbSplitMs: 9000,
+                    pbSegmentMs: 3000
+                }
+            ]
+        };
+
+        runSaveService.syncCanonicalPbTimingFields(routeData);
+
+        tester.expect(routeData.personalBestMs).toBe(7000);
+
+        tester.expect(routeData.segments[0].pbSplitMs).toBe(1000);
+        tester.expect(routeData.segments[0].pbSegmentMs).toBe(1000);
+
+        tester.expect(routeData.segments[1].pbSplitMs).toBe(5000);
+        tester.expect(routeData.segments[1].pbSegmentMs).toBe(4000);
+
+        tester.expect(routeData.segments[2].pbSplitMs).toBe(7000);
+        tester.expect(routeData.segments[2].pbSegmentMs).toBe(2000);
+    });
+
+    tester.it('does not sync canonical PB timing fields when route data is missing segments', () => {
+        const routeData = {
+            personalBest: '00:00:07',
+            personalBestMs: 9000
+        };
+
+        runSaveService.syncCanonicalPbTimingFields(routeData);
+
+        tester.expect(routeData.personalBestMs).toBe(9000);
+    });
 });
