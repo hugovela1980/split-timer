@@ -67,4 +67,62 @@ tester.describe('RouteLoader schema normalization', () => {
     tester.expect(subSegment.order).toBe(1);
     tester.expect(subSegment.setTimeMs).toBe(75000);
   });
+
+  tester.it('preserves existing canonical schema fields when loading a route', async () => {
+    globalThis.fetch = tester.fn(async () => ({
+      ok: true,
+      json: async () => ({
+        schemaVersion: 3,
+        routeId: 'custom-route-id',
+        name: 'Act 1 100%',
+        personalBest: '00:10:00',
+        sumOfBest: '00:09:30',
+        personalBestMs: 123,
+        sumOfBestMs: 456,
+        segments: [
+          {
+            id: 'custom-segment-id',
+            name: 'Get Silk Spear',
+            order: 10,
+            pbSplitTime: '00:02:00',
+            pbSegmentDuration: '00:02:00',
+            goldSplit: '00:01:50',
+            pbSplitMs: 111,
+            pbSegmentMs: 222,
+            goldSegmentMs: 333,
+            subSegments: [
+              {
+                id: 'custom-subsegment-id',
+                description: 'Enter room',
+                order: 20,
+                time: '00:01:15',
+                setTimeMs: 444
+              }
+            ]
+          }
+        ]
+      })
+    }));
+
+    await routeLoader.loadRouteData('canonical-route.json');
+
+    tester.expect(routeLoader.routeData.schemaVersion).toBe(3);
+    tester.expect(routeLoader.routeData.routeId).toBe('custom-route-id');
+    tester.expect(routeLoader.routeData.personalBestMs).toBe(123);
+    tester.expect(routeLoader.routeData.sumOfBestMs).toBe(456);
+
+    const segment = routeLoader.routeData.segments[0];
+
+    tester.expect(segment.id).toBe('custom-segment-id');
+    tester.expect(segment.order).toBe(10);
+    tester.expect(segment.pbSplitMs).toBe(111);
+    tester.expect(segment.pbSegmentMs).toBe(222);
+    tester.expect(segment.goldSegmentMs).toBe(333);
+
+    const subSegment = segment.subSegments[0];
+
+    tester.expect(subSegment.id).toBe('custom-subsegment-id');
+    tester.expect(subSegment.order).toBe(20);
+    tester.expect(subSegment.setTimeMs).toBe(444);
+  });
 });
