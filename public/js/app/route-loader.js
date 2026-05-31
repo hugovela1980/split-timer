@@ -1440,6 +1440,11 @@ class RouteLoader {
   }
 
   async updateCurrentSegmentProgress(segmentId) {
+    if (this.runComplete) {
+      this.renderComparisonsPanel();
+      return;
+    }
+    
     if (!this.routeData || !Array.isArray(this.routeData.segments)) return;
 
     const segmentIdNumber = Number(String(segmentId).replace('segment-', ''));
