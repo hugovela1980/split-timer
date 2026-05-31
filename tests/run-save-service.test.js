@@ -7,9 +7,15 @@ import {
     cloneFixture
 } from './fixtures/routes.js';
 import {
+    deepClone,
+    isBetterTime,
+    timeToSeconds,
+    timeToMilliseconds,
+    secondsToTime,
     getSegmentPbSplitTime,
     getSegmentPbSegmentDuration,
-    getSegmentGoldSplit
+    getSegmentGoldSplit,
+    setSegmentGoldSplit
 } from '../public/js/utils/utils.js';
 
 tester.describe('RunSaveService', () => {
@@ -95,6 +101,7 @@ tester.describe('RunSaveService', () => {
         runSaveService.recalculateSumOfBest(routeData);
 
         tester.expect(routeData.sumOfBest).toBe('00:00:12');
+        tester.expect(routeData.sumOfBestMs).toBe(12000);
     });
 
     tester.it('does not recalculate sumOfBest when route data is missing segments', () => {
@@ -133,5 +140,41 @@ tester.describe('RunSaveService', () => {
         runSaveService.updatePersonalBestFromFinalSegment(routeData);
 
         tester.expect(routeData.personalBest).toBe('00:00:10');
+    });
+
+    tester.it('creates a gold split save route from baseline and active run data', () => {
+        const activeRunRoute = cloneFixture(createCompletedNonPbRunWithGoldRoute());
+        const baselineRouteData = cloneFixture(baselineRoute);
+        const sessionSetSegments = new Set([1, 2, 3]);
+
+        const mergedRouteData = runSaveService.createGoldSplitSaveRoute({
+            activeRunRouteData: activeRunRoute,
+            baselineRouteData,
+            sessionSetSegments,
+            personalBestAtRunStart: '00:00:15'
+        });
+
+        tester.expect(mergedRouteData === null).toBe(false);
+        tester.expect(mergedRouteData === baselineRouteData).toBe(false);
+        tester.expect(mergedRouteData.personalBest).toBe('00:00:15');
+
+        tester.expect(getSegmentGoldSplit(mergedRouteData.segments[0])).toBe('00:00:05');
+        tester.expect(getSegmentGoldSplit(mergedRouteData.segments[1])).toBe('00:00:04');
+        tester.expect(getSegmentGoldSplit(mergedRouteData.segments[2])).toBe('00:00:05');
+
+        tester.expect(mergedRouteData.segments[0].goldSegmentMs).toBe(5000);
+        tester.expect(mergedRouteData.segments[1].goldSegmentMs).toBe(4000);
+        tester.expect(mergedRouteData.segments[2].goldSegmentMs).toBe(5000);
+    });
+
+    tester.it('returns null when gold split save route data is invalid', () => {
+        const mergedRouteData = runSaveService.createGoldSplitSaveRoute({
+            activeRunRouteData: { name: 'Invalid Active Run' },
+            baselineRouteData: cloneFixture(baselineRoute),
+            sessionSetSegments: new Set([1, 2, 3]),
+            personalBestAtRunStart: '00:00:15'
+        });
+
+        tester.expect(mergedRouteData).toBe(null);
     });
 });

@@ -1,6 +1,8 @@
 import {
+    deepClone,
     isBetterTime,
     timeToSeconds,
+    timeToMilliseconds,
     secondsToTime,
     getSegmentPbSplitTime,
     getSegmentPbSegmentDuration,
@@ -20,6 +22,36 @@ export class RunSaveService {
         if (isBetterTime(lastSegmentTime, routeData.personalBest)) {
             routeData.personalBest = lastSegmentTime;
         }
+    }
+
+    createGoldSplitSaveRoute({
+        activeRunRouteData,
+        baselineRouteData,
+        sessionSetSegments = new Set(),
+        personalBestAtRunStart = ''
+    } = {}) {
+        if (
+            !activeRunRouteData ||
+            !baselineRouteData ||
+            !Array.isArray(activeRunRouteData.segments) ||
+            !Array.isArray(baselineRouteData.segments)
+        ) {
+            return null;
+        }
+
+        const mergedRouteData = deepClone(baselineRouteData);
+
+        this.updateGoldSplitsFromCompletedRun({
+            targetRouteData: mergedRouteData,
+            activeRunRouteData,
+            baselineRouteData,
+            sessionSetSegments
+        });
+
+        mergedRouteData.personalBest =
+            personalBestAtRunStart || mergedRouteData.personalBest || '';
+
+        return mergedRouteData;
     }
 
     updateGoldSplitsFromCompletedRun({
@@ -61,8 +93,10 @@ export class RunSaveService {
 
             if (activeDuration && isBetterTime(activeDuration, baselineGoldSplit)) {
                 setSegmentGoldSplit(targetSegment, activeDuration);
+                targetSegment.goldSegmentMs = timeToMilliseconds(activeDuration);
             } else {
                 setSegmentGoldSplit(targetSegment, baselineGoldSplit);
+                targetSegment.goldSegmentMs = timeToMilliseconds(baselineGoldSplit);
             }
         });
     }
@@ -75,9 +109,10 @@ export class RunSaveService {
         const sumOfBestSeconds = routeData.segments.reduce((total, segment) => {
             const goldSplitSeconds = timeToSeconds(getSegmentGoldSplit(segment));
 
-            return total + goldSplitSeconds;
+            return total + (goldSplitSeconds === null ? 0 : goldSplitSeconds);
         }, 0);
 
         routeData.sumOfBest = secondsToTime(sumOfBestSeconds);
+        routeData.sumOfBestMs = sumOfBestSeconds * 1000;
     }
 }
