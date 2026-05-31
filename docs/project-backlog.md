@@ -7,13 +7,20 @@
 - Development branch: `develop`
 - Next planned branch: `feature/start-screen-route-tests`
 
+## Current Focus
 
+- [ ] Split RouteLoader route selector population behavior
+  - [ ] Extract route list fetching and selector population into a smaller controller/service
+  - [ ] Preserve main route selector population from `/api/list-routes`
+  - [ ] Preserve start screen selector sync behavior
+  - [ ] Preserve current route filename selection behavior
+  - [ ] Keep existing route switching and start screen tests passing
 
 ## Next Up
 
 - [ ] Split `RouteLoader` into smaller modules/classes
-  - [ ] Separate route loading/fetching logic
-  - [ ] Separate start screen and route selection behavior
+  - [x] Separate route loading/fetching logic
+  - [x] Separate start screen and route selection behavior
   - [ ] Separate run save / PB / gold split behavior
   - [ ] Separate editor-related behavior
   - [ ] Separate comparison / pacing / timing recalculation behavior
