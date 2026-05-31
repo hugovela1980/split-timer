@@ -405,11 +405,11 @@ class RouteLoader {
     const currentRunTime = this.liveStopwatchTime || this.getCurrentStopwatchTime();
     const baselinePersonalBest = this.personalBestAtRunStart || this.routeData.personalBest;
 
-    this.runComplete = {
+    this.runComplete = this.runSaveService.createRunCompleteState({
       finalTime: currentRunTime,
       isNewPB: false,
-      previousPB: baselinePersonalBest || '--:--:--'
-    };
+      previousPB: baselinePersonalBest
+    });
 
     this.hasRunStarted = false;
 
@@ -1171,6 +1171,7 @@ class RouteLoader {
     if (!this.routeData || !Array.isArray(this.routeData.segments)) return;
 
     this.runSaveService.updatePersonalBestFromFinalSegment(this.routeData);
+    this.runSaveService.syncCanonicalPbTimingFields(this.routeData);
     this.runSaveService.recalculateSumOfBest(this.routeData);
   }
 
@@ -1302,7 +1303,7 @@ class RouteLoader {
       this.renderComparisonsPanel();
       return;
     }
-    
+
     if (!this.routeData || !Array.isArray(this.routeData.segments)) return;
 
     const segmentIdNumber = Number(String(segmentId).replace('segment-', ''));
@@ -1422,11 +1423,11 @@ class RouteLoader {
       // - Save New PB
       // - Save Gold Splits
       // - Delete Run Data
-      this.runComplete = {
+      this.runComplete = this.runSaveService.createRunCompleteState({
         finalTime,
         isNewPB,
-        previousPB: baselinePersonalBest || '--:--:--'
-      };
+        previousPB: baselinePersonalBest
+      });
 
       window.dispatchEvent(new CustomEvent('run:complete', { detail: { finalTime, isNewPB } }));
       this.renderComparisonsPanel();
