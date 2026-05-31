@@ -9,13 +9,11 @@
 
 ## Current Focus
 
-- [ ] Add route loading tests for schema normalization
-  - [ ] Verify `RouteLoader` applies route schema normalization when loading route data
-  - [ ] Confirm loaded routes receive canonical millisecond timing fields
-  - [ ] Confirm loaded routes receive `schemaVersion`, stable IDs, and order fields
-  - [ ] Confirm subsegment `time` values normalize to `setTimeMs`
-  - [ ] Confirm legacy timing fields remain available for compatibility
-  - [ ] Confirm existing route loading behavior still works with normalized data
+- [ ] Split RouteLoader route-loading responsibilities
+  - [ ] Extract route fetching/loading into a smaller module or service
+  - [ ] Keep schema normalization applied during route loading
+  - [ ] Preserve existing RouteLoader public behavior
+  - [ ] Run route loading and schema normalization tests after each extraction
 
 ## Next Up
 
@@ -89,3 +87,5 @@
 - [x] Add tests for route switching and start screen behavior
 - [x] Begin route schema cleanup implementation — Phase 1  
   Added the first route data normalization layer: canonical millisecond timing fields, schema versioning, stable IDs, and order fields are now created during normalization while legacy fields and current route files remain supported.
+- [x] Add route loading tests for schema normalization  
+  Added RouteLoader integration tests confirming that legacy route data receives the new normalized schema fields when loaded, while existing canonical schema fields are preserved and not overwritten.
