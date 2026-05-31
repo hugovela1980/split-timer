@@ -2,19 +2,10 @@
 
 ## Current Version
 
-- Current stable release: `v1.1.0`
+- Current stable release: `v1.1.1`
 - Stable branch: `main`
 - Development branch: `develop`
-- Next planned branch: `feature/start-screen-route-tests`
 
-## Current Focus
-
-- [ ] Fix Run Complete UI being lost after scrolling completed route
-  - [ ] Reproduce completed-run UI disappearing after scrolling route container
-  - [ ] Add regression test for preserving Run Complete UI state
-  - [ ] Prevent segment scroll/selection behavior from replacing Run Complete card while unsaved completed-run data exists
-  - [ ] Preserve Save New PB / Save Gold Splits / Delete Run Data controls until user saves, deletes, restarts, or switches routes
-  - [ ] Verify route JSON is not written unless user explicitly saves
 
 ## Next Up
 
