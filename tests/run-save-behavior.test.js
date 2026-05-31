@@ -107,4 +107,25 @@ tester.describe('RouteLoader confirmed run save behavior', () => {
 
     tester.expect(route.sumOfBest).toBe('00:00:13');
   });
+
+  tester.it('does not clear completed-run state when scroll updates current segment after run completion', async () => {
+    routeLoader.routeData = cloneFixture(createCompletedNonPbRunWithGoldRoute());
+
+    routeLoader.runComplete = {
+      finalTime: '00:00:19',
+      isNewPB: false,
+      previousPB: '00:00:15'
+    };
+
+    routeLoader.renderComparisonsPanel = tester.fn();
+    routeLoader.handleRouteDataChanged = tester.fn(async () => {
+      routeLoader.runComplete = null;
+    });
+
+    await routeLoader.updateCurrentSegmentProgress('segment-2');
+
+    tester.expect(routeLoader.runComplete.finalTime).toBe('00:00:19');
+    tester.expect(routeLoader.renderComparisonsPanel).toHaveBeenCalledTimes(1);
+    tester.expect(routeLoader.handleRouteDataChanged).toHaveBeenCalledTimes(0);
+  });
 });
