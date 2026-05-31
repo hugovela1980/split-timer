@@ -3,6 +3,7 @@ import { StartScreenController } from '../controllers/start-screen-controller.js
 import { RouteSelectorService } from '../services/route-selector-service.js';
 import { RouteDataService } from '../services/route-data-service.js';
 import { RouteStorageService } from '../services/route-storage-service.js';
+import { RunSaveService } from '../services/run-save-service.js';
 import {
   deepClone,
   timeToSeconds,
@@ -11,12 +12,11 @@ import {
   escapeHtml,
   toKebabCase,
   formatDurationDelta,
+  getSegmentGoldSplit,
   getSegmentPbSplitTime,
   setSegmentPbSplitTime,
   getSegmentPbSegmentDuration,
   setSegmentPbSegmentDuration,
-  getSegmentGoldSplit,
-  setSegmentGoldSplit,
   normalizeSegmentTimingFields,
 } from '../utils/utils.js';
 import { createRouteSegmentElement, createRouteSubSegmentElement, createSidebarSegmentItem, createRunCompleteComparisonsHtml, createComparisonsHtml } from '../ui/ui.js';
@@ -68,6 +68,7 @@ class RouteLoader {
     });
     this.routeDataService = options.routeDataService || new RouteDataService();
     this.routeSelectorService = options.routeSelectorService || new RouteSelectorService();
+    this.runSaveService = options.runSaveService || new RunSaveService();
   }
 
   async init() {
@@ -364,42 +365,11 @@ class RouteLoader {
   }
 
   updateGoldSplitsFromCompletedRun(targetRouteData, activeRunRouteData, baselineRouteData) {
-    if (
-      !targetRouteData ||
-      !activeRunRouteData ||
-      !baselineRouteData ||
-      !Array.isArray(targetRouteData.segments) ||
-      !Array.isArray(activeRunRouteData.segments) ||
-      !Array.isArray(baselineRouteData.segments)
-    ) {
-      return;
-    }
-
-    targetRouteData.segments.forEach((targetSegment) => {
-      const segmentId = Number(targetSegment.id);
-
-      if (!this.sessionSetSegments.has(segmentId)) {
-        return;
-      }
-
-      const activeSegment = activeRunRouteData.segments.find(
-        (segment) => Number(segment.id) === segmentId
-      );
-
-      const baselineSegment = baselineRouteData.segments.find(
-        (segment) => Number(segment.id) === segmentId
-      );
-
-      if (!activeSegment || !baselineSegment) return;
-
-      const activeDuration = getSegmentPbSegmentDuration(activeSegment);
-      const baselineGoldSplit = getSegmentGoldSplit(baselineSegment);
-
-      if (activeDuration && isBetterTime(activeDuration, baselineGoldSplit)) {
-        setSegmentGoldSplit(targetSegment, activeDuration);
-      } else {
-        setSegmentGoldSplit(targetSegment, baselineGoldSplit);
-      }
+    this.runSaveService.updateGoldSplitsFromCompletedRun({
+      targetRouteData,
+      activeRunRouteData,
+      baselineRouteData,
+      sessionSetSegments: this.sessionSetSegments
     });
   }
 
