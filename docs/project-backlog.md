@@ -7,14 +7,7 @@
 - Development branch: `develop`
 - Next planned branch: `feature/start-screen-route-tests`
 
-## Current Focus
 
-- [ ] Split RouteLoader route selector population behavior
-  - [ ] Extract route list fetching and selector population into a smaller controller/service
-  - [ ] Preserve main route selector population from `/api/list-routes`
-  - [ ] Preserve start screen selector sync behavior
-  - [ ] Preserve current route filename selection behavior
-  - [ ] Keep existing route switching and start screen tests passing
 
 ## Next Up
 
@@ -94,3 +87,5 @@
   Extracted route fetching, route response unwrapping, route validation, and schema normalization into `RouteDataService`. `RouteLoader` now delegates route data loading to the service while preserving its public route-loading behavior.
 - [x] Split RouteLoader start screen and route selection behavior  
   Extracted start screen route selection, start-route button behavior, Enter-key route loading, start-screen route creation flow, main app display, and stopwatch clear dispatch into `StartScreenController`. `RouteLoader` now delegates start screen behavior to the controller while preserving existing route switching and active-run confirmation behavior.
+- [x] Split RouteLoader route selector population behavior  
+  Extracted route list fetching and selector population into `RouteSelectorService`. `RouteLoader` now delegates main route selector population and start screen selector syncing to the service while preserving route dropdown loading and selector sync behavior.
