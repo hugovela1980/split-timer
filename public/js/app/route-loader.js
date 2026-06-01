@@ -1494,10 +1494,6 @@ class RouteLoader {
       return { duration: '--:--:--', isLive: false };
     }
 
-    if (!this.isStopwatchRunning) {
-      return { duration: savedDuration, isLive: false };
-    }
-
     const segmentIndex = this.routeData.segments.findIndex(
       (segment) => Number(segment.id) === Number(currentSegment.id)
     );
@@ -1517,7 +1513,11 @@ class RouteLoader {
       return { duration: savedDuration, isLive: false };
     }
 
-    return { duration: secondsToTime(liveSeconds - previousSeconds), isLive: true };
+    return {
+      duration: secondsToTime(liveSeconds - previousSeconds),
+      isLive: this.isStopwatchRunning,
+      isPaused: this.hasRunStarted && !this.isStopwatchRunning
+    };
   }
 
   getCurrentSegmentData() {
@@ -1661,11 +1661,13 @@ class RouteLoader {
 
     const durationMeta = this.getCurrentSegmentDuration(currentSegment);
     const currentDuration = durationMeta.duration;
-    const segmentStatus = (!this.hasRunStarted && !this.isStopwatchRunning)
+    const currentStatus = (!this.hasRunStarted && !this.isStopwatchRunning)
       ? { state: 'idle', text: 'IDLE' }
       : (durationMeta.isLive
         ? { state: 'live', text: 'LIVE' }
-        : { state: 'saved', text: 'SAVED' });
+        : (durationMeta.isPaused 
+          ? { state: 'paused', text: 'PAUSED' }
+          : { state: 'saved', text: 'SAVED' }));
 
     const bestDuration = currentSegment
       ? (this.getComparisonBestDuration(currentSegment) || '--:--:--')
@@ -1687,7 +1689,7 @@ class RouteLoader {
     this.comparisonsContainer.innerHTML = createComparisonsHtml({
       segmentLabel,
       currentDuration,
-      segmentStatus,
+      currentStatus,
       bestDuration,
       delta,
       currentRunTime,

@@ -220,7 +220,7 @@ export function createRunCompleteComparisonsHtml({ finalTime, isNewPB, previousP
 export function createComparisonsHtml({
   segmentLabel,
   currentDuration,
-  segmentStatus,
+  currentStatus,
   bestDuration,
   delta,
   currentRunTime,
@@ -237,7 +237,7 @@ export function createComparisonsHtml({
       <section class="comparisons__card">
         <div class="comparisons__card-top">
           <h4 class="comparisons__card-title">Segment Comparison</h4>
-          <div class="comparisons__status comparisons__status--${segmentStatus.state}">${escapeHtml(segmentStatus.text)}</div>
+          <div class="comparisons__status comparisons__status--${currentStatus.state}">${escapeHtml(currentStatus.text)}</div>
         </div>
         <div class="comparisons__row">
           <span class="comparisons__label">Current Segment</span>
@@ -264,7 +264,7 @@ export function createComparisonsHtml({
       <section class="comparisons__card">
         <div class="comparisons__card-top">
           <h4 class="comparisons__card-title">Run Comparison</h4>
-          <div class="comparisons__status comparisons__status--${isStopwatchRunning ? 'live' : 'saved'}">${isStopwatchRunning ? 'LIVE' : 'SAVED'}</div>
+          <div class="comparisons__status comparisons__status--${currentStatus.state}">${escapeHtml(currentStatus.text)}</div>
         </div>
         <div class="comparisons__row">
           <span class="comparisons__label">Current Run</span>
