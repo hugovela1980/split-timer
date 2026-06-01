@@ -12,31 +12,22 @@
         {
           "description": "Mossberry 1, Moss Grotto",
           "time": "",
-          "allowSetTime": false,
-          "id": "subsegment-mossberry-1-moss-grotto",
-          "order": 1
+          "allowSetTime": false
         },
         {
           "description": "Rosary String, Moss Grotto",
           "time": "",
-          "allowSetTime": false,
-          "id": "subsegment-rosary-string-moss-grotto",
-          "order": 2
+          "allowSetTime": false
         },
         {
           "description": "Moss Mother",
           "time": "00:02:37",
-          "allowSetTime": true,
-          "id": "subsegment-moss-mother",
-          "order": 3,
-          "setTimeMs": 157000
+          "allowSetTime": true
         },
         {
           "description": "Get Silk Spear",
           "time": "",
-          "allowSetTime": false,
-          "id": "subsegment-get-silk-spear",
-          "order": 4
+          "allowSetTime": false
         }
       ],
       "duration": "00:06:15",
@@ -44,11 +35,7 @@
       "segmentDuration": "00:05:55",
       "pbSplitTime": "00:06:15",
       "pbSegmentDuration": "00:06:15",
-      "goldSplit": "00:05:55",
-      "order": 1,
-      "pbSplitMs": 375000,
-      "pbSegmentMs": 375000,
-      "goldSegmentMs": 355000
+      "goldSplit": "00:05:55"
     },
     {
       "id": 2,
@@ -59,60 +46,42 @@
         {
           "description": "Bell Beast",
           "time": "00:07:29",
-          "allowSetTime": true,
-          "id": "subsegment-bell-beast",
-          "order": 1,
-          "setTimeMs": 449000
+          "allowSetTime": true
         },
         {
           "description": "Rosary Rocks, The Marrow",
           "time": "",
-          "allowSetTime": false,
-          "id": "subsegment-rosary-rocks-the-marrow",
-          "order": 2
+          "allowSetTime": false
         },
         {
           "description": "Skarrgard",
           "time": "00:11:05",
-          "allowSetTime": true,
-          "id": "subsegment-skarrgard",
-          "order": 3,
-          "setTimeMs": 665000
+          "allowSetTime": true
         },
         {
           "description": "Flea 1, Hunter's March",
           "time": "",
-          "allowSetTime": false,
-          "id": "subsegment-flea-1-hunters-march",
-          "order": 4
+          "allowSetTime": false
         },
         {
           "description": "Rosary String, Hunter's March",
           "time": "",
-          "allowSetTime": false,
-          "id": "subsegment-rosary-string-hunters-march",
-          "order": 5
+          "allowSetTime": false
         },
         {
           "description": "Arena 1, Hunter's March",
           "time": "",
-          "allowSetTime": true,
-          "id": "subsegment-arena-1-hunters-march",
-          "order": 6
+          "allowSetTime": true
         },
         {
           "description": "Arena 2, Hunter's March",
           "time": "",
-          "allowSetTime": true,
-          "id": "subsegment-arena-2-hunters-march",
-          "order": 7
+          "allowSetTime": true
         },
         {
           "description": "Get Swift Step",
           "time": "",
-          "allowSetTime": false,
-          "id": "subsegment-get-swift-step",
-          "order": 8
+          "allowSetTime": false
         }
       ],
       "duration": "00:08:16",
@@ -120,11 +89,7 @@
       "segmentDuration": "00:08:54",
       "pbSplitTime": "00:14:31",
       "pbSegmentDuration": "00:08:16",
-      "goldSplit": "00:08:16",
-      "order": 2,
-      "pbSplitMs": 871000,
-      "pbSegmentMs": 496000,
-      "goldSegmentMs": 496000
+      "goldSplit": "00:08:16"
     },
     {
       "id": 3,
@@ -135,59 +100,42 @@
         {
           "description": "Flea 2, Deep Docks",
           "time": "",
-          "allowSetTime": false,
-          "id": "subsegment-flea-2-deep-docks",
-          "order": 1
+          "allowSetTime": false
         },
         {
           "description": "Flea 3, Deep Docks Bellway",
           "time": "",
-          "allowSetTime": false,
-          "id": "subsegment-flea-3-deep-docks-bellway",
-          "order": 2
+          "allowSetTime": false
         },
         {
           "description": "Crafting Kit 1, Forge Daughter",
           "time": "",
-          "allowSetTime": false,
-          "id": "subsegment-crafting-kit-1-forge-daughter",
-          "order": 3
+          "allowSetTime": false
         },
         {
           "description": "Lace 1",
           "time": "00:19:08",
-          "allowSetTime": true,
-          "id": "subsegment-lace-1",
-          "order": 4,
-          "setTimeMs": 1148000
+          "allowSetTime": true
         },
         {
           "description": "Flea 4, Far Fields",
           "time": "",
-          "allowSetTime": false,
-          "id": "subsegment-flea-4-far-fields",
-          "order": 5
+          "allowSetTime": false
         },
         {
           "description": "Flea 5, The Marrow",
           "time": "",
-          "allowSetTime": false,
-          "id": "subsegment-flea-5-the-marrow",
-          "order": 6
+          "allowSetTime": false
         },
         {
           "description": "Travel with Fleas and get flea brew",
           "time": "",
-          "allowSetTime": false,
-          "id": "subsegment-travel-with-fleas-and-get-flea-brew",
-          "order": 7
+          "allowSetTime": false
         },
         {
           "description": "Enter Haunted Bellhart",
           "time": "",
-          "allowSetTime": false,
-          "id": "subsegment-enter-haunted-bellhart",
-          "order": 8
+          "allowSetTime": false
         }
       ],
       "duration": "00:08:53",
@@ -195,11 +143,7 @@
       "segmentDuration": "00:08:58",
       "pbSplitTime": "00:23:24",
       "pbSegmentDuration": "00:08:53",
-      "goldSplit": "00:08:22",
-      "order": 3,
-      "pbSplitMs": 1404000,
-      "pbSegmentMs": 533000,
-      "goldSegmentMs": 502000
+      "goldSplit": "00:08:22"
     },
     {
       "id": 4,
@@ -210,23 +154,17 @@
         {
           "description": "Rosary String, Shellwood",
           "time": "",
-          "allowSetTime": false,
-          "id": "subsegment-rosary-string-shellwood",
-          "order": 1
+          "allowSetTime": false
         },
         {
           "description": "Pollip 1",
           "time": "",
-          "allowSetTime": false,
-          "id": "subsegment-pollip-1",
-          "order": 2
+          "allowSetTime": false
         },
         {
           "description": "Cling Grip",
           "time": "",
-          "allowSetTime": false,
-          "id": "subsegment-cling-grip",
-          "order": 3
+          "allowSetTime": false
         }
       ],
       "duration": "00:04:36",
@@ -234,11 +172,7 @@
       "segmentDuration": "00:03:50",
       "pbSplitTime": "00:28:00",
       "pbSegmentDuration": "00:04:36",
-      "goldSplit": "00:03:50",
-      "order": 4,
-      "pbSplitMs": 1680000,
-      "pbSegmentMs": 276000,
-      "goldSegmentMs": 230000
+      "goldSplit": "00:03:50"
     },
     {
       "id": 5,
@@ -249,52 +183,37 @@
         {
           "description": "Pollip 2",
           "time": "",
-          "allowSetTime": false,
-          "id": "subsegment-pollip-2",
-          "order": 1
+          "allowSetTime": false
         },
         {
           "description": "Flea 6, Shellwood",
           "time": "",
-          "allowSetTime": false,
-          "id": "subsegment-flea-6-shellwood",
-          "order": 2
+          "allowSetTime": false
         },
         {
           "description": "Mask shard 1, Shellwood (Quit Out)",
           "time": "",
-          "allowSetTime": false,
-          "id": "subsegment-mask-shard-1-shellwood-quit-out",
-          "order": 3
+          "allowSetTime": false
         },
         {
           "description": "Pollip 3",
           "time": "",
-          "allowSetTime": false,
-          "id": "subsegment-pollip-3",
-          "order": 4
+          "allowSetTime": false
         },
         {
           "description": "Flea 7, Bellvein",
           "time": "",
-          "allowSetTime": false,
-          "id": "subsegment-flea-7-bellvein",
-          "order": 5
+          "allowSetTime": false
         },
         {
           "description": "Widow",
           "time": "00:32:17",
-          "allowSetTime": true,
-          "id": "subsegment-widow",
-          "order": 6,
-          "setTimeMs": 1937000
+          "allowSetTime": true
         },
         {
           "description": "Needolin",
           "time": "",
-          "allowSetTime": false,
-          "id": "subsegment-needolin",
-          "order": 7
+          "allowSetTime": false
         }
       ],
       "duration": "00:06:49",
@@ -302,11 +221,7 @@
       "segmentDuration": "00:08:18",
       "pbSplitTime": "00:34:49",
       "pbSegmentDuration": "00:06:49",
-      "goldSplit": "00:06:49",
-      "order": 5,
-      "pbSplitMs": 2089000,
-      "pbSegmentMs": 409000,
-      "goldSegmentMs": 409000
+      "goldSplit": "00:06:49"
     },
     {
       "id": 6,
@@ -317,37 +232,27 @@
         {
           "description": "Pollip 4",
           "time": "",
-          "allowSetTime": false,
-          "id": "subsegment-pollip-4",
-          "order": 1
+          "allowSetTime": false
         },
         {
           "description": "Rosary String, Shellwood",
           "time": "",
-          "allowSetTime": false,
-          "id": "subsegment-rosary-string-shellwood",
-          "order": 2
+          "allowSetTime": false
         },
         {
           "description": "Pollip 5",
           "time": "",
-          "allowSetTime": false,
-          "id": "subsegment-pollip-5",
-          "order": 3
+          "allowSetTime": false
         },
         {
           "description": "Bellhart wishes: Crawbug Clearing and My Missing Courier",
           "time": "",
-          "allowSetTime": false,
-          "id": "subsegment-bellhart-wishes-crawbug-clearing-and-my-missing-courier",
-          "order": 4
+          "allowSetTime": false
         },
         {
           "description": "Needle Ugrade 1",
           "time": "",
-          "allowSetTime": false,
-          "id": "subsegment-needle-ugrade-1",
-          "order": 5
+          "allowSetTime": false
         }
       ],
       "duration": "00:01:52",
@@ -355,11 +260,7 @@
       "segmentDuration": "00:01:57",
       "pbSplitTime": "00:36:41",
       "pbSegmentDuration": "00:01:52",
-      "goldSplit": "00:01:52",
-      "order": 6,
-      "pbSplitMs": 2201000,
-      "pbSegmentMs": 112000,
-      "goldSegmentMs": 112000
+      "goldSplit": "00:01:52"
     },
     {
       "id": 7,
@@ -370,44 +271,32 @@
         {
           "description": "Memory Locket 1, Greymoor",
           "time": "",
-          "allowSetTime": false,
-          "id": "subsegment-memory-locket-1-greymoor",
-          "order": 1
+          "allowSetTime": false
         },
         {
           "description": "Crawbug Clearing wish update",
           "time": "",
-          "allowSetTime": false,
-          "id": "subsegment-crawbug-clearing-wish-update",
-          "order": 2
+          "allowSetTime": false
         },
         {
           "description": "Spool Fragment 1, Greymoor",
           "time": "",
-          "allowSetTime": false,
-          "id": "subsegment-spool-fragment-1-greymoor",
-          "order": 3
+          "allowSetTime": false
         },
         {
           "description": "Rosary String, Greymoor",
           "time": "",
-          "allowSetTime": false,
-          "id": "subsegment-rosary-string-greymoor",
-          "order": 4
+          "allowSetTime": false
         },
         {
           "description": "Arena, Craw Lake",
           "time": "",
-          "allowSetTime": true,
-          "id": "subsegment-arena-craw-lake",
-          "order": 5
+          "allowSetTime": true
         },
         {
           "description": "Thread Storm",
           "time": "",
-          "allowSetTime": false,
-          "id": "subsegment-thread-storm",
-          "order": 6
+          "allowSetTime": false
         }
       ],
       "duration": "00:06:17",
@@ -415,11 +304,7 @@
       "segmentDuration": "00:06:40",
       "pbSplitTime": "00:42:58",
       "pbSegmentDuration": "00:06:17",
-      "goldSplit": "00:06:17",
-      "order": 7,
-      "pbSplitMs": 2578000,
-      "pbSegmentMs": 377000,
-      "goldSegmentMs": 377000
+      "goldSplit": "00:06:17"
     },
     {
       "id": 8,
@@ -430,37 +315,27 @@
         {
           "description": "Threefold Pin",
           "time": "",
-          "allowSetTime": false,
-          "id": "subsegment-threefold-pin",
-          "order": 1
+          "allowSetTime": false
         },
         {
           "description": "Flea 8, Greymoor",
           "time": "",
-          "allowSetTime": false,
-          "id": "subsegment-flea-8-greymoor",
-          "order": 2
+          "allowSetTime": false
         },
         {
           "description": "Bone Scroll, Greymoor",
           "time": "",
-          "allowSetTime": false,
-          "id": "subsegment-bone-scroll-greymoor",
-          "order": 3
+          "allowSetTime": false
         },
         {
           "description": "Crawbug Clearing Completion",
           "time": "",
-          "allowSetTime": false,
-          "id": "subsegment-crawbug-clearing-completion",
-          "order": 4
+          "allowSetTime": false
         },
         {
           "description": "Reaper Crest",
           "time": "",
-          "allowSetTime": false,
-          "id": "subsegment-reaper-crest",
-          "order": 5
+          "allowSetTime": false
         }
       ],
       "duration": "00:06:30",
@@ -468,11 +343,7 @@
       "segmentDuration": "00:07:49",
       "pbSplitTime": "00:49:28",
       "pbSegmentDuration": "00:06:30",
-      "goldSplit": "00:06:30",
-      "order": 8,
-      "pbSplitMs": 2968000,
-      "pbSegmentMs": 390000,
-      "goldSegmentMs": 390000
+      "goldSplit": "00:06:30"
     },
     {
       "id": 9,
@@ -483,44 +354,32 @@
         {
           "description": "Switch to Hunter's Crest, Fleatopia",
           "time": "",
-          "allowSetTime": false,
-          "id": "subsegment-switch-to-hunters-crest-fleatopia",
-          "order": 1
+          "allowSetTime": false
         },
         {
           "description": "Open Bellway, Bellhart",
           "time": "",
-          "allowSetTime": false,
-          "id": "subsegment-open-bellway-bellhart",
-          "order": 2
+          "allowSetTime": false
         },
         {
           "description": "Accept Seamstress wish and bench",
           "time": "",
-          "allowSetTime": false,
-          "id": "subsegment-accept-seamstress-wish-and-bench",
-          "order": 3
+          "allowSetTime": false
         },
         {
           "description": "Collect Flexile Spines",
           "time": "",
-          "allowSetTime": false,
-          "id": "subsegment-collect-flexile-spines",
-          "order": 4
+          "allowSetTime": false
         },
         {
           "description": "Silkspeed Anklets (Quit Out and equip)",
           "time": "",
-          "allowSetTime": false,
-          "id": "subsegment-silkspeed-anklets-quit-out-and-equip",
-          "order": 5
+          "allowSetTime": false
         },
         {
           "description": "Drifter's Cloak",
           "time": "",
-          "allowSetTime": false,
-          "id": "subsegment-drifters-cloak",
-          "order": 6
+          "allowSetTime": false
         }
       ],
       "duration": "00:03:31",
@@ -528,11 +387,7 @@
       "segmentDuration": "00:05:30",
       "pbSplitTime": "00:52:59",
       "pbSegmentDuration": "00:03:31",
-      "goldSplit": "00:03:31",
-      "order": 9,
-      "pbSplitMs": 3179000,
-      "pbSegmentMs": 211000,
-      "goldSegmentMs": 211000
+      "goldSplit": "00:03:31"
     },
     {
       "id": 10,
@@ -543,65 +398,47 @@
         {
           "description": "4th Chorus",
           "time": "",
-          "allowSetTime": true,
-          "id": "subsegment-4th-chorus",
-          "order": 1
+          "allowSetTime": true
         },
         {
           "description": "Bellway to Bellhart",
           "time": "",
-          "allowSetTime": false,
-          "id": "subsegment-bellway-to-bellhart",
-          "order": 2
+          "allowSetTime": false
         },
         {
           "description": "Pollip 6",
           "time": "",
-          "allowSetTime": false,
-          "id": "subsegment-pollip-6",
-          "order": 3
+          "allowSetTime": false
         },
         {
           "description": "Grant Pollip Wish",
           "time": "",
-          "allowSetTime": false,
-          "id": "subsegment-grant-pollip-wish",
-          "order": 4
+          "allowSetTime": false
         },
         {
           "description": "Bench at Shellwood Bellway",
           "time": "",
-          "allowSetTime": false,
-          "id": "subsegment-bench-at-shellwood-bellway",
-          "order": 5
+          "allowSetTime": false
         },
         {
           "description": "Rescue My Missing Courier",
           "time": "",
-          "allowSetTime": false,
-          "id": "subsegment-rescue-my-missing-courier",
-          "order": 6
+          "allowSetTime": false
         },
         {
           "description": "Choral Commandment, Mosshome",
           "time": "",
-          "allowSetTime": false,
-          "id": "subsegment-choral-commandment-mosshome",
-          "order": 7
+          "allowSetTime": false
         },
         {
           "description": "Weaver Effigy, collect rosaries",
           "time": "",
-          "allowSetTime": false,
-          "id": "subsegment-weaver-effigy-collect-rosaries",
-          "order": 8
+          "allowSetTime": false
         },
         {
           "description": "Spool Fragment 2, Bone Bottom (Quit Out)",
           "time": "",
-          "allowSetTime": false,
-          "id": "subsegment-spool-fragment-2-bone-bottom-quit-out",
-          "order": 9
+          "allowSetTime": false
         }
       ],
       "duration": "00:05:54",
@@ -609,11 +446,7 @@
       "segmentDuration": "00:07:12",
       "pbSplitTime": "00:58:53",
       "pbSegmentDuration": "00:05:54",
-      "goldSplit": "00:05:54",
-      "order": 10,
-      "pbSplitMs": 3533000,
-      "pbSegmentMs": 354000,
-      "goldSegmentMs": 354000
+      "goldSplit": "00:05:54"
     },
     {
       "id": 11,
@@ -624,31 +457,22 @@
         {
           "description": "Memory Locket 2, Blasted Steps",
           "time": "",
-          "allowSetTime": false,
-          "id": "subsegment-memory-locket-2-blasted-steps",
-          "order": 1
+          "allowSetTime": false
         },
         {
           "description": "Open Bellway and bench, Blasted Steps",
           "time": "",
-          "allowSetTime": false,
-          "id": "subsegment-open-bellway-and-bench-blasted-steps",
-          "order": 2
+          "allowSetTime": false
         },
         {
           "description": "Craftmetal 1, Blasted Steps",
           "time": "",
-          "allowSetTime": false,
-          "id": "subsegment-craftmetal-1-blasted-steps",
-          "order": 3
+          "allowSetTime": false
         },
         {
           "description": "Last Judge",
           "time": "01:04:13",
-          "allowSetTime": true,
-          "id": "subsegment-last-judge",
-          "order": 4,
-          "setTimeMs": 3853000
+          "allowSetTime": true
         }
       ],
       "duration": "00:05:44",
@@ -656,17 +480,9 @@
       "segmentDuration": "00:09:57",
       "pbSplitTime": "01:04:37",
       "pbSegmentDuration": "00:05:44",
-      "goldSplit": "00:05:44",
-      "order": 11,
-      "pbSplitMs": 3877000,
-      "pbSegmentMs": 344000,
-      "goldSegmentMs": 344000
+      "goldSplit": "00:05:44"
     }
   ],
   "currentSegmentId": 1,
-  "currentSegmentName": "Get Silk Spear",
-  "schemaVersion": 2,
-  "routeId": "act-1-100-percent",
-  "personalBestMs": 3877000,
-  "sumOfBestMs": 3780000
+  "currentSegmentName": "Get Silk Spear"
 }
