@@ -8,12 +8,8 @@
 
 ## Current Focus
 
-- [ ] Consolidate RouteLoader refactor progress
-  - [ ] Run full test suite
-  - [ ] Smoke test main flows
-  - [ ] Review `RouteLoader` responsibilities after recent extractions
-  - [ ] Update architecture notes to reflect new services/controllers
-  - [ ] Identify the next safest extraction target
+- [ ] Preserve comparison card values when pausing a run  
+  When the timer is stopped/paused during an active run, the segment comparison card currently resets live values such as Current Split Time and Vs Best back to `--:--:--`. Preserve the most recent displayed split/comparison values while the run is paused, and only clear them when the run is reset, deleted, completed, or the route changes.
 
 ## Next Up
 
@@ -23,7 +19,7 @@
   - [ ] Preserve `/api/health` availability check
   - [ ] Preserve `/api/save-route` file write behavior
   - [ ] Keep route file write behavior tests passing
-  
+
 - [ ] Split `RouteLoader` into smaller modules/classes
   - [x] Separate route loading/fetching logic
   - [x] Separate start screen and route selection behavior
@@ -48,8 +44,11 @@
 - [ ] Fix confirmation message typo: “dicard” → “discard”
 - [ ] Review duplicate stopwatch:clear dispatch during confirmed route switch
 - [ ] Improve slug generation for percent symbols in route names
+- [ ] Preserve comparison card values when pausing a run  
 
 ## Backlog
+- [ ] Preserve completed-run review after saving or deleting run data  
+  After the user saves or deletes from the Run Complete card, keep a read-only summary of the completed run visible during the current session so the user can review performance without needing to inspect the route JSON or take a screenshot.
 - [ ] - [ ] Rename `RouteLoader` to `SplitTimerController`
   - [ ] Rename `public/js/app/route-loader.js` if appropriate
   - [ ] Update imports in app and tests
@@ -74,6 +73,10 @@
 - [ ] Add TypeScript-friendly JSDoc comments to test runner
 - [ ] Consider future TypeScript migration for test runner
 - [ ] Consider future TypeScript migration for app modules
+
+## Notes
+- I would like to be able to review stats for previous runs (maybe going back 3 most recent runs)
+- First time running a route created by the home create route button, when values are blank, is treated as a non-pb when completed and shows some strange behavior
 
 ## Completed
 
@@ -129,3 +132,54 @@
   Extracted core run-save calculations into `RunSaveService`, including gold split updates, sum of best recalculation, personal best updates, and gold split save route creation. Also fixed canonical timing sync so saved route data keeps legacy timing fields and millisecond fields aligned during Save Gold Splits / run-save workflows.
 - [x] Split RouteLoader run save / PB / gold split behavior  
   Extracted core completed-run save calculations into `RunSaveService`, including gold split updates, sum of best recalculation, personal best updates, completed-run state creation, gold split save route creation, and canonical millisecond timing sync for Save New PB / Save Gold Splits workflows.
+- [x] Consolidate RouteLoader refactor progress
+
+## Current RouteLoader Responsibilities After Refactor
+
+`RouteLoader` is no longer only responsible for loading route data. It now acts more like the central app coordinator for the Split Timer UI.
+
+Responsibilities already extracted:
+
+- `RouteDataService`
+  - Fetches route JSON
+  - Supports wrapped route responses
+  - Validates loaded route data
+  - Applies route schema normalization
+
+- `RouteSelectorService`
+  - Fetches route list from `/api/list-routes`
+  - Populates the main route selector
+  - Syncs the start screen route selector
+
+- `RouteStorageService`
+  - Persists route data to localStorage
+  - Restores baseline route data
+  - Restores active-run route data
+  - Saves/restores run session state
+  - Clears run-related storage
+
+- `StartScreenController`
+  - Handles start screen route selection
+  - Handles Enter key route opening
+  - Handles start-screen create-route flow
+  - Shows the main app shell from the start screen
+
+- `RunSaveService`
+  - Updates gold splits from completed runs
+  - Recalculates sum of best
+  - Updates personal best from final segment
+  - Creates completed-run state
+  - Creates gold split save route data
+  - Syncs canonical millisecond timing fields during run-save workflows
+
+Responsibilities still remaining in `RouteLoader`:
+
+- Coordinates app initialization
+- Coordinates route switching and route switch confirmation
+- Coordinates route rendering and sidebar rendering
+- Handles scroll observer / active segment behavior
+- Coordinates comparison panel rendering
+- Coordinates completed-run UI flow
+- Coordinates create/edit route modal behavior
+- Coordinates stopwatch events
+- Coordinates route file saving through the current file-saving integration
