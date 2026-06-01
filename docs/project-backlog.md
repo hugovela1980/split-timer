@@ -8,8 +8,9 @@
 
 ## Current Focus
 
-- [ ] Preserve comparison card values when pausing a run  
-  When the timer is stopped/paused during an active run, the segment comparison card currently resets live values such as Current Split Time and Vs Best back to `--:--:--`. Preserve the most recent displayed split/comparison values while the run is paused, and only clear them when the run is reset, deleted, completed, or the route changes.
+- [ ] Preserve completed-run review after saving or deleting run data  
+  After the user saves or deletes from the Run Complete card, keep a read-only summary of the completed run visible during the current session so the user can review performance without needing to inspect the route JSON or take a screenshot.
+
 
 ## Next Up
 
@@ -44,11 +45,8 @@
 - [ ] Fix confirmation message typo: “dicard” → “discard”
 - [ ] Review duplicate stopwatch:clear dispatch during confirmed route switch
 - [ ] Improve slug generation for percent symbols in route names
-- [ ] Preserve comparison card values when pausing a run  
 
 ## Backlog
-- [ ] Preserve completed-run review after saving or deleting run data  
-  After the user saves or deletes from the Run Complete card, keep a read-only summary of the completed run visible during the current session so the user can review performance without needing to inspect the route JSON or take a screenshot.
 - [ ] - [ ] Rename `RouteLoader` to `SplitTimerController`
   - [ ] Rename `public/js/app/route-loader.js` if appropriate
   - [ ] Update imports in app and tests

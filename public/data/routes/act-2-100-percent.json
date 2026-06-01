@@ -1,14 +1,14 @@
 {
   "name": "Act 2, 100 Percent",
   "personalBest": "01:08:26",
-  "sumOfBest": "01:05:18",
+  "sumOfBest": "01:03:12",
   "segments": [
     {
       "id": 1,
       "name": "Get Whiteward Key",
       "time": "00:04:57",
       "duration": "00:04:57",
-      "bestTime": "00:04:35",
+      "bestTime": "00:04:30",
       "allowSetTime": true,
       "completed": false,
       "subSegments": [
@@ -60,11 +60,11 @@
       ],
       "pbSplitTime": "00:04:57",
       "pbSegmentDuration": "00:04:57",
-      "goldSplit": "00:04:35",
+      "goldSplit": "00:04:30",
       "order": 1,
       "pbSplitMs": 297000,
       "pbSegmentMs": 297000,
-      "goldSegmentMs": 275000
+      "goldSegmentMs": 270000
     },
     {
       "id": 2,
@@ -206,7 +206,7 @@
       "name": "Get Faydown Cloak, Mount Fay",
       "time": "00:21:40",
       "duration": "00:08:21",
-      "bestTime": "00:08:21",
+      "bestTime": "00:07:07",
       "allowSetTime": true,
       "completed": false,
       "subSegments": [
@@ -276,11 +276,11 @@
       ],
       "pbSplitTime": "00:21:40",
       "pbSegmentDuration": "00:08:21",
-      "goldSplit": "00:08:21",
+      "goldSplit": "00:07:07",
       "order": 4,
       "pbSplitMs": 1300000,
       "pbSegmentMs": 501000,
-      "goldSegmentMs": 501000
+      "goldSegmentMs": 427000
     },
     {
       "id": 5,
@@ -530,7 +530,7 @@
       "name": "Needle Upgrade 2",
       "time": "00:48:50",
       "duration": "00:08:15",
-      "bestTime": "00:08:15",
+      "bestTime": "00:07:28",
       "allowSetTime": true,
       "completed": false,
       "subSegments": [
@@ -618,11 +618,11 @@
       ],
       "pbSplitTime": "00:48:50",
       "pbSegmentDuration": "00:08:15",
-      "goldSplit": "00:08:15",
+      "goldSplit": "00:07:28",
       "order": 8,
       "pbSplitMs": 2930000,
       "pbSegmentMs": 495000,
-      "goldSegmentMs": 495000
+      "goldSegmentMs": 448000
     },
     {
       "id": 9,
@@ -1161,5 +1161,5 @@
   "schemaVersion": 2,
   "routeId": "act-2-100-percent",
   "personalBestMs": 4106000,
-  "sumOfBestMs": 3918000
+  "sumOfBestMs": 3792000
 }
