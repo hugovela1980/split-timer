@@ -6,7 +6,15 @@
 - Stable branch: `main`
 - Development branch: `develop`
 
+## Current Focus
 
+- [ ] Extract ComparisonPanelController from RouteLoader
+  - [ ] Move normal comparison card rendering out of `RouteLoader`
+  - [ ] Move Run Complete card rendering out of `RouteLoader`
+  - [ ] Preserve LIVE / PAUSED / SAVED / IDLE status behavior
+  - [ ] Preserve Current Split Time, Vs Best, Run Time, Vs PB display
+  - [ ] Preserve Run Complete save/delete controls
+  - [ ] Keep run save, paused comparison, and Run Complete UI tests passing
 
 ## Next Up
 
