@@ -1,43 +1,44 @@
 import {
-  escapeHtml,
-  formatDurationDelta,
-  getSegmentGoldSplit,
-  getSegmentPbSegmentDuration,
-  getSegmentPbSplitTime
+    escapeHtml,
+    formatDurationDelta,
+    getSegmentGoldSplit,
+    getSegmentPbSegmentDuration,
+    getSegmentPbSplitTime
 } from '../utils/utils.js';
+import { createSidebarSegmentItem } from '../ui/ui.js';
 
 export class RunSidebarController {
-  constructor({
-    sidebarList = null,
-    documentProvider = globalThis.document,
-    getActiveTab = () => 'current-run',
-    setActiveTab = () => {},
-    getLastCompletedRunReview = () => null,
-    onTabChange = () => {}
-  } = {}) {
-    this.sidebarList = sidebarList;
-    this.documentProvider = documentProvider;
-    this.getActiveTab = getActiveTab;
-    this.setActiveTab = setActiveTab;
-    this.getLastCompletedRunReview = getLastCompletedRunReview;
-    this.onTabChange = onTabChange;
-  }
+    constructor({
+        sidebarList = null,
+        documentProvider = globalThis.document,
+        getActiveTab = () => 'current-run',
+        setActiveTab = () => { },
+        getLastCompletedRunReview = () => null,
+        onTabChange = () => { }
+    } = {}) {
+        this.sidebarList = sidebarList;
+        this.documentProvider = documentProvider;
+        this.getActiveTab = getActiveTab;
+        this.setActiveTab = setActiveTab;
+        this.getLastCompletedRunReview = getLastCompletedRunReview;
+        this.onTabChange = onTabChange;
+    }
 
-  setSidebarList(sidebarList) {
-    this.sidebarList = sidebarList;
-  }
+    setSidebarList(sidebarList) {
+        this.sidebarList = sidebarList;
+    }
 
-  ensureReviewTabs() {
-    if (!this.sidebarList || !this.sidebarList.parentElement) return;
+    ensureReviewTabs() {
+        if (!this.sidebarList || !this.sidebarList.parentElement) return;
 
-    const sidebar = this.sidebarList.parentElement;
-    let tabs = sidebar.querySelector('.sidebar-review-tabs');
+        const sidebar = this.sidebarList.parentElement;
+        let tabs = sidebar.querySelector('.sidebar-review-tabs');
 
-    if (!tabs) {
-      tabs = this.documentProvider.createElement('div');
-      tabs.className = 'sidebar-review-tabs';
+        if (!tabs) {
+            tabs = this.documentProvider.createElement('div');
+            tabs.className = 'sidebar-review-tabs';
 
-      tabs.innerHTML = `
+            tabs.innerHTML = `
         <button type="button" class="sidebar-review-tabs__button" data-sidebar-review-tab="current-run">
           Current Run
         </button>
@@ -46,89 +47,139 @@ export class RunSidebarController {
         </button>
       `;
 
-      sidebar.insertBefore(tabs, this.sidebarList);
+            sidebar.insertBefore(tabs, this.sidebarList);
 
-      tabs.addEventListener('click', (event) => {
-        const button = event.target.closest('[data-sidebar-review-tab]');
-        if (!button) return;
+            tabs.addEventListener('click', (event) => {
+                const button = event.target.closest('[data-sidebar-review-tab]');
+                if (!button) return;
 
-        this.setActiveTab(button.dataset.sidebarReviewTab);
-        this.onTabChange();
-      });
+                this.setActiveTab(button.dataset.sidebarReviewTab);
+                this.onTabChange();
+            });
+        }
+
+        tabs.querySelectorAll('[data-sidebar-review-tab]').forEach((button) => {
+            const isActive = button.dataset.sidebarReviewTab === this.getActiveTab();
+
+            button.classList.toggle('sidebar-review-tabs__button--active', isActive);
+
+            if (isActive) {
+                button.setAttribute('aria-current', 'true');
+            } else {
+                button.removeAttribute('aria-current');
+            }
+        });
     }
 
-    tabs.querySelectorAll('[data-sidebar-review-tab]').forEach((button) => {
-      const isActive = button.dataset.sidebarReviewTab === this.getActiveTab();
+    populateCurrentRunSidebar({
+        routeData,
+        sessionSetSegments = new Set(),
+        sessionGoldSplits = new Set(),
+        getComparisonBestDuration = () => '',
+        isSidebarSegmentExpanded = () => false,
+        onSegmentClick = async () => { },
+        onSegmentDoubleClick = () => { },
+        onSegmentContextMenu = () => { },
+        onSubsegmentClick = async () => { },
+        onSubsegmentContextMenu = () => { },
+        setActiveSidebarButton = async () => { }
+    } = {}) {
+        if (!this.sidebarList || !routeData || !Array.isArray(routeData.segments)) return;
 
-      button.classList.toggle('sidebar-review-tabs__button--active', isActive);
+        this.sidebarList.innerHTML = '';
 
-      if (isActive) {
-        button.setAttribute('aria-current', 'true');
-      } else {
-        button.removeAttribute('aria-current');
-      }
-    });
-  }
+        routeData.segments.forEach((segment) => {
+            const segmentWasSet = sessionSetSegments.has(Number(segment.id));
+            const comparisonBestDuration = getComparisonBestDuration(segment);
 
-  populateLastRunSidebar() {
-    if (!this.sidebarList) return;
+            const sidebarDelta = segmentWasSet
+                ? formatDurationDelta(getSegmentPbSegmentDuration(segment), comparisonBestDuration)
+                : { text: '--:--:--', state: 'neutral' };
 
-    this.sidebarList.innerHTML = '';
+            const isGoldSplit = segmentWasSet && sessionGoldSplits.has(Number(segment.id));
 
-    const lastCompletedRunReview = this.getLastCompletedRunReview();
+            const items = createSidebarSegmentItem({
+                segment,
+                segmentWasSet,
+                sidebarDelta,
+                isExpanded: isSidebarSegmentExpanded(segment.id),
+                isGoldSplit,
+                onSegmentClick: () => onSegmentClick(segment),
+                onSegmentDoubleClick: () => onSegmentDoubleClick(segment),
+                onSegmentContextMenu: (event) => onSegmentContextMenu(event, segment),
+                onSubsegmentClick: (subSegmentIndex) => onSubsegmentClick(segment, subSegmentIndex),
+                onSubsegmentContextMenu: (event, subSegmentIndex) => (
+                    onSubsegmentContextMenu(event, segment, subSegmentIndex)
+                )
+            });
 
-    if (
-      !lastCompletedRunReview ||
-      !lastCompletedRunReview.routeData ||
-      !Array.isArray(lastCompletedRunReview.routeData.segments)
-    ) {
-      const emptyItem = this.documentProvider.createElement('li');
-      emptyItem.className = 'sidebar__item sidebar__item--empty';
-      emptyItem.textContent = 'No completed run to review yet.';
-      this.sidebarList.appendChild(emptyItem);
-      return;
+            items.forEach((item) => this.sidebarList.appendChild(item));
+        });
+
+        if (Number.isInteger(routeData.currentSegmentId)) {
+            setActiveSidebarButton(`segment-${routeData.currentSegmentId}`, false);
+        }
     }
 
-    lastCompletedRunReview.routeData.segments.forEach((segment) => {
-      const item = this.documentProvider.createElement('li');
-      item.className = 'sidebar__item sidebar__item--review';
+    populateLastRunSidebar() {
+        if (!this.sidebarList) return;
 
-      const row = this.documentProvider.createElement('div');
-      row.className = 'sidebar__row';
+        this.sidebarList.innerHTML = '';
 
-      const segmentName = this.documentProvider.createElement('span');
-      segmentName.className = 'sidebar__btn sidebar__btn--review';
-      segmentName.textContent = segment.name;
+        const lastCompletedRunReview = this.getLastCompletedRunReview();
 
-      const splitTime = this.documentProvider.createElement('span');
-      splitTime.className = 'sidebar__split-time';
-      splitTime.textContent = getSegmentPbSplitTime(segment) || '--:--:--';
+        if (
+            !lastCompletedRunReview ||
+            !lastCompletedRunReview.routeData ||
+            !Array.isArray(lastCompletedRunReview.routeData.segments)
+        ) {
+            const emptyItem = this.documentProvider.createElement('li');
+            emptyItem.className = 'sidebar__item sidebar__item--empty';
+            emptyItem.textContent = 'No completed run to review yet.';
+            this.sidebarList.appendChild(emptyItem);
+            return;
+        }
 
-      const segmentDuration = getSegmentPbSegmentDuration(segment);
-      const comparisonBestDuration = getSegmentGoldSplit(segment);
-      const sidebarDelta = segmentDuration && comparisonBestDuration
-        ? formatDurationDelta(segmentDuration, comparisonBestDuration)
-        : { text: '--:--:--', state: 'neutral' };
+        lastCompletedRunReview.routeData.segments.forEach((segment) => {
+            const item = this.documentProvider.createElement('li');
+            item.className = 'sidebar__item sidebar__item--review';
 
-      const comparisonTime = this.documentProvider.createElement('span');
-      comparisonTime.className = `sidebar__time sidebar__time--${sidebarDelta.state}`;
-      comparisonTime.textContent = sidebarDelta.text;
+            const row = this.documentProvider.createElement('div');
+            row.className = 'sidebar__row';
 
-      row.appendChild(segmentName);
-      row.appendChild(splitTime);
-      row.appendChild(comparisonTime);
+            const segmentName = this.documentProvider.createElement('span');
+            segmentName.className = 'sidebar__btn sidebar__btn--review';
+            segmentName.textContent = segment.name;
 
-      item.appendChild(row);
-      this.sidebarList.appendChild(item);
-    });
+            const splitTime = this.documentProvider.createElement('span');
+            splitTime.className = 'sidebar__split-time';
+            splitTime.textContent = getSegmentPbSplitTime(segment) || '--:--:--';
 
-    if (lastCompletedRunReview.runComplete) {
-      const summaryItem = this.documentProvider.createElement('li');
-      summaryItem.className = 'sidebar__item sidebar__item--review-summary';
+            const segmentDuration = getSegmentPbSegmentDuration(segment);
+            const comparisonBestDuration = getSegmentGoldSplit(segment);
+            const sidebarDelta = segmentDuration && comparisonBestDuration
+                ? formatDurationDelta(segmentDuration, comparisonBestDuration)
+                : { text: '--:--:--', state: 'neutral' };
 
-      const { finalTime, previousPB, isNewPB } = lastCompletedRunReview.runComplete;
+            const comparisonTime = this.documentProvider.createElement('span');
+            comparisonTime.className = `sidebar__time sidebar__time--${sidebarDelta.state}`;
+            comparisonTime.textContent = sidebarDelta.text;
 
-      summaryItem.innerHTML = `
+            row.appendChild(segmentName);
+            row.appendChild(splitTime);
+            row.appendChild(comparisonTime);
+
+            item.appendChild(row);
+            this.sidebarList.appendChild(item);
+        });
+
+        if (lastCompletedRunReview.runComplete) {
+            const summaryItem = this.documentProvider.createElement('li');
+            summaryItem.className = 'sidebar__item sidebar__item--review-summary';
+
+            const { finalTime, previousPB, isNewPB } = lastCompletedRunReview.runComplete;
+
+            summaryItem.innerHTML = `
         <div class="sidebar__review-summary">
           <strong>Last Run Summary</strong>
           <div>Final Time: ${escapeHtml(finalTime || '--:--:--')}</div>
@@ -137,7 +188,7 @@ export class RunSidebarController {
         </div>
       `;
 
-      this.sidebarList.appendChild(summaryItem);
+            this.sidebarList.appendChild(summaryItem);
+        }
     }
-  }
 }

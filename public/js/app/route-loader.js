@@ -20,7 +20,12 @@ import {
   setSegmentPbSegmentDuration,
   normalizeSegmentTimingFields,
 } from '../utils/utils.js';
-import { createRouteSegmentElement, createRouteSubSegmentElement, createSidebarSegmentItem, createRunCompleteComparisonsHtml, createComparisonsHtml } from '../ui/ui.js';
+import { 
+  createRouteSegmentElement,
+  createRouteSubSegmentElement,
+  createRunCompleteComparisonsHtml,
+  createComparisonsHtml
+} from '../ui/ui.js';
 
 class RouteLoader {
   constructor(options = {}) {
@@ -1287,60 +1292,56 @@ class RouteLoader {
       return;
     }
 
-    this.sidebarList.innerHTML = '';
+    this.runSidebarController.populateCurrentRunSidebar({
+      routeData: this.routeData,
+      sessionSetSegments: this.sessionSetSegments,
+      sessionGoldSplits: this.sessionGoldSplits,
+      getComparisonBestDuration: (segment) => this.getComparisonBestDuration(segment),
+      isSidebarSegmentExpanded: (segmentId) => this.isSidebarSegmentExpanded(segmentId),
 
-    this.routeData.segments.forEach(segment => {
-      const segmentWasSet = this.sessionSetSegments.has(Number(segment.id));
-      const comparisonBestDuration = this.getComparisonBestDuration(segment);
-      const sidebarDelta = segmentWasSet
-        ? formatDurationDelta(getSegmentPbSegmentDuration(segment), comparisonBestDuration)
-        : { text: '--:--:--', state: 'neutral' };
-      const isGoldSplit = segmentWasSet && this.sessionGoldSplits.has(Number(segment.id));
+      onSegmentClick: async (segment) => {
+        this.suppressObserverUntil = Date.now() + 1500;
+        await this.setActiveSidebarButton(`segment-${segment.id}`);
 
-      const items = createSidebarSegmentItem({
-        segment,
-        segmentWasSet,
-        sidebarDelta,
-        isExpanded: this.isSidebarSegmentExpanded(segment.id),
-        isGoldSplit,
-        onSegmentClick: async () => {
-          this.suppressObserverUntil = Date.now() + 1500;
-          await this.setActiveSidebarButton(`segment-${segment.id}`);
-          const target = document.getElementById(`segment-${segment.id}`);
-          if (target) {
-            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }
-        },
-        onSegmentDoubleClick: () => this.toggleSidebarSegmentExpansion(segment.id),
-        onSegmentContextMenu: (event) => {
-          this.openSidebarContextMenu(event, {
-            type: 'segment',
-            segmentId: Number(segment.id)
-          });
-        },
-        onSubsegmentClick: async (subSegmentIndex) => {
-          this.suppressObserverUntil = Date.now() + 1500;
-          await this.setActiveSidebarButton(`segment-${segment.id}`);
-          const target = document.getElementById(`segment-${segment.id}-subsegment-${subSegmentIndex}`);
-          if (target) {
-            target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          }
-        },
-        onSubsegmentContextMenu: (event, subSegmentIndex) => {
-          this.openSidebarContextMenu(event, {
-            type: 'subsegment',
-            segmentId: Number(segment.id),
-            subSegmentIndex
-          });
+        const target = document.getElementById(`segment-${segment.id}`);
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
-      });
+      },
 
-      items.forEach((item) => this.sidebarList.appendChild(item));
+      onSegmentDoubleClick: (segment) => {
+        this.toggleSidebarSegmentExpansion(segment.id);
+      },
+
+      onSegmentContextMenu: (event, segment) => {
+        this.openSidebarContextMenu(event, {
+          type: 'segment',
+          segmentId: Number(segment.id)
+        });
+      },
+
+      onSubsegmentClick: async (segment, subSegmentIndex) => {
+        this.suppressObserverUntil = Date.now() + 1500;
+        await this.setActiveSidebarButton(`segment-${segment.id}`);
+
+        const target = document.getElementById(`segment-${segment.id}-subsegment-${subSegmentIndex}`);
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      },
+
+      onSubsegmentContextMenu: (event, segment, subSegmentIndex) => {
+        this.openSidebarContextMenu(event, {
+          type: 'subsegment',
+          segmentId: Number(segment.id),
+          subSegmentIndex
+        });
+      },
+
+      setActiveSidebarButton: (segmentId, persistProgress) => (
+        this.setActiveSidebarButton(segmentId, persistProgress)
+      )
     });
-
-    if (Number.isInteger(this.routeData.currentSegmentId)) {
-      this.setActiveSidebarButton(`segment-${this.routeData.currentSegmentId}`, false);
-    }
   }
 
   async setActiveSidebarButton(segmentId, persistProgress = true) {
