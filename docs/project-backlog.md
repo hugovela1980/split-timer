@@ -132,6 +132,8 @@
   Added Current Run and Last Run sidebar tabs. The app now captures a session-only completed-run review before clearing active-run state, allowing the user to review the last completed run after Save New PB, Save Gold Splits, or Delete Run Data. Last Run displays completed split times, color-coded deltas, and a readable run summary. Starting a new run switches back to Current Run while preserving Last Run for the current route session; switching routes clears the Last Run review.
 - [x] Extract RunSidebarController from RouteLoader  
   Moved sidebar review tab rendering and Last Run sidebar rendering into `RunSidebarController`. `RouteLoader` now delegates Current Run / Last Run tab UI behavior while preserving Last Run review data, split/delta display, summary rendering, active tab behavior, and existing sidebar smoke-tested workflows.
+- [x] Move Current Run sidebar rendering into RunSidebarController  
+  Moved current-run sidebar row rendering, split/delta display, gold-split styling, segment click behavior, subsegment click behavior, and sidebar context-menu wiring into `RunSidebarController`. `RouteLoader` now delegates both Current Run and Last Run sidebar rendering while preserving existing sidebar behavior.
 
 ## Current RouteLoader Responsibilities After Refactor
 
