@@ -39,6 +39,7 @@ class RouteLoader {
     this.lastCompletedSegmentId = null;
     this.hasRunStarted = false;
     this.runComplete = null;
+    this.lastCompletedRunReview = null;
     this.sessionGoldSplits = new Set();
     this.sessionSetSegments = new Set();
     this.sessionBestBySegment = new Map();
@@ -330,6 +331,11 @@ class RouteLoader {
 
   async deleteCompletedRunData() {
     this.restoreBaselineRouteState();
+
+    this.captureLastCompletedRunReview({
+      action: 'deleted-run-data'
+    });
+    
     this.resetRunSessionState();
 
     this.populateRoute();
@@ -348,6 +354,21 @@ class RouteLoader {
     await this.resetRouteProgressToFirstSegmentAndRender({ scroll: true, save: false });
 
     window.dispatchEvent(new CustomEvent('stopwatch:clear'));
+  }
+
+  captureLastCompletedRunReview({ action = '' } = {}) {
+    const activeRunRouteData = this.restoreActiveRunRouteFromStorage() || this.routeData;
+
+    if (!activeRunRouteData || !Array.isArray(activeRunRouteData.segments)) {
+      return;
+    }
+
+    this.lastCompletedRunReview = {
+      action,
+      runComplete: this.runComplete ? deepClone(this.runComplete) : null,
+      routeData: deepClone(activeRunRouteData),
+      capturedAt: new Date().toISOString()
+    };
   }
 
   updateSessionGoldSplitState(segment) {
@@ -450,6 +471,10 @@ class RouteLoader {
       this.updateRouteRunStats();
       await this.saveCleanRouteState({ force: true });
     }
+
+    this.captureLastCompletedRunReview({
+      action: this.runComplete?.isNewPB ? 'saved-pb' : 'saved-gold-splits'
+    });
 
     this.resetRunSessionState();
 

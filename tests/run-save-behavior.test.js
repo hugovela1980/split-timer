@@ -128,4 +128,63 @@ tester.describe('RouteLoader confirmed run save behavior', () => {
     tester.expect(routeLoader.renderComparisonsPanel).toHaveBeenCalledTimes(1);
     tester.expect(routeLoader.handleRouteDataChanged).toHaveBeenCalledTimes(0);
   });
+
+  tester.it('captures last completed run review before deleting completed run data', async () => {
+    const originalWindow = globalThis.window;
+    const originalCustomEvent = globalThis.CustomEvent;
+
+    globalThis.window = {
+      dispatchEvent: tester.fn()
+    };
+
+    globalThis.CustomEvent = class FakeCustomEvent {
+      constructor(type, options = {}) {
+        this.type = type;
+        this.detail = options.detail;
+      }
+    };
+
+    try {
+      routeLoader.routeData = cloneFixture(createCompletedNonPbRunWithGoldRoute());
+
+      routeLoader.runComplete = {
+        finalTime: '00:00:19',
+        isNewPB: false,
+        previousPB: '00:00:15'
+      };
+
+      routeLoader.restoreActiveRunRouteFromStorage = tester.fn(() => (
+        cloneFixture(createCompletedNonPbRunWithGoldRoute())
+      ));
+
+      routeLoader.restoreBaselineRouteFromStorage = tester.fn(() => (
+        cloneFixture(createTimerColorPaceRoute())
+      ));
+
+      routeLoader.clearRunStorage = tester.fn();
+      routeLoader.saveRunSessionToStorage = tester.fn();
+      routeLoader.saveCleanRouteState = tester.fn(async () => { });
+      routeLoader.populateRoute = tester.fn();
+      routeLoader.resetRouteProgressToFirstSegmentAndRender = tester.fn(async () => { });
+
+      await routeLoader.deleteCompletedRunData();
+
+      tester.expect(routeLoader.lastCompletedRunReview === null).toBe(false);
+      tester.expect(routeLoader.lastCompletedRunReview.action).toBe('deleted-run-data');
+      tester.expect(routeLoader.lastCompletedRunReview.runComplete.finalTime).toBe('00:00:19');
+      tester.expect(routeLoader.lastCompletedRunReview.routeData.segments.length).toBe(3);
+    } finally {
+      if (originalWindow === undefined) {
+        delete globalThis.window;
+      } else {
+        globalThis.window = originalWindow;
+      }
+
+      if (originalCustomEvent === undefined) {
+        delete globalThis.CustomEvent;
+      } else {
+        globalThis.CustomEvent = originalCustomEvent;
+      }
+    }
+  });
 });
