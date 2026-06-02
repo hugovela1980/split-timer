@@ -6,10 +6,7 @@
 - Stable branch: `main`
 - Development branch: `develop`
 
-- [ ] Add Last Run review clearing behavior
-  - [ ] Clear Last Run when starting a new run
-  - [ ] Clear Last Run when switching routes
-  - [ ] Add optional dismiss/clear Last Run control
+
 
 ## Next Up
 
@@ -72,7 +69,6 @@
 - [ ] Consider future TypeScript migration for app modules
 
 ## Notes
-- I would like to be able to review stats for previous runs (maybe going back 3 most recent runs)
 - First time running a route created by the home create route button, when values are blank, is treated as a non-pb when completed and shows some strange behavior
 
 ## Completed
@@ -132,6 +128,8 @@
 - [x] Consolidate RouteLoader refactor progress
 - [x] Preserve completed-run review after saving or deleting run data  
   Added Current Run and Last Run sidebar tabs. The app now captures a session-only completed-run review before clearing run state, allowing the user to inspect the last completed run after Save Gold Splits, Save New PB, or Delete Run Data. Last Run displays completed split times, deltas using existing sidebar comparison colors, and a readable run summary.
+- [x] Preserve completed-run review after saving or deleting run data  
+  Added Current Run and Last Run sidebar tabs. The app now captures a session-only completed-run review before clearing active-run state, allowing the user to review the last completed run after Save New PB, Save Gold Splits, or Delete Run Data. Last Run displays completed split times, color-coded deltas, and a readable run summary. Starting a new run switches back to Current Run while preserving Last Run for the current route session; switching routes clears the Last Run review.
 
 ## Current RouteLoader Responsibilities After Refactor
 
