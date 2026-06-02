@@ -1,5 +1,6 @@
 // Route Loader - Dynamically loads and populates route data from JSON
 import { StartScreenController } from '../controllers/start-screen-controller.js';
+import { RunSidebarController } from '../controllers/run-sidebar-controller.js';
 import { RouteSelectorService } from '../services/route-selector-service.js';
 import { RouteDataService } from '../services/route-data-service.js';
 import { RouteStorageService } from '../services/route-storage-service.js';
@@ -58,6 +59,7 @@ class RouteLoader {
     this.activeRunRouteStorageKey = 'stopwatch:activeRunRouteData';
     this.runSessionStorageKey = 'stopwatch:runSession';
     this.startScreenController = options.startScreenController || null;
+    this.runSidebarController = options.runSidebarController || null;
     this.storageProvider = options.storageProvider || (typeof globalThis !== 'undefined' && globalThis.localStorage ? globalThis.localStorage : null);
     this.routeStorageService = options.routeStorageService || new RouteStorageService({
       storageProvider: this.storageProvider,
@@ -86,6 +88,7 @@ class RouteLoader {
 
       this.routeContainer = document.querySelector('.route');
       this.sidebarList = document.querySelector('.sidebar__list');
+      this.initRunSidebarController();
       this.comparisonsContainer = document.querySelector('.comparisons');
       this.startScreen = document.getElementById('start-screen');
       this.appShell = document.getElementById('app-shell');
@@ -145,6 +148,20 @@ class RouteLoader {
     });
 
     this.startScreenController.init();
+  }
+
+  initRunSidebarController() {
+    this.runSidebarController = this.runSidebarController || new RunSidebarController({
+      sidebarList: this.sidebarList,
+      getActiveTab: () => this.sidebarReviewTab,
+      setActiveTab: (tab) => {
+        this.sidebarReviewTab = tab;
+      },
+      getLastCompletedRunReview: () => this.lastCompletedRunReview,
+      onTabChange: () => this.populateSidebar()
+    });
+
+    this.runSidebarController.setSidebarList(this.sidebarList);
   }
 
   showMainApp() {
@@ -1263,10 +1280,10 @@ class RouteLoader {
   populateSidebar() {
     if (!this.routeData || !this.sidebarList) return;
 
-    this.ensureSidebarReviewTabs();
+    this.runSidebarController.ensureReviewTabs();
 
     if (this.sidebarReviewTab === 'last-run') {
-      this.populateLastRunSidebar();
+      this.runSidebarController.populateLastRunSidebar();
       return;
     }
 
@@ -1326,49 +1343,6 @@ class RouteLoader {
     }
   }
 
-  ensureSidebarReviewTabs() {
-    if (!this.sidebarList || !this.sidebarList.parentElement) return;
-
-    const sidebar = this.sidebarList.parentElement;
-    let tabs = sidebar.querySelector('.sidebar-review-tabs');
-
-    if (!tabs) {
-      tabs = document.createElement('div');
-      tabs.className = 'sidebar-review-tabs';
-
-      tabs.innerHTML = `
-      <button type="button" class="sidebar-review-tabs__button" data-sidebar-review-tab="current-run">
-        Current Run
-      </button>
-      <button type="button" class="sidebar-review-tabs__button" data-sidebar-review-tab="last-run">
-        Last Run
-      </button>
-    `;
-
-      sidebar.insertBefore(tabs, this.sidebarList);
-
-      tabs.addEventListener('click', (event) => {
-        const button = event.target.closest('[data-sidebar-review-tab]');
-        if (!button) return;
-
-        this.sidebarReviewTab = button.dataset.sidebarReviewTab;
-        this.populateSidebar();
-      });
-    }
-
-    tabs.querySelectorAll('[data-sidebar-review-tab]').forEach((button) => {
-      const isActive = button.dataset.sidebarReviewTab === this.sidebarReviewTab;
-
-      button.classList.toggle('sidebar-review-tabs__button--active', isActive);
-
-      if (isActive) {
-        button.setAttribute('aria-current', 'true');
-      } else {
-        button.removeAttribute('aria-current');
-      }
-    });
-  }
-
   async setActiveSidebarButton(segmentId, persistProgress = true) {
     document.querySelectorAll('.sidebar__btn').forEach((btn) => {
       btn.classList.toggle('sidebar__btn--active', btn.dataset.segmentId === segmentId);
@@ -1404,75 +1378,6 @@ class RouteLoader {
     this.renderComparisonsPanel();
 
     await this.handleRouteDataChanged();
-  }
-
-  populateLastRunSidebar() {
-    if (!this.sidebarList) return;
-
-    this.sidebarList.innerHTML = '';
-
-    if (
-      !this.lastCompletedRunReview ||
-      !this.lastCompletedRunReview.routeData ||
-      !Array.isArray(this.lastCompletedRunReview.routeData.segments)
-    ) {
-      const emptyItem = document.createElement('li');
-      emptyItem.className = 'sidebar__item sidebar__item--empty';
-      emptyItem.textContent = 'No completed run to review yet.';
-      this.sidebarList.appendChild(emptyItem);
-      return;
-    }
-
-    this.lastCompletedRunReview.routeData.segments.forEach((segment) => {
-      const item = document.createElement('li');
-      item.className = 'sidebar__item sidebar__item--review';
-
-      const row = document.createElement('div');
-      row.className = 'sidebar__row';
-
-      const segmentName = document.createElement('span');
-      segmentName.className = 'sidebar__btn sidebar__btn--review';
-      segmentName.textContent = segment.name;
-
-      const splitTime = document.createElement('span');
-      splitTime.className = 'sidebar__split-time';
-      splitTime.textContent = getSegmentPbSplitTime(segment) || '--:--:--';
-
-      const segmentDuration = getSegmentPbSegmentDuration(segment);
-      const comparisonBestDuration = getSegmentGoldSplit(segment);
-      const sidebarDelta = segmentDuration && comparisonBestDuration
-        ? formatDurationDelta(segmentDuration, comparisonBestDuration)
-        : { text: '--:--:--', state: 'neutral' };
-
-      const comparisonTime = document.createElement('span');
-      comparisonTime.className = `sidebar__time sidebar__time--${sidebarDelta.state}`;
-      comparisonTime.textContent = sidebarDelta.text;
-
-      row.appendChild(segmentName);
-      row.appendChild(splitTime);
-      row.appendChild(comparisonTime);
-
-      item.appendChild(row);
-      this.sidebarList.appendChild(item);
-    });
-
-    if (this.lastCompletedRunReview.runComplete) {
-      const summaryItem = document.createElement('li');
-      summaryItem.className = 'sidebar__item sidebar__item--review-summary';
-
-      const { finalTime, previousPB, isNewPB } = this.lastCompletedRunReview.runComplete;
-
-      summaryItem.innerHTML = `
-      <div class="sidebar__review-summary">
-        <strong>Last Run Summary</strong>
-        <div>Final Time: ${escapeHtml(finalTime || '--:--:--')}</div>
-        <div>Previous PB: ${escapeHtml(previousPB || '--:--:--')}</div>
-        <div>Result: ${isNewPB ? 'New PB' : 'Gold splits / review'}</div>
-      </div>
-    `;
-
-      this.sidebarList.appendChild(summaryItem);
-    }
   }
 
   initScrollObserver() {

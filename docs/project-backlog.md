@@ -6,7 +6,14 @@
 - Stable branch: `main`
 - Development branch: `develop`
 
+## Current Focus
 
+- [ ] Extract RunSidebarController from RouteLoader
+  - [ ] Move Current Run / Last Run tab rendering out of RouteLoader
+  - [ ] Move Last Run sidebar rendering out of RouteLoader
+  - [ ] Preserve existing sidebar row formatting and delta colors
+  - [ ] Preserve active segment highlighting and segment click behavior
+  - [ ] Keep Last Run review behavior tests and smoke tests passing
 
 ## Next Up
 
