@@ -40,6 +40,7 @@ class RouteLoader {
     this.hasRunStarted = false;
     this.runComplete = null;
     this.lastCompletedRunReview = null;
+    this.sidebarReviewTab = 'current-run';
     this.sessionGoldSplits = new Set();
     this.sessionSetSegments = new Set();
     this.sessionBestBySegment = new Map();
@@ -335,6 +336,8 @@ class RouteLoader {
     this.captureLastCompletedRunReview({
       action: 'deleted-run-data'
     });
+
+    this.sidebarReviewTab = 'last-run';
     
     this.resetRunSessionState();
 
@@ -475,6 +478,8 @@ class RouteLoader {
     this.captureLastCompletedRunReview({
       action: this.runComplete?.isNewPB ? 'saved-pb' : 'saved-gold-splits'
     });
+
+    this.sidebarReviewTab = 'last-run';
 
     this.resetRunSessionState();
 
@@ -1256,6 +1261,13 @@ class RouteLoader {
   populateSidebar() {
     if (!this.routeData || !this.sidebarList) return;
 
+    this.ensureSidebarReviewTabs();
+
+    if (this.sidebarReviewTab === 'last-run') {
+      this.populateLastRunSidebar();
+      return;
+    }
+
     this.sidebarList.innerHTML = '';
 
     this.routeData.segments.forEach(segment => {
@@ -1312,6 +1324,49 @@ class RouteLoader {
     }
   }
 
+  ensureSidebarReviewTabs() {
+    if (!this.sidebarList || !this.sidebarList.parentElement) return;
+
+    const sidebar = this.sidebarList.parentElement;
+    let tabs = sidebar.querySelector('.sidebar-review-tabs');
+
+    if (!tabs) {
+      tabs = document.createElement('div');
+      tabs.className = 'sidebar-review-tabs';
+
+      tabs.innerHTML = `
+      <button type="button" class="sidebar-review-tabs__button" data-sidebar-review-tab="current-run">
+        Current Run
+      </button>
+      <button type="button" class="sidebar-review-tabs__button" data-sidebar-review-tab="last-run">
+        Last Run
+      </button>
+    `;
+
+      sidebar.insertBefore(tabs, this.sidebarList);
+
+      tabs.addEventListener('click', (event) => {
+        const button = event.target.closest('[data-sidebar-review-tab]');
+        if (!button) return;
+
+        this.sidebarReviewTab = button.dataset.sidebarReviewTab;
+        this.populateSidebar();
+      });
+    }
+
+    tabs.querySelectorAll('[data-sidebar-review-tab]').forEach((button) => {
+      const isActive = button.dataset.sidebarReviewTab === this.sidebarReviewTab;
+
+      button.classList.toggle('sidebar-review-tabs__button--active', isActive);
+
+      if (isActive) {
+        button.setAttribute('aria-current', 'true');
+      } else {
+        button.removeAttribute('aria-current');
+      }
+    });
+  }
+
   async setActiveSidebarButton(segmentId, persistProgress = true) {
     document.querySelectorAll('.sidebar__btn').forEach((btn) => {
       btn.classList.toggle('sidebar__btn--active', btn.dataset.segmentId === segmentId);
@@ -1347,6 +1402,60 @@ class RouteLoader {
     this.renderComparisonsPanel();
 
     await this.handleRouteDataChanged();
+  }
+
+  populateLastRunSidebar() {
+    if (!this.sidebarList) return;
+
+    this.sidebarList.innerHTML = '';
+
+    if (
+      !this.lastCompletedRunReview ||
+      !this.lastCompletedRunReview.routeData ||
+      !Array.isArray(this.lastCompletedRunReview.routeData.segments)
+    ) {
+      const emptyItem = document.createElement('li');
+      emptyItem.className = 'sidebar__item sidebar__item--empty';
+      emptyItem.textContent = 'No completed run to review yet.';
+      this.sidebarList.appendChild(emptyItem);
+      return;
+    }
+
+    this.lastCompletedRunReview.routeData.segments.forEach((segment) => {
+      const item = document.createElement('li');
+      item.className = 'sidebar__item sidebar__item--review';
+
+      const splitTime = getSegmentPbSplitTime(segment) || '--:--:--';
+      const segmentDuration = getSegmentPbSegmentDuration(segment) || '--:--:--';
+
+      item.innerHTML = `
+      <div class="sidebar__review-row">
+        <span class="sidebar__review-segment">${escapeHtml(`${segment.id}. ${segment.name}`)}</span>
+        <span class="sidebar__review-split">${escapeHtml(splitTime)}</span>
+        <span class="sidebar__review-duration">${escapeHtml(segmentDuration)}</span>
+      </div>
+    `;
+
+      this.sidebarList.appendChild(item);
+    });
+
+    if (this.lastCompletedRunReview.runComplete) {
+      const summaryItem = document.createElement('li');
+      summaryItem.className = 'sidebar__item sidebar__item--review-summary';
+
+      const { finalTime, previousPB, isNewPB } = this.lastCompletedRunReview.runComplete;
+
+      summaryItem.innerHTML = `
+      <div class="sidebar__review-summary">
+        <strong>Last Run Summary</strong>
+        <div>Final Time: ${escapeHtml(finalTime || '--:--:--')}</div>
+        <div>Previous PB: ${escapeHtml(previousPB || '--:--:--')}</div>
+        <div>Result: ${isNewPB ? 'New PB' : 'Gold splits / review'}</div>
+      </div>
+    `;
+
+      this.sidebarList.appendChild(summaryItem);
+    }
   }
 
   initScrollObserver() {
