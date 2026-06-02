@@ -1026,6 +1026,8 @@ class RouteLoader {
       this.runPaceState = 'neutral';
       this.lastCompletedSegmentId = null;
       this.runComplete = null;
+      this.lastCompletedRunReview = null;
+      this.sidebarReviewTab = 'current-run';
       this.hasRunStarted = false;
       this.clearRunStorage();
 
@@ -1614,10 +1616,11 @@ class RouteLoader {
 
       this.isStopwatchRunning = detail.runState === 'running';
       if (this.isStopwatchRunning && !this.hasRunStarted) {
+        this.sidebarReviewTab = 'current-run';
+
         this.resetRouteProgressToFirstSegment();
         this.populateSidebar();
         this.renderComparisonsPanel();
-
         this.captureSessionBestSnapshot();
         this.ensureRunSnapshotCaptured();
         this.hasRunStarted = true;
