@@ -6,14 +6,7 @@
 - Stable branch: `main`
 - Development branch: `develop`
 
-## Current Focus
 
-- [ ] Extract RunSidebarController from RouteLoader
-  - [ ] Move Current Run / Last Run tab rendering out of RouteLoader
-  - [ ] Move Last Run sidebar rendering out of RouteLoader
-  - [ ] Preserve existing sidebar row formatting and delta colors
-  - [ ] Preserve active segment highlighting and segment click behavior
-  - [ ] Keep Last Run review behavior tests and smoke tests passing
 
 ## Next Up
 
@@ -137,6 +130,8 @@
   Added Current Run and Last Run sidebar tabs. The app now captures a session-only completed-run review before clearing run state, allowing the user to inspect the last completed run after Save Gold Splits, Save New PB, or Delete Run Data. Last Run displays completed split times, deltas using existing sidebar comparison colors, and a readable run summary.
 - [x] Preserve completed-run review after saving or deleting run data  
   Added Current Run and Last Run sidebar tabs. The app now captures a session-only completed-run review before clearing active-run state, allowing the user to review the last completed run after Save New PB, Save Gold Splits, or Delete Run Data. Last Run displays completed split times, color-coded deltas, and a readable run summary. Starting a new run switches back to Current Run while preserving Last Run for the current route session; switching routes clears the Last Run review.
+- [x] Extract RunSidebarController from RouteLoader  
+  Moved sidebar review tab rendering and Last Run sidebar rendering into `RunSidebarController`. `RouteLoader` now delegates Current Run / Last Run tab UI behavior while preserving Last Run review data, split/delta display, summary rendering, active tab behavior, and existing sidebar smoke-tested workflows.
 
 ## Current RouteLoader Responsibilities After Refactor
 
