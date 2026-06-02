@@ -6,17 +6,10 @@
 - Stable branch: `main`
 - Development branch: `develop`
 
-## Current Focus
-
-- [ ] Preserve completed-run review after saving or deleting run data
-  - [ ] Capture a session-only snapshot of the completed run before clearing active-run state
-  - [ ] Add sidebar tabs for Current Run and Last Run
-  - [ ] Show the active/current route split table in Current Run
-  - [ ] Show read-only completed-run split data in Last Run
-  - [ ] Preserve Last Run after Save New PB, Save Gold Splits, or Delete Run Data
-  - [ ] Do not allow duplicate saving from Last Run
-  - [ ] Clear Last Run only when starting a new run, switching routes, or explicitly dismissing it
-
+- [ ] Add Last Run review clearing behavior
+  - [ ] Clear Last Run when starting a new run
+  - [ ] Clear Last Run when switching routes
+  - [ ] Add optional dismiss/clear Last Run control
 
 ## Next Up
 
@@ -137,6 +130,8 @@
 - [x] Split RouteLoader run save / PB / gold split behavior  
   Extracted core completed-run save calculations into `RunSaveService`, including gold split updates, sum of best recalculation, personal best updates, completed-run state creation, gold split save route creation, and canonical millisecond timing sync for Save New PB / Save Gold Splits workflows.
 - [x] Consolidate RouteLoader refactor progress
+- [x] Preserve completed-run review after saving or deleting run data  
+  Added Current Run and Last Run sidebar tabs. The app now captures a session-only completed-run review before clearing run state, allowing the user to inspect the last completed run after Save Gold Splits, Save New PB, or Delete Run Data. Last Run displays completed split times, deltas using existing sidebar comparison colors, and a readable run summary.
 
 ## Current RouteLoader Responsibilities After Refactor
 
