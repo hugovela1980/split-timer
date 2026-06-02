@@ -1425,17 +1425,32 @@ class RouteLoader {
       const item = document.createElement('li');
       item.className = 'sidebar__item sidebar__item--review';
 
-      const splitTime = getSegmentPbSplitTime(segment) || '--:--:--';
-      const segmentDuration = getSegmentPbSegmentDuration(segment) || '--:--:--';
+      const row = document.createElement('div');
+      row.className = 'sidebar__row';
 
-      item.innerHTML = `
-      <div class="sidebar__review-row">
-        <span class="sidebar__review-segment">${escapeHtml(`${segment.id}. ${segment.name}`)}</span>
-        <span class="sidebar__review-split">${escapeHtml(splitTime)}</span>
-        <span class="sidebar__review-duration">${escapeHtml(segmentDuration)}</span>
-      </div>
-    `;
+      const segmentName = document.createElement('span');
+      segmentName.className = 'sidebar__btn sidebar__btn--review';
+      segmentName.textContent = segment.name;
 
+      const splitTime = document.createElement('span');
+      splitTime.className = 'sidebar__split-time';
+      splitTime.textContent = getSegmentPbSplitTime(segment) || '--:--:--';
+
+      const segmentDuration = getSegmentPbSegmentDuration(segment);
+      const comparisonBestDuration = getSegmentGoldSplit(segment);
+      const sidebarDelta = segmentDuration && comparisonBestDuration
+        ? formatDurationDelta(segmentDuration, comparisonBestDuration)
+        : { text: '--:--:--', state: 'neutral' };
+
+      const comparisonTime = document.createElement('span');
+      comparisonTime.className = `sidebar__time sidebar__time--${sidebarDelta.state}`;
+      comparisonTime.textContent = sidebarDelta.text;
+
+      row.appendChild(segmentName);
+      row.appendChild(splitTime);
+      row.appendChild(comparisonTime);
+
+      item.appendChild(row);
       this.sidebarList.appendChild(item);
     });
 

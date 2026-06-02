@@ -839,3 +839,121 @@ input {
     gap: 0.75rem;
     margin-top: 0.75rem;
 }
+
+/* Revised sidebar review tabs */
+.sidebar__btn--review {
+  cursor: default;
+  pointer-events: none;
+}
+
+.sidebar__btn--review:hover {
+  background: none;
+  color: #ccc;
+}
+
+/* Sidebar review tabs */
+
+.sidebar-review-tabs {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.sidebar-review-tabs__button {
+  flex: 1;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  padding: 0.45rem 0.65rem;
+  background: rgba(255, 255, 255, 0.06);
+  color: inherit;
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.sidebar-review-tabs__button:hover {
+  background: rgba(255, 255, 255, 0.11);
+}
+
+.sidebar-review-tabs__button--active {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.32);
+  font-weight: 700;
+}
+
+/* Last Run review list */
+
+.sidebar__item--empty {
+  padding: 1rem;
+  opacity: 0.75;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.sidebar__item--review {
+  padding: 0.7rem 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sidebar__review-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 0.65rem;
+  align-items: center;
+}
+
+.sidebar__review-segment {
+  min-width: 0;
+  font-size: 0.9rem;
+  line-height: 1.25;
+}
+
+.sidebar__review-split,
+.sidebar__review-duration {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  font-size: 0.85rem;
+  opacity: 0.9;
+}
+
+.sidebar__item--review-summary {
+  padding: 1rem 0.85rem;
+  margin-top: 0.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.sidebar__review-summary {
+  display: grid;
+  gap: 0.5rem;
+  font-size: 1rem;
+  line-height: 1.45;
+}
+
+.sidebar__review-summary strong {
+  font-size: 1.05rem;
+}
+
+.sidebar-review-tabs,
+.sidebar-review-tabs__button,
+.sidebar__item--empty,
+.sidebar__item--review,
+.sidebar__item--review-summary,
+.sidebar__review-row,
+.sidebar__review-summary {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.sidebar__review-split,
+.sidebar__review-duration {
+  color: rgba(255, 255, 255, 0.86);
+}
+
+.sidebar-review-tabs__button {
+  color: rgba(255, 255, 255, 0.86);
+}
+
+.sidebar-review-tabs__button--active {
+  color: #fff;
+}
