@@ -8,8 +8,14 @@
 
 ## Current Focus
 
-- [ ] Preserve completed-run review after saving or deleting run data  
-  After the user saves or deletes from the Run Complete card, keep a read-only summary of the completed run visible during the current session so the user can review performance without needing to inspect the route JSON or take a screenshot.
+- [ ] Preserve completed-run review after saving or deleting run data
+  - [ ] Capture a session-only snapshot of the completed run before clearing active-run state
+  - [ ] Add sidebar tabs for Current Run and Last Run
+  - [ ] Show the active/current route split table in Current Run
+  - [ ] Show read-only completed-run split data in Last Run
+  - [ ] Preserve Last Run after Save New PB, Save Gold Splits, or Delete Run Data
+  - [ ] Do not allow duplicate saving from Last Run
+  - [ ] Clear Last Run only when starting a new run, switching routes, or explicitly dismissing it
 
 
 ## Next Up
