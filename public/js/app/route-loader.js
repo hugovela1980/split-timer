@@ -1,6 +1,7 @@
 // Route Loader - Dynamically loads and populates route data from JSON
 import { StartScreenController } from '../controllers/start-screen-controller.js';
 import { RunSidebarController } from '../controllers/run-sidebar-controller.js';
+import { ComparisonPanelController } from '../controllers/comparison-panel-controller.js';
 import { RouteSelectorService } from '../services/route-selector-service.js';
 import { RouteDataService } from '../services/route-data-service.js';
 import { RouteStorageService } from '../services/route-storage-service.js';
@@ -12,7 +13,6 @@ import {
   secondsToTime,
   escapeHtml,
   toKebabCase,
-  formatDurationDelta,
   getSegmentGoldSplit,
   getSegmentPbSplitTime,
   setSegmentPbSplitTime,
@@ -20,11 +20,9 @@ import {
   setSegmentPbSegmentDuration,
   normalizeSegmentTimingFields,
 } from '../utils/utils.js';
-import { 
+import {
   createRouteSegmentElement,
   createRouteSubSegmentElement,
-  createRunCompleteComparisonsHtml,
-  createComparisonsHtml
 } from '../ui/ui.js';
 
 class RouteLoader {
@@ -65,6 +63,7 @@ class RouteLoader {
     this.runSessionStorageKey = 'stopwatch:runSession';
     this.startScreenController = options.startScreenController || null;
     this.runSidebarController = options.runSidebarController || null;
+    this.comparisonPanelController = options.comparisonPanelController || null;
     this.storageProvider = options.storageProvider || (typeof globalThis !== 'undefined' && globalThis.localStorage ? globalThis.localStorage : null);
     this.routeStorageService = options.routeStorageService || new RouteStorageService({
       storageProvider: this.storageProvider,
@@ -95,6 +94,7 @@ class RouteLoader {
       this.sidebarList = document.querySelector('.sidebar__list');
       this.initRunSidebarController();
       this.comparisonsContainer = document.querySelector('.comparisons');
+      this.initComparisonPanelController();
       this.startScreen = document.getElementById('start-screen');
       this.appShell = document.getElementById('app-shell');
       this.startRouteSelector = document.getElementById('start-route-selector');
@@ -167,6 +167,14 @@ class RouteLoader {
     });
 
     this.runSidebarController.setSidebarList(this.sidebarList);
+  }
+
+  initComparisonPanelController() {
+    this.comparisonPanelController = this.comparisonPanelController || new ComparisonPanelController({
+      comparisonsContainer: this.comparisonsContainer
+    });
+
+    this.comparisonPanelController.setComparisonsContainer(this.comparisonsContainer);
   }
 
   showMainApp() {
@@ -360,7 +368,7 @@ class RouteLoader {
     });
 
     this.sidebarReviewTab = 'last-run';
-    
+
     this.resetRunSessionState();
 
     this.populateRoute();
@@ -1683,16 +1691,9 @@ class RouteLoader {
     if (!this.comparisonsContainer) return;
 
     if (this.runComplete) {
-      const { finalTime, isNewPB, previousPB } = this.runComplete;
-      const previousPersonalBest = previousPB || '--:--:--';
-      const runDelta = formatDurationDelta(finalTime, previousPersonalBest);
-
-      this.comparisonsContainer.innerHTML = createRunCompleteComparisonsHtml({
-        finalTime,
-        isNewPB,
-        previousPersonalBest,
-        runDelta,
-        sumOfBest: this.routeData.sumOfBest || '--:--:--'
+      this.comparisonPanelController.renderRunComplete({
+        runComplete: this.runComplete,
+        routeData: this.routeData
       });
 
       const saveGoldButton = this.comparisonsContainer.querySelector('.comparisons__end-run-btn');
@@ -1713,54 +1714,35 @@ class RouteLoader {
     }
 
     const currentSegment = this.getCurrentSegmentData();
-    const segmentLabel = currentSegment
-      ? `${currentSegment.id}. ${currentSegment.name}`
-      : 'No segment selected';
-
     const durationMeta = this.getCurrentSegmentDuration(currentSegment);
     const currentDuration = durationMeta.duration;
-    const currentStatus = (!this.hasRunStarted && !this.isStopwatchRunning)
-      ? { state: 'idle', text: 'IDLE' }
-      : (durationMeta.isLive
-        ? { state: 'live', text: 'LIVE' }
-        : (durationMeta.isPaused 
-          ? { state: 'paused', text: 'PAUSED' }
-          : { state: 'saved', text: 'SAVED' }));
 
-    const bestDuration = currentSegment
+    const comparisonBestDuration = currentSegment
       ? (this.getComparisonBestDuration(currentSegment) || '--:--:--')
       : '--:--:--';
 
-    const delta = formatDurationDelta(currentDuration, bestDuration);
     const currentRunTime = this.liveStopwatchTime || this.getCurrentStopwatchTime();
+
     const personalBest = this.routeData && typeof this.routeData.personalBest === 'string'
       ? (this.routeData.personalBest || '--:--:--')
       : '--:--:--';
-    const runDelta = this.hasRunStarted
-      ? formatDurationDelta(currentRunTime, personalBest)
-      : { text: '--:--:--', state: 'neutral' };
-    const isGoldSplit = Boolean(
-      currentSegment &&
-      this.sessionGoldSplits.has(currentSegment.id)
-    );
 
-    this.comparisonsContainer.innerHTML = createComparisonsHtml({
-      segmentLabel,
+    this.comparisonPanelController.renderCurrentComparison({
+      currentSegment,
       currentDuration,
-      currentStatus,
-      bestDuration,
-      delta,
+      durationMeta,
+      hasRunStarted: this.hasRunStarted,
+      isStopwatchRunning: this.isStopwatchRunning,
+      comparisonBestDuration,
       currentRunTime,
       personalBest,
-      runDelta,
       sumOfBest: this.routeData.sumOfBest || '--:--:--',
-      isGoldSplit,
-      isStopwatchRunning: this.isStopwatchRunning,
-      hasRunStarted: this.hasRunStarted
+      sessionGoldSplits: this.sessionGoldSplits
     });
 
     if (this.hasRunStarted) {
       const resetRunButton = this.comparisonsContainer.querySelector('.comparisons__reset-run-btn');
+
       if (resetRunButton) {
         resetRunButton.addEventListener('click', async () => {
           await this.resetRun();
