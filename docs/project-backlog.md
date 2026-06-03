@@ -43,7 +43,9 @@
 - [ ] Improve slug generation for percent symbols in route names
 
 ## Backlog
-- [ ] - [ ] Rename `RouteLoader` to `SplitTimerController`
+- [ ] Add force reload route-from-file behavior  
+  During development/testing, manually restoring a route JSON file does not update the already-loaded in-memory route data. Add a way to force reload the current route from disk and clear active-run/session state so smoke tests can start from the actual saved file.
+- [ ] Rename `RouteLoader` to `SplitTimerController`
   - [ ] Rename `public/js/app/route-loader.js` if appropriate
   - [ ] Update imports in app and tests
   - [ ] Preserve existing behavior with tests passing
@@ -136,6 +138,8 @@
   Moved current-run sidebar row rendering, split/delta display, gold-split styling, segment click behavior, subsegment click behavior, and sidebar context-menu wiring into `RunSidebarController`. `RouteLoader` now delegates both Current Run and Last Run sidebar rendering while preserving existing sidebar behavior.
 - [x] Extract ComparisonPanelController from RouteLoader  
   Moved normal comparison panel rendering and Run Complete panel rendering into `ComparisonPanelController`. `RouteLoader` now delegates comparison UI generation while preserving LIVE / PAUSED / SAVED / IDLE status behavior, current split comparison display, run comparison display, Run Complete save/delete controls, and reset-run behavior.
+- [x] Clean up route file saving service integration  
+  Added an injectable `routeFileSaver` dependency to `RouteLoader` and removed direct file-saving logic from the save method. `RouteLoader` now prefers the injected file saver while preserving the existing `window.fileSaver` fallback for browser integration. Route file write behavior remains covered by tests.
 
 ## Current RouteLoader Responsibilities After Refactor
 
