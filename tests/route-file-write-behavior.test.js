@@ -39,12 +39,7 @@ tester.describe('RouteLoader route file write behavior', () => {
 
         saveRouteDataMock = tester.fn(async () => { });
 
-        globalThis.window = {
-            fileSaver: {
-                saveRouteData: saveRouteDataMock
-            },
-            dispatchEvent: tester.fn()
-        };
+        globalThis.window = { dispatchEvent: tester.fn() };
 
         globalThis.CustomEvent = class CustomEvent {
             constructor(type, options = {}) {
@@ -68,7 +63,10 @@ tester.describe('RouteLoader route file write behavior', () => {
         };
 
         routeLoader = new RouteLoader({
-            storageProvider: createMemoryStorage()
+            storageProvider: createMemoryStorage(),
+            routeFileSaver: {
+                saveRouteData: saveRouteDataMock
+            }
         });
 
         routeLoader.routeData = routeData;
@@ -448,5 +446,29 @@ tester.describe('RouteLoader route file write behavior', () => {
         tester.expect(routeLoader.lastCompletedSegmentId).toBe(null);
 
         tester.expect(saveRouteDataMock).toHaveBeenCalledTimes(1);
+    });
+
+    tester.it('falls back to window file saver when no route file saver is injected', async () => {
+        const fallbackSaveRouteDataMock = tester.fn(async () => { });
+
+        globalThis.window.fileSaver = {
+            saveRouteData: fallbackSaveRouteDataMock
+        };
+
+        const fallbackRouteLoader = new RouteLoader({
+            storageProvider: createMemoryStorage()
+        });
+
+        fallbackRouteLoader.routeData = routeData;
+        fallbackRouteLoader.currentRouteFilename = 'test-timer-color-pace.json';
+
+        await fallbackRouteLoader.saveRouteDataToFile({ force: true });
+
+        tester.expect(fallbackSaveRouteDataMock).toHaveBeenCalledTimes(1);
+        tester.expect(fallbackSaveRouteDataMock).toHaveBeenCalledWith(
+            routeData,
+            'test-timer-color-pace.json',
+            { force: true }
+        );
     });
 });

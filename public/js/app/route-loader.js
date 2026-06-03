@@ -77,6 +77,7 @@ class RouteLoader {
     this.routeDataService = options.routeDataService || new RouteDataService();
     this.routeSelectorService = options.routeSelectorService || new RouteSelectorService();
     this.runSaveService = options.runSaveService || new RunSaveService();
+    this.routeFileSaver = options.routeFileSaver || null;
   }
 
   async init() {
@@ -337,9 +338,31 @@ class RouteLoader {
     }
   }
 
+  getRouteFileSaver() {
+    if (this.routeFileSaver) {
+      return this.routeFileSaver;
+    }
+
+    if (
+      typeof window !== 'undefined' &&
+      window.fileSaver &&
+      typeof window.fileSaver.saveRouteData === 'function'
+    ) {
+      return window.fileSaver;
+    }
+
+    return null;
+  }
+  
   async saveRouteDataToFile(options = {}) {
-    if (window.fileSaver && typeof window.fileSaver.saveRouteData === 'function') {
-      await window.fileSaver.saveRouteData(this.routeData, this.currentRouteFilename, options);
+    const routeFileSaver = this.getRouteFileSaver();
+
+    if (routeFileSaver && typeof routeFileSaver.saveRouteData === 'function') {
+      await routeFileSaver.saveRouteData(
+        this.routeData,
+        this.currentRouteFilename,
+        options
+      );
     }
   }
 
