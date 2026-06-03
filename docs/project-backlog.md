@@ -6,15 +6,7 @@
 - Stable branch: `main`
 - Development branch: `develop`
 
-## Current Focus
 
-- [ ] Extract ComparisonPanelController from RouteLoader
-  - [ ] Move normal comparison card rendering out of `RouteLoader`
-  - [ ] Move Run Complete card rendering out of `RouteLoader`
-  - [ ] Preserve LIVE / PAUSED / SAVED / IDLE status behavior
-  - [ ] Preserve Current Split Time, Vs Best, Run Time, Vs PB display
-  - [ ] Preserve Run Complete save/delete controls
-  - [ ] Keep run save, paused comparison, and Run Complete UI tests passing
 
 ## Next Up
 
@@ -142,6 +134,8 @@
   Moved sidebar review tab rendering and Last Run sidebar rendering into `RunSidebarController`. `RouteLoader` now delegates Current Run / Last Run tab UI behavior while preserving Last Run review data, split/delta display, summary rendering, active tab behavior, and existing sidebar smoke-tested workflows.
 - [x] Move Current Run sidebar rendering into RunSidebarController  
   Moved current-run sidebar row rendering, split/delta display, gold-split styling, segment click behavior, subsegment click behavior, and sidebar context-menu wiring into `RunSidebarController`. `RouteLoader` now delegates both Current Run and Last Run sidebar rendering while preserving existing sidebar behavior.
+- [x] Extract ComparisonPanelController from RouteLoader  
+  Moved normal comparison panel rendering and Run Complete panel rendering into `ComparisonPanelController`. `RouteLoader` now delegates comparison UI generation while preserving LIVE / PAUSED / SAVED / IDLE status behavior, current split comparison display, run comparison display, Run Complete save/delete controls, and reset-run behavior.
 
 ## Current RouteLoader Responsibilities After Refactor
 
