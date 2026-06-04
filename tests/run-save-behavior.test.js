@@ -1,5 +1,5 @@
 import { tester } from './test-runner/tester.js';
-import { RouteLoader } from '../public/js/app/route-loader.js';
+import { SplitTimerController } from '../public/js/app/split-timer-controller.js';
 import {
   createTimerColorPaceRoute,
   createCompletedPbRunRoute,
@@ -12,12 +12,12 @@ import {
   getSegmentGoldSplit
 } from '../public/js/utils/utils.js';
 
-tester.describe('RouteLoader confirmed run save behavior', () => {
-  let routeLoader;
+tester.describe('SplitTimerController confirmed run save behavior', () => {
+  let splitTimerController;
   let baselineRoute;
 
   tester.beforeEach(() => {
-    routeLoader = new RouteLoader({
+    splitTimerController = new SplitTimerController({
       storageProvider: null
     });
 
@@ -28,11 +28,11 @@ tester.describe('RouteLoader confirmed run save behavior', () => {
     const activeRunRoute = cloneFixture(createCompletedPbRunRoute());
     const targetRoute = cloneFixture(activeRunRoute);
 
-    routeLoader.sessionSetSegments.add(1);
-    routeLoader.sessionSetSegments.add(2);
-    routeLoader.sessionSetSegments.add(3);
+    splitTimerController.sessionSetSegments.add(1);
+    splitTimerController.sessionSetSegments.add(2);
+    splitTimerController.sessionSetSegments.add(3);
 
-    routeLoader.updateGoldSplitsFromCompletedRun(
+    splitTimerController.updateGoldSplitsFromCompletedRun(
       targetRoute,
       activeRunRoute,
       baselineRoute
@@ -47,11 +47,11 @@ tester.describe('RouteLoader confirmed run save behavior', () => {
     const activeRunRoute = cloneFixture(createCompletedNonPbRunWithGoldRoute());
     const targetRoute = cloneFixture(baselineRoute);
 
-    routeLoader.sessionSetSegments.add(1);
-    routeLoader.sessionSetSegments.add(2);
-    routeLoader.sessionSetSegments.add(3);
+    splitTimerController.sessionSetSegments.add(1);
+    splitTimerController.sessionSetSegments.add(2);
+    splitTimerController.sessionSetSegments.add(3);
 
-    routeLoader.updateGoldSplitsFromCompletedRun(
+    splitTimerController.updateGoldSplitsFromCompletedRun(
       targetRoute,
       activeRunRoute,
       baselineRoute
@@ -71,11 +71,11 @@ tester.describe('RouteLoader confirmed run save behavior', () => {
     const activeRunRoute = cloneFixture(createCompletedNonPbRunWithGoldRoute());
     const targetRoute = cloneFixture(baselineRoute);
 
-    routeLoader.sessionSetSegments.add(1);
-    routeLoader.sessionSetSegments.add(2);
-    routeLoader.sessionSetSegments.add(3);
+    splitTimerController.sessionSetSegments.add(1);
+    splitTimerController.sessionSetSegments.add(2);
+    splitTimerController.sessionSetSegments.add(3);
 
-    routeLoader.updateGoldSplitsFromCompletedRun(
+    splitTimerController.updateGoldSplitsFromCompletedRun(
       targetRoute,
       activeRunRoute,
       baselineRoute
@@ -102,31 +102,31 @@ tester.describe('RouteLoader confirmed run save behavior', () => {
     route.segments[2].goldSplit = '00:00:05';
     route.segments[2].bestTime = '00:00:05';
 
-    routeLoader.routeData = route;
-    routeLoader.updateRouteRunStats();
+    splitTimerController.routeData = route;
+    splitTimerController.updateRouteRunStats();
 
     tester.expect(route.sumOfBest).toBe('00:00:13');
   });
 
   tester.it('does not clear completed-run state when scroll updates current segment after run completion', async () => {
-    routeLoader.routeData = cloneFixture(createCompletedNonPbRunWithGoldRoute());
+    splitTimerController.routeData = cloneFixture(createCompletedNonPbRunWithGoldRoute());
 
-    routeLoader.runComplete = {
+    splitTimerController.runComplete = {
       finalTime: '00:00:19',
       isNewPB: false,
       previousPB: '00:00:15'
     };
 
-    routeLoader.renderComparisonsPanel = tester.fn();
-    routeLoader.handleRouteDataChanged = tester.fn(async () => {
-      routeLoader.runComplete = null;
+    splitTimerController.renderComparisonsPanel = tester.fn();
+    splitTimerController.handleRouteDataChanged = tester.fn(async () => {
+      splitTimerController.runComplete = null;
     });
 
-    await routeLoader.updateCurrentSegmentProgress('segment-2');
+    await splitTimerController.updateCurrentSegmentProgress('segment-2');
 
-    tester.expect(routeLoader.runComplete.finalTime).toBe('00:00:19');
-    tester.expect(routeLoader.renderComparisonsPanel).toHaveBeenCalledTimes(1);
-    tester.expect(routeLoader.handleRouteDataChanged).toHaveBeenCalledTimes(0);
+    tester.expect(splitTimerController.runComplete.finalTime).toBe('00:00:19');
+    tester.expect(splitTimerController.renderComparisonsPanel).toHaveBeenCalledTimes(1);
+    tester.expect(splitTimerController.handleRouteDataChanged).toHaveBeenCalledTimes(0);
   });
 
   tester.it('captures last completed run review before deleting completed run data', async () => {
@@ -145,34 +145,34 @@ tester.describe('RouteLoader confirmed run save behavior', () => {
     };
 
     try {
-      routeLoader.routeData = cloneFixture(createCompletedNonPbRunWithGoldRoute());
+      splitTimerController.routeData = cloneFixture(createCompletedNonPbRunWithGoldRoute());
 
-      routeLoader.runComplete = {
+      splitTimerController.runComplete = {
         finalTime: '00:00:19',
         isNewPB: false,
         previousPB: '00:00:15'
       };
 
-      routeLoader.restoreActiveRunRouteFromStorage = tester.fn(() => (
+      splitTimerController.restoreActiveRunRouteFromStorage = tester.fn(() => (
         cloneFixture(createCompletedNonPbRunWithGoldRoute())
       ));
 
-      routeLoader.restoreBaselineRouteFromStorage = tester.fn(() => (
+      splitTimerController.restoreBaselineRouteFromStorage = tester.fn(() => (
         cloneFixture(createTimerColorPaceRoute())
       ));
 
-      routeLoader.clearRunStorage = tester.fn();
-      routeLoader.saveRunSessionToStorage = tester.fn();
-      routeLoader.saveCleanRouteState = tester.fn(async () => { });
-      routeLoader.populateRoute = tester.fn();
-      routeLoader.resetRouteProgressToFirstSegmentAndRender = tester.fn(async () => { });
+      splitTimerController.clearRunStorage = tester.fn();
+      splitTimerController.saveRunSessionToStorage = tester.fn();
+      splitTimerController.saveCleanRouteState = tester.fn(async () => { });
+      splitTimerController.populateRoute = tester.fn();
+      splitTimerController.resetRouteProgressToFirstSegmentAndRender = tester.fn(async () => { });
 
-      await routeLoader.deleteCompletedRunData();
+      await splitTimerController.deleteCompletedRunData();
 
-      tester.expect(routeLoader.lastCompletedRunReview === null).toBe(false);
-      tester.expect(routeLoader.lastCompletedRunReview.action).toBe('deleted-run-data');
-      tester.expect(routeLoader.lastCompletedRunReview.runComplete.finalTime).toBe('00:00:19');
-      tester.expect(routeLoader.lastCompletedRunReview.routeData.segments.length).toBe(3);
+      tester.expect(splitTimerController.lastCompletedRunReview === null).toBe(false);
+      tester.expect(splitTimerController.lastCompletedRunReview.action).toBe('deleted-run-data');
+      tester.expect(splitTimerController.lastCompletedRunReview.runComplete.finalTime).toBe('00:00:19');
+      tester.expect(splitTimerController.lastCompletedRunReview.routeData.segments.length).toBe(3);
     } finally {
       if (originalWindow === undefined) {
         delete globalThis.window;

@@ -1,5 +1,5 @@
 import { tester } from './test-runner/tester.js';
-import { RouteLoader } from '../public/js/app/route-loader.js';
+import { SplitTimerController } from '../public/js/app/split-timer-controller.js';
 import {
     createTimerColorPaceRoute,
     createCompletedPbRunRoute,
@@ -29,8 +29,8 @@ function createMemoryStorage() {
     };
 }
 
-tester.describe('RouteLoader route file write behavior', () => {
-    let routeLoader;
+tester.describe('SplitTimerController route file write behavior', () => {
+    let splitTimerController;
     let routeData;
     let saveRouteDataMock;
 
@@ -62,25 +62,25 @@ tester.describe('RouteLoader route file write behavior', () => {
             }
         };
 
-        routeLoader = new RouteLoader({
+        splitTimerController = new SplitTimerController({
             storageProvider: createMemoryStorage(),
             routeFileSaver: {
                 saveRouteData: saveRouteDataMock
             }
         });
 
-        routeLoader.routeData = routeData;
-        routeLoader.currentRouteFilename = 'test-timer-color-pace.json';
+        splitTimerController.routeData = routeData;
+        splitTimerController.currentRouteFilename = 'test-timer-color-pace.json';
     });
 
     tester.it('does not write route files when saving active run state to storage only', () => {
-        routeLoader.saveActiveRunRouteToStorage();
+        splitTimerController.saveActiveRunRouteToStorage();
 
         tester.expect(saveRouteDataMock).toHaveBeenCalledTimes(0);
     });
 
     tester.it('writes route data when saveRouteDataToFile is called', async () => {
-        await routeLoader.saveRouteDataToFile({ force: true });
+        await splitTimerController.saveRouteDataToFile({ force: true });
 
         tester.expect(saveRouteDataMock).toHaveBeenCalledTimes(1);
         tester.expect(saveRouteDataMock).toHaveBeenCalledWith(
@@ -91,7 +91,7 @@ tester.describe('RouteLoader route file write behavior', () => {
     });
 
     tester.it('writes route data when saving clean route state', async () => {
-        await routeLoader.saveCleanRouteState({ force: true });
+        await splitTimerController.saveCleanRouteState({ force: true });
 
         tester.expect(saveRouteDataMock).toHaveBeenCalledTimes(1);
         tester.expect(saveRouteDataMock).toHaveBeenCalledWith(
@@ -112,29 +112,29 @@ tester.describe('RouteLoader route file write behavior', () => {
         modifiedRoute.segments[0].duration = '00:00:03';
         modifiedRoute.segments[0].pbSegmentDuration = '00:00:03';
 
-        routeLoader.routeData = modifiedRoute;
-        routeLoader.runDataSnapshot = baselineRoute;
-        routeLoader.currentRouteFilename = 'test-timer-color-pace.json';
+        splitTimerController.routeData = modifiedRoute;
+        splitTimerController.runDataSnapshot = baselineRoute;
+        splitTimerController.currentRouteFilename = 'test-timer-color-pace.json';
 
         // Avoid DOM rendering concerns in this workflow test.
-        routeLoader.populateRoute = tester.fn();
-        routeLoader.populateSidebar = tester.fn();
-        routeLoader.renderComparisonsPanel = tester.fn();
-        routeLoader.resetRouteProgressToFirstSegment = tester.fn(() => {
-            routeLoader.routeData.currentSegmentId = 1;
-            routeLoader.routeData.currentSegmentName = 'Segment 1';
+        splitTimerController.populateRoute = tester.fn();
+        splitTimerController.populateSidebar = tester.fn();
+        splitTimerController.renderComparisonsPanel = tester.fn();
+        splitTimerController.resetRouteProgressToFirstSegment = tester.fn(() => {
+            splitTimerController.routeData.currentSegmentId = 1;
+            splitTimerController.routeData.currentSegmentName = 'Segment 1';
         });
 
-        await routeLoader.deleteCompletedRunData();
+        await splitTimerController.deleteCompletedRunData();
 
-        tester.expect(routeLoader.routeData.personalBest).toBe('00:00:15');
-        tester.expect(routeLoader.routeData.sumOfBest).toBe('00:00:15');
-        tester.expect(routeLoader.routeData.segments[0].pbSplitTime).toBe('00:00:05');
-        tester.expect(routeLoader.routeData.segments[0].pbSegmentDuration).toBe('00:00:05');
+        tester.expect(splitTimerController.routeData.personalBest).toBe('00:00:15');
+        tester.expect(splitTimerController.routeData.sumOfBest).toBe('00:00:15');
+        tester.expect(splitTimerController.routeData.segments[0].pbSplitTime).toBe('00:00:05');
+        tester.expect(splitTimerController.routeData.segments[0].pbSegmentDuration).toBe('00:00:05');
 
         tester.expect(saveRouteDataMock).toHaveBeenCalledTimes(1);
         tester.expect(saveRouteDataMock).toHaveBeenCalledWith(
-            routeLoader.routeData,
+            splitTimerController.routeData,
             'test-timer-color-pace.json',
             { force: true }
         );
@@ -143,38 +143,38 @@ tester.describe('RouteLoader route file write behavior', () => {
     tester.it('deleteCompletedRunData clears active run session state', async () => {
         const baselineRoute = cloneFixture(createTimerColorPaceRoute());
 
-        routeLoader.routeData = cloneFixture(createTimerColorPaceRoute());
-        routeLoader.runDataSnapshot = baselineRoute;
-        routeLoader.runComplete = {
+        splitTimerController.routeData = cloneFixture(createTimerColorPaceRoute());
+        splitTimerController.runDataSnapshot = baselineRoute;
+        splitTimerController.runComplete = {
             finalTime: '00:00:18',
             isNewPB: false,
             previousPB: '00:00:15'
         };
-        routeLoader.hasRunStarted = true;
-        routeLoader.sessionGoldSplits.add(2);
-        routeLoader.sessionSetSegments.add(1);
-        routeLoader.sessionSetSegments.add(2);
-        routeLoader.sessionBestBySegment.set(2, '00:00:04');
-        routeLoader.runPaceState = 'behind';
-        routeLoader.lastCompletedSegmentId = 2;
+        splitTimerController.hasRunStarted = true;
+        splitTimerController.sessionGoldSplits.add(2);
+        splitTimerController.sessionSetSegments.add(1);
+        splitTimerController.sessionSetSegments.add(2);
+        splitTimerController.sessionBestBySegment.set(2, '00:00:04');
+        splitTimerController.runPaceState = 'behind';
+        splitTimerController.lastCompletedSegmentId = 2;
 
-        routeLoader.populateRoute = tester.fn();
-        routeLoader.populateSidebar = tester.fn();
-        routeLoader.renderComparisonsPanel = tester.fn();
-        routeLoader.resetRouteProgressToFirstSegment = tester.fn(() => {
-            routeLoader.routeData.currentSegmentId = 1;
-            routeLoader.routeData.currentSegmentName = 'Segment 1';
+        splitTimerController.populateRoute = tester.fn();
+        splitTimerController.populateSidebar = tester.fn();
+        splitTimerController.renderComparisonsPanel = tester.fn();
+        splitTimerController.resetRouteProgressToFirstSegment = tester.fn(() => {
+            splitTimerController.routeData.currentSegmentId = 1;
+            splitTimerController.routeData.currentSegmentName = 'Segment 1';
         });
 
-        await routeLoader.deleteCompletedRunData();
+        await splitTimerController.deleteCompletedRunData();
 
-        tester.expect(routeLoader.runComplete).toBe(null);
-        tester.expect(routeLoader.hasRunStarted).toBe(false);
-        tester.expect(routeLoader.sessionGoldSplits.size).toBe(0);
-        tester.expect(routeLoader.sessionSetSegments.size).toBe(0);
-        tester.expect(routeLoader.sessionBestBySegment.size).toBe(0);
-        tester.expect(routeLoader.runPaceState).toBe('neutral');
-        tester.expect(routeLoader.lastCompletedSegmentId).toBe(null);
+        tester.expect(splitTimerController.runComplete).toBe(null);
+        tester.expect(splitTimerController.hasRunStarted).toBe(false);
+        tester.expect(splitTimerController.sessionGoldSplits.size).toBe(0);
+        tester.expect(splitTimerController.sessionSetSegments.size).toBe(0);
+        tester.expect(splitTimerController.sessionBestBySegment.size).toBe(0);
+        tester.expect(splitTimerController.runPaceState).toBe('neutral');
+        tester.expect(splitTimerController.lastCompletedSegmentId).toBe(null);
 
         tester.expect(saveRouteDataMock).toHaveBeenCalledTimes(1);
     });
@@ -190,24 +190,24 @@ tester.describe('RouteLoader route file write behavior', () => {
         modifiedRoute.segments[0].duration = '00:00:03';
         modifiedRoute.segments[0].pbSegmentDuration = '00:00:03';
 
-        routeLoader.routeData = modifiedRoute;
-        routeLoader.runDataSnapshot = baselineRoute;
-        routeLoader.currentRouteFilename = 'test-timer-color-pace.json';
+        splitTimerController.routeData = modifiedRoute;
+        splitTimerController.runDataSnapshot = baselineRoute;
+        splitTimerController.currentRouteFilename = 'test-timer-color-pace.json';
 
-        routeLoader.populateRoute = tester.fn();
-        routeLoader.populateSidebar = tester.fn();
-        routeLoader.renderComparisonsPanel = tester.fn();
-        routeLoader.resetRouteProgressToFirstSegment = tester.fn(() => {
-            routeLoader.routeData.currentSegmentId = 1;
-            routeLoader.routeData.currentSegmentName = 'Segment 1';
+        splitTimerController.populateRoute = tester.fn();
+        splitTimerController.populateSidebar = tester.fn();
+        splitTimerController.renderComparisonsPanel = tester.fn();
+        splitTimerController.resetRouteProgressToFirstSegment = tester.fn(() => {
+            splitTimerController.routeData.currentSegmentId = 1;
+            splitTimerController.routeData.currentSegmentName = 'Segment 1';
         });
 
-        await routeLoader.restartRun();
+        await splitTimerController.restartRun();
 
-        tester.expect(routeLoader.routeData.personalBest).toBe('00:00:15');
-        tester.expect(routeLoader.routeData.sumOfBest).toBe('00:00:15');
-        tester.expect(routeLoader.routeData.segments[0].pbSplitTime).toBe('00:00:05');
-        tester.expect(routeLoader.routeData.segments[0].pbSegmentDuration).toBe('00:00:05');
+        tester.expect(splitTimerController.routeData.personalBest).toBe('00:00:15');
+        tester.expect(splitTimerController.routeData.sumOfBest).toBe('00:00:15');
+        tester.expect(splitTimerController.routeData.segments[0].pbSplitTime).toBe('00:00:05');
+        tester.expect(splitTimerController.routeData.segments[0].pbSegmentDuration).toBe('00:00:05');
 
         tester.expect(saveRouteDataMock).toHaveBeenCalledTimes(0);
     });
@@ -215,38 +215,38 @@ tester.describe('RouteLoader route file write behavior', () => {
     tester.it('restartRun clears active run session state', async () => {
         const baselineRoute = cloneFixture(createTimerColorPaceRoute());
 
-        routeLoader.routeData = cloneFixture(createTimerColorPaceRoute());
-        routeLoader.runDataSnapshot = baselineRoute;
-        routeLoader.runComplete = {
+        splitTimerController.routeData = cloneFixture(createTimerColorPaceRoute());
+        splitTimerController.runDataSnapshot = baselineRoute;
+        splitTimerController.runComplete = {
             finalTime: '00:00:18',
             isNewPB: false,
             previousPB: '00:00:15'
         };
-        routeLoader.hasRunStarted = true;
-        routeLoader.sessionGoldSplits.add(2);
-        routeLoader.sessionSetSegments.add(1);
-        routeLoader.sessionSetSegments.add(2);
-        routeLoader.sessionBestBySegment.set(2, '00:00:04');
-        routeLoader.runPaceState = 'behind';
-        routeLoader.lastCompletedSegmentId = 2;
+        splitTimerController.hasRunStarted = true;
+        splitTimerController.sessionGoldSplits.add(2);
+        splitTimerController.sessionSetSegments.add(1);
+        splitTimerController.sessionSetSegments.add(2);
+        splitTimerController.sessionBestBySegment.set(2, '00:00:04');
+        splitTimerController.runPaceState = 'behind';
+        splitTimerController.lastCompletedSegmentId = 2;
 
-        routeLoader.populateRoute = tester.fn();
-        routeLoader.populateSidebar = tester.fn();
-        routeLoader.renderComparisonsPanel = tester.fn();
-        routeLoader.resetRouteProgressToFirstSegment = tester.fn(() => {
-            routeLoader.routeData.currentSegmentId = 1;
-            routeLoader.routeData.currentSegmentName = 'Segment 1';
+        splitTimerController.populateRoute = tester.fn();
+        splitTimerController.populateSidebar = tester.fn();
+        splitTimerController.renderComparisonsPanel = tester.fn();
+        splitTimerController.resetRouteProgressToFirstSegment = tester.fn(() => {
+            splitTimerController.routeData.currentSegmentId = 1;
+            splitTimerController.routeData.currentSegmentName = 'Segment 1';
         });
 
-        await routeLoader.restartRun();
+        await splitTimerController.restartRun();
 
-        tester.expect(routeLoader.runComplete).toBe(null);
-        tester.expect(routeLoader.hasRunStarted).toBe(false);
-        tester.expect(routeLoader.sessionGoldSplits.size).toBe(0);
-        tester.expect(routeLoader.sessionSetSegments.size).toBe(0);
-        tester.expect(routeLoader.sessionBestBySegment.size).toBe(0);
-        tester.expect(routeLoader.runPaceState).toBe('neutral');
-        tester.expect(routeLoader.lastCompletedSegmentId).toBe(null);
+        tester.expect(splitTimerController.runComplete).toBe(null);
+        tester.expect(splitTimerController.hasRunStarted).toBe(false);
+        tester.expect(splitTimerController.sessionGoldSplits.size).toBe(0);
+        tester.expect(splitTimerController.sessionSetSegments.size).toBe(0);
+        tester.expect(splitTimerController.sessionBestBySegment.size).toBe(0);
+        tester.expect(splitTimerController.runPaceState).toBe('neutral');
+        tester.expect(splitTimerController.lastCompletedSegmentId).toBe(null);
 
         tester.expect(saveRouteDataMock).toHaveBeenCalledTimes(0);
     });
@@ -257,50 +257,50 @@ tester.describe('RouteLoader route file write behavior', () => {
 
         completedPbRoute.personalBest = '00:00:14';
 
-        routeLoader.routeData = completedPbRoute;
-        routeLoader.runDataSnapshot = baselineRoute;
-        routeLoader.currentRouteFilename = 'test-timer-color-pace.json';
-        routeLoader.runComplete = {
+        splitTimerController.routeData = completedPbRoute;
+        splitTimerController.runDataSnapshot = baselineRoute;
+        splitTimerController.currentRouteFilename = 'test-timer-color-pace.json';
+        splitTimerController.runComplete = {
             finalTime: '00:00:14',
             isNewPB: true,
             previousPB: '00:00:15'
         };
 
-        routeLoader.sessionSetSegments.add(1);
-        routeLoader.sessionSetSegments.add(2);
-        routeLoader.sessionSetSegments.add(3);
+        splitTimerController.sessionSetSegments.add(1);
+        splitTimerController.sessionSetSegments.add(2);
+        splitTimerController.sessionSetSegments.add(3);
 
-        routeLoader.populateRoute = tester.fn();
-        routeLoader.populateSidebar = tester.fn();
-        routeLoader.renderComparisonsPanel = tester.fn();
-        routeLoader.resetRouteProgressToFirstSegmentAndRender = tester.fn(async () => {
-            routeLoader.routeData.currentSegmentId = 1;
-            routeLoader.routeData.currentSegmentName = 'Segment 1';
+        splitTimerController.populateRoute = tester.fn();
+        splitTimerController.populateSidebar = tester.fn();
+        splitTimerController.renderComparisonsPanel = tester.fn();
+        splitTimerController.resetRouteProgressToFirstSegmentAndRender = tester.fn(async () => {
+            splitTimerController.routeData.currentSegmentId = 1;
+            splitTimerController.routeData.currentSegmentName = 'Segment 1';
         });
 
-        await routeLoader.saveRunCompleteGold();
+        await splitTimerController.saveRunCompleteGold();
 
         tester.expect(saveRouteDataMock).toHaveBeenCalledTimes(1);
         tester.expect(saveRouteDataMock).toHaveBeenCalledWith(
-            routeLoader.routeData,
+            splitTimerController.routeData,
             'test-timer-color-pace.json',
             { force: true }
         );
 
-        tester.expect(routeLoader.routeData.personalBest).toBe('00:00:14');
-        tester.expect(routeLoader.routeData.sumOfBest).toBe('00:00:13');
+        tester.expect(splitTimerController.routeData.personalBest).toBe('00:00:14');
+        tester.expect(splitTimerController.routeData.sumOfBest).toBe('00:00:13');
 
-        tester.expect(routeLoader.routeData.segments[0].pbSplitTime).toBe('00:00:03');
-        tester.expect(routeLoader.routeData.segments[0].pbSegmentDuration).toBe('00:00:03');
-        tester.expect(routeLoader.routeData.segments[0].goldSplit).toBe('00:00:03');
+        tester.expect(splitTimerController.routeData.segments[0].pbSplitTime).toBe('00:00:03');
+        tester.expect(splitTimerController.routeData.segments[0].pbSegmentDuration).toBe('00:00:03');
+        tester.expect(splitTimerController.routeData.segments[0].goldSplit).toBe('00:00:03');
 
-        tester.expect(routeLoader.routeData.segments[1].pbSplitTime).toBe('00:00:09');
-        tester.expect(routeLoader.routeData.segments[1].pbSegmentDuration).toBe('00:00:06');
-        tester.expect(routeLoader.routeData.segments[1].goldSplit).toBe('00:00:05');
+        tester.expect(splitTimerController.routeData.segments[1].pbSplitTime).toBe('00:00:09');
+        tester.expect(splitTimerController.routeData.segments[1].pbSegmentDuration).toBe('00:00:06');
+        tester.expect(splitTimerController.routeData.segments[1].goldSplit).toBe('00:00:05');
 
-        tester.expect(routeLoader.routeData.segments[2].pbSplitTime).toBe('00:00:14');
-        tester.expect(routeLoader.routeData.segments[2].pbSegmentDuration).toBe('00:00:05');
-        tester.expect(routeLoader.routeData.segments[2].goldSplit).toBe('00:00:05');
+        tester.expect(splitTimerController.routeData.segments[2].pbSplitTime).toBe('00:00:14');
+        tester.expect(splitTimerController.routeData.segments[2].pbSegmentDuration).toBe('00:00:05');
+        tester.expect(splitTimerController.routeData.segments[2].goldSplit).toBe('00:00:05');
     });
 
     tester.it('saveRunCompleteGold clears session state after saving a new PB', async () => {
@@ -309,39 +309,39 @@ tester.describe('RouteLoader route file write behavior', () => {
 
         completedPbRoute.personalBest = '00:00:14';
 
-        routeLoader.routeData = completedPbRoute;
-        routeLoader.runDataSnapshot = baselineRoute;
-        routeLoader.runComplete = {
+        splitTimerController.routeData = completedPbRoute;
+        splitTimerController.runDataSnapshot = baselineRoute;
+        splitTimerController.runComplete = {
             finalTime: '00:00:14',
             isNewPB: true,
             previousPB: '00:00:15'
         };
-        routeLoader.hasRunStarted = true;
-        routeLoader.sessionGoldSplits.add(1);
-        routeLoader.sessionSetSegments.add(1);
-        routeLoader.sessionSetSegments.add(2);
-        routeLoader.sessionSetSegments.add(3);
-        routeLoader.sessionBestBySegment.set(1, '00:00:03');
-        routeLoader.runPaceState = 'ahead';
-        routeLoader.lastCompletedSegmentId = 3;
+        splitTimerController.hasRunStarted = true;
+        splitTimerController.sessionGoldSplits.add(1);
+        splitTimerController.sessionSetSegments.add(1);
+        splitTimerController.sessionSetSegments.add(2);
+        splitTimerController.sessionSetSegments.add(3);
+        splitTimerController.sessionBestBySegment.set(1, '00:00:03');
+        splitTimerController.runPaceState = 'ahead';
+        splitTimerController.lastCompletedSegmentId = 3;
 
-        routeLoader.populateRoute = tester.fn();
-        routeLoader.populateSidebar = tester.fn();
-        routeLoader.renderComparisonsPanel = tester.fn();
-        routeLoader.resetRouteProgressToFirstSegmentAndRender = tester.fn(async () => {
-            routeLoader.routeData.currentSegmentId = 1;
-            routeLoader.routeData.currentSegmentName = 'Segment 1';
+        splitTimerController.populateRoute = tester.fn();
+        splitTimerController.populateSidebar = tester.fn();
+        splitTimerController.renderComparisonsPanel = tester.fn();
+        splitTimerController.resetRouteProgressToFirstSegmentAndRender = tester.fn(async () => {
+            splitTimerController.routeData.currentSegmentId = 1;
+            splitTimerController.routeData.currentSegmentName = 'Segment 1';
         });
 
-        await routeLoader.saveRunCompleteGold();
+        await splitTimerController.saveRunCompleteGold();
 
-        tester.expect(routeLoader.runComplete).toBe(null);
-        tester.expect(routeLoader.hasRunStarted).toBe(false);
-        tester.expect(routeLoader.sessionGoldSplits.size).toBe(0);
-        tester.expect(routeLoader.sessionSetSegments.size).toBe(0);
-        tester.expect(routeLoader.sessionBestBySegment.size).toBe(0);
-        tester.expect(routeLoader.runPaceState).toBe('neutral');
-        tester.expect(routeLoader.lastCompletedSegmentId).toBe(null);
+        tester.expect(splitTimerController.runComplete).toBe(null);
+        tester.expect(splitTimerController.hasRunStarted).toBe(false);
+        tester.expect(splitTimerController.sessionGoldSplits.size).toBe(0);
+        tester.expect(splitTimerController.sessionSetSegments.size).toBe(0);
+        tester.expect(splitTimerController.sessionBestBySegment.size).toBe(0);
+        tester.expect(splitTimerController.runPaceState).toBe('neutral');
+        tester.expect(splitTimerController.lastCompletedSegmentId).toBe(null);
 
         tester.expect(saveRouteDataMock).toHaveBeenCalledTimes(1);
     });
@@ -350,100 +350,100 @@ tester.describe('RouteLoader route file write behavior', () => {
         const baselineRoute = cloneFixture(createTimerColorPaceRoute());
         const completedNonPbRoute = cloneFixture(createCompletedNonPbRunWithGoldRoute());
 
-        routeLoader.routeData = completedNonPbRoute;
-        routeLoader.runDataSnapshot = baselineRoute;
-        routeLoader.currentRouteFilename = 'test-timer-color-pace.json';
-        routeLoader.runComplete = {
+        splitTimerController.routeData = completedNonPbRoute;
+        splitTimerController.runDataSnapshot = baselineRoute;
+        splitTimerController.currentRouteFilename = 'test-timer-color-pace.json';
+        splitTimerController.runComplete = {
             finalTime: '00:00:18',
             isNewPB: false,
             previousPB: '00:00:15'
         };
 
-        routeLoader.sessionSetSegments.add(1);
-        routeLoader.sessionSetSegments.add(2);
-        routeLoader.sessionSetSegments.add(3);
+        splitTimerController.sessionSetSegments.add(1);
+        splitTimerController.sessionSetSegments.add(2);
+        splitTimerController.sessionSetSegments.add(3);
 
-        routeLoader.populateRoute = tester.fn();
-        routeLoader.populateSidebar = tester.fn();
-        routeLoader.renderComparisonsPanel = tester.fn();
-        routeLoader.resetRouteProgressToFirstSegmentAndRender = tester.fn(async () => {
-            routeLoader.routeData.currentSegmentId = 1;
-            routeLoader.routeData.currentSegmentName = 'Segment 1';
+        splitTimerController.populateRoute = tester.fn();
+        splitTimerController.populateSidebar = tester.fn();
+        splitTimerController.renderComparisonsPanel = tester.fn();
+        splitTimerController.resetRouteProgressToFirstSegmentAndRender = tester.fn(async () => {
+            splitTimerController.routeData.currentSegmentId = 1;
+            splitTimerController.routeData.currentSegmentName = 'Segment 1';
         });
 
-        await routeLoader.saveRunCompleteGold();
+        await splitTimerController.saveRunCompleteGold();
 
         tester.expect(saveRouteDataMock).toHaveBeenCalledTimes(1);
         tester.expect(saveRouteDataMock).toHaveBeenCalledWith(
-            routeLoader.routeData,
+            splitTimerController.routeData,
             'test-timer-color-pace.json',
             { force: true }
         );
 
         // Non-PB run should preserve the original personal best.
-        tester.expect(routeLoader.routeData.personalBest).toBe('00:00:15');
+        tester.expect(splitTimerController.routeData.personalBest).toBe('00:00:15');
 
         // PB split data should stay from the baseline route, not the non-PB active run.
-        tester.expect(routeLoader.routeData.segments[0].pbSplitTime).toBe('00:00:05');
-        tester.expect(routeLoader.routeData.segments[1].pbSplitTime).toBe('00:00:10');
-        tester.expect(routeLoader.routeData.segments[2].pbSplitTime).toBe('00:00:15');
+        tester.expect(splitTimerController.routeData.segments[0].pbSplitTime).toBe('00:00:05');
+        tester.expect(splitTimerController.routeData.segments[1].pbSplitTime).toBe('00:00:10');
+        tester.expect(splitTimerController.routeData.segments[2].pbSplitTime).toBe('00:00:15');
 
-        tester.expect(routeLoader.routeData.segments[0].pbSegmentDuration).toBe('00:00:05');
-        tester.expect(routeLoader.routeData.segments[1].pbSegmentDuration).toBe('00:00:05');
-        tester.expect(routeLoader.routeData.segments[2].pbSegmentDuration).toBe('00:00:05');
+        tester.expect(splitTimerController.routeData.segments[0].pbSegmentDuration).toBe('00:00:05');
+        tester.expect(splitTimerController.routeData.segments[1].pbSegmentDuration).toBe('00:00:05');
+        tester.expect(splitTimerController.routeData.segments[2].pbSegmentDuration).toBe('00:00:05');
 
         // Only Segment 2 should gold:
         // Segment 1 active duration: 00:00:06, old gold 00:00:05 -> unchanged
         // Segment 2 active duration: 00:00:04, old gold 00:00:05 -> updated
         // Segment 3 active duration: 00:00:08, old gold 00:00:05 -> unchanged
-        tester.expect(routeLoader.routeData.segments[0].goldSplit).toBe('00:00:05');
-        tester.expect(routeLoader.routeData.segments[1].goldSplit).toBe('00:00:04');
-        tester.expect(routeLoader.routeData.segments[2].goldSplit).toBe('00:00:05');
+        tester.expect(splitTimerController.routeData.segments[0].goldSplit).toBe('00:00:05');
+        tester.expect(splitTimerController.routeData.segments[1].goldSplit).toBe('00:00:04');
+        tester.expect(splitTimerController.routeData.segments[2].goldSplit).toBe('00:00:05');
 
-        tester.expect(routeLoader.routeData.segments[0].bestTime).toBe('00:00:05');
-        tester.expect(routeLoader.routeData.segments[1].bestTime).toBe('00:00:04');
-        tester.expect(routeLoader.routeData.segments[2].bestTime).toBe('00:00:05');
+        tester.expect(splitTimerController.routeData.segments[0].bestTime).toBe('00:00:05');
+        tester.expect(splitTimerController.routeData.segments[1].bestTime).toBe('00:00:04');
+        tester.expect(splitTimerController.routeData.segments[2].bestTime).toBe('00:00:05');
 
-        tester.expect(routeLoader.routeData.sumOfBest).toBe('00:00:14');
+        tester.expect(splitTimerController.routeData.sumOfBest).toBe('00:00:14');
     });
 
     tester.it('saveRunCompleteGold clears session state after saving non-PB gold splits', async () => {
         const baselineRoute = cloneFixture(createTimerColorPaceRoute());
         const completedNonPbRoute = cloneFixture(createCompletedNonPbRunWithGoldRoute());
 
-        routeLoader.routeData = completedNonPbRoute;
-        routeLoader.runDataSnapshot = baselineRoute;
-        routeLoader.runComplete = {
+        splitTimerController.routeData = completedNonPbRoute;
+        splitTimerController.runDataSnapshot = baselineRoute;
+        splitTimerController.runComplete = {
             finalTime: '00:00:18',
             isNewPB: false,
             previousPB: '00:00:15'
         };
-        routeLoader.hasRunStarted = true;
-        routeLoader.sessionGoldSplits.add(2);
-        routeLoader.sessionSetSegments.add(1);
-        routeLoader.sessionSetSegments.add(2);
-        routeLoader.sessionSetSegments.add(3);
-        routeLoader.sessionBestBySegment.set(2, '00:00:04');
-        routeLoader.runPaceState = 'behind';
-        routeLoader.lastCompletedSegmentId = 3;
+        splitTimerController.hasRunStarted = true;
+        splitTimerController.sessionGoldSplits.add(2);
+        splitTimerController.sessionSetSegments.add(1);
+        splitTimerController.sessionSetSegments.add(2);
+        splitTimerController.sessionSetSegments.add(3);
+        splitTimerController.sessionBestBySegment.set(2, '00:00:04');
+        splitTimerController.runPaceState = 'behind';
+        splitTimerController.lastCompletedSegmentId = 3;
 
-        routeLoader.populateRoute = tester.fn();
-        routeLoader.populateSidebar = tester.fn();
-        routeLoader.renderComparisonsPanel = tester.fn();
-        routeLoader.resetRouteProgressToFirstSegmentAndRender = tester.fn(async () => {
-            routeLoader.routeData.currentSegmentId = 1;
-            routeLoader.routeData.currentSegmentName = 'Segment 1';
+        splitTimerController.populateRoute = tester.fn();
+        splitTimerController.populateSidebar = tester.fn();
+        splitTimerController.renderComparisonsPanel = tester.fn();
+        splitTimerController.resetRouteProgressToFirstSegmentAndRender = tester.fn(async () => {
+            splitTimerController.routeData.currentSegmentId = 1;
+            splitTimerController.routeData.currentSegmentName = 'Segment 1';
         });
 
-        await routeLoader.saveRunCompleteGold();
+        await splitTimerController.saveRunCompleteGold();
 
-        tester.expect(routeLoader.runComplete).toBe(null);
-        tester.expect(routeLoader.hasRunStarted).toBe(false);
-        tester.expect(routeLoader.sessionGoldSplits.size).toBe(0);
-        tester.expect(routeLoader.sessionSetSegments.size).toBe(0);
-        tester.expect(routeLoader.sessionBestBySegment.size).toBe(0);
-        tester.expect(routeLoader.runPaceState).toBe('neutral');
-        tester.expect(routeLoader.lastCompletedSegmentId).toBe(null);
+        tester.expect(splitTimerController.runComplete).toBe(null);
+        tester.expect(splitTimerController.hasRunStarted).toBe(false);
+        tester.expect(splitTimerController.sessionGoldSplits.size).toBe(0);
+        tester.expect(splitTimerController.sessionSetSegments.size).toBe(0);
+        tester.expect(splitTimerController.sessionBestBySegment.size).toBe(0);
+        tester.expect(splitTimerController.runPaceState).toBe('neutral');
+        tester.expect(splitTimerController.lastCompletedSegmentId).toBe(null);
 
         tester.expect(saveRouteDataMock).toHaveBeenCalledTimes(1);
     });
@@ -455,14 +455,14 @@ tester.describe('RouteLoader route file write behavior', () => {
             saveRouteData: fallbackSaveRouteDataMock
         };
 
-        const fallbackRouteLoader = new RouteLoader({
+        const fallbackSplitTimerController = new SplitTimerController({
             storageProvider: createMemoryStorage()
         });
 
-        fallbackRouteLoader.routeData = routeData;
-        fallbackRouteLoader.currentRouteFilename = 'test-timer-color-pace.json';
+        fallbackSplitTimerController.routeData = routeData;
+        fallbackSplitTimerController.currentRouteFilename = 'test-timer-color-pace.json';
 
-        await fallbackRouteLoader.saveRouteDataToFile({ force: true });
+        await fallbackSplitTimerController.saveRouteDataToFile({ force: true });
 
         tester.expect(fallbackSaveRouteDataMock).toHaveBeenCalledTimes(1);
         tester.expect(fallbackSaveRouteDataMock).toHaveBeenCalledWith(

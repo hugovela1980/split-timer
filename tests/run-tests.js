@@ -5,8 +5,8 @@ import './route-selector-service.test.js';
 import './route-storage-service.test.js';
 import './run-save-service.test.js';
 import './start-screen-controller.test.js';
-import './route-loader-timing.test.js';
-import './route-loader-schema-normalization.test.js';
+import './split-timer-controller-timing.test.js';
+import './split-timer-controller-schema-normalization.test.js';
 import './run-save-behavior.test.js';
 import './route-file-write-behavior.test.js';
 

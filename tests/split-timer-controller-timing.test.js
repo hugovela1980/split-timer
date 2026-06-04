@@ -1,5 +1,5 @@
 import { tester } from './test-runner/tester.js';
-import { RouteLoader } from '../public/js/app/route-loader.js';
+import { SplitTimerController } from '../public/js/app/split-timer-controller.js';
 import { createTimerColorPaceRoute, cloneFixture } from './fixtures/routes.js';
 import {
   getSegmentPbSegmentDuration,
@@ -7,17 +7,17 @@ import {
   setSegmentPbSplitTime
 } from '../public/js/utils/utils.js';
 
-tester.describe('RouteLoader timing recalculation', () => {
-  let routeLoader;
+tester.describe('SplitTimerController timing recalculation', () => {
+  let splitTimerController;
   let routeData;
 
   tester.beforeEach(() => {
-    routeLoader = new RouteLoader({
+    splitTimerController = new SplitTimerController({
       storageProvider: null
     });
 
     routeData = cloneFixture(createTimerColorPaceRoute());
-    routeLoader.routeData = routeData;
+    splitTimerController.routeData = routeData;
   });
 
   tester.it('updates segment durations without mutating gold splits', () => {
@@ -35,7 +35,7 @@ tester.describe('RouteLoader timing recalculation', () => {
     // Gold splits should only update during confirmed save actions.
     setSegmentPbSplitTime(segment2, '00:00:09');
 
-    routeLoader.updateSegmentDurations();
+    splitTimerController.updateSegmentDurations();
 
     tester.expect(getSegmentPbSegmentDuration(segment2)).toBe('00:00:04');
     tester.expect(getSegmentGoldSplit(segment2)).toBe('00:00:05');
@@ -47,7 +47,7 @@ tester.describe('RouteLoader timing recalculation', () => {
 
     setSegmentPbSplitTime(segment2, '00:00:09');
 
-    routeLoader.updateSegmentDurations();
+    splitTimerController.updateSegmentDurations();
 
     tester.expect(segment2.pbSegmentDuration).toBe('00:00:04');
     tester.expect(segment2.duration).toBe('00:00:04');

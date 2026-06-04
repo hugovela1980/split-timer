@@ -25,7 +25,7 @@ import {
   createRouteSubSegmentElement,
 } from '../ui/ui.js';
 
-class RouteLoader {
+class SplitTimerController {
   constructor(options = {}) {
     this.routeData = null;
     this.currentRouteFilename = 'act-1-100-percent.json';
@@ -1778,9 +1778,9 @@ class RouteLoader {
 // Initialize route loader when DOM is ready
 if (typeof document !== 'undefined' && document.addEventListener) {
   document.addEventListener('DOMContentLoaded', () => {
-    const routeLoader = new RouteLoader();
-    routeLoader.init();
+    const splitTimerController = new SplitTimerController();
+    splitTimerController.init();
   });
 }
 
-export { RouteLoader };
+export { SplitTimerController };

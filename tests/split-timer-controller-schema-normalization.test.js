@@ -1,5 +1,5 @@
 import { tester } from './test-runner/tester.js';
-import { RouteLoader } from '../public/js/app/route-loader.js';
+import { SplitTimerController } from '../public/js/app/split-timer-controller.js';
 import { RouteDataService } from '../public/js/services/route-data-service.js';
 
 function createLegacyRouteData() {
@@ -29,8 +29,8 @@ function createLegacyRouteData() {
   };
 }
 
-tester.describe('RouteLoader schema normalization', () => {
-  let routeLoader;
+tester.describe('SplitTimerController schema normalization', () => {
+  let splitTimerController;
 
   tester.beforeEach(() => {
     const fetchMock = tester.fn(async () => ({
@@ -42,23 +42,23 @@ tester.describe('RouteLoader schema normalization', () => {
       fetchProvider: fetchMock
     });
 
-    routeLoader = new RouteLoader({
+    splitTimerController = new SplitTimerController({
       storageProvider: null,
       routeDataService
     });
   });
 
   tester.it('normalizes route data when loading a route', async () => {
-    await routeLoader.loadRouteData('legacy-route.json');
+    await splitTimerController.loadRouteData('legacy-route.json');
 
-    tester.expect(routeLoader.currentRouteFilename).toBe('legacy-route.json');
+    tester.expect(splitTimerController.currentRouteFilename).toBe('legacy-route.json');
 
-    tester.expect(routeLoader.routeData.schemaVersion).toBe(2);
-    tester.expect(routeLoader.routeData.routeId).toBe('act-1-100');
-    tester.expect(routeLoader.routeData.personalBestMs).toBe(600000);
-    tester.expect(routeLoader.routeData.sumOfBestMs).toBe(570000);
+    tester.expect(splitTimerController.routeData.schemaVersion).toBe(2);
+    tester.expect(splitTimerController.routeData.routeId).toBe('act-1-100');
+    tester.expect(splitTimerController.routeData.personalBestMs).toBe(600000);
+    tester.expect(splitTimerController.routeData.sumOfBestMs).toBe(570000);
 
-    const segment = routeLoader.routeData.segments[0];
+    const segment = splitTimerController.routeData.segments[0];
 
     tester.expect(segment.id).toBe('segment-get-silk-spear');
     tester.expect(segment.order).toBe(1);
@@ -112,18 +112,18 @@ tester.describe('RouteLoader schema normalization', () => {
       })
     }));
 
-    routeLoader.routeDataService = new RouteDataService({
+    splitTimerController.routeDataService = new RouteDataService({
       fetchProvider: fetchMock
     });
 
-    await routeLoader.loadRouteData('canonical-route.json');
+    await splitTimerController.loadRouteData('canonical-route.json');
 
-    tester.expect(routeLoader.routeData.schemaVersion).toBe(3);
-    tester.expect(routeLoader.routeData.routeId).toBe('custom-route-id');
-    tester.expect(routeLoader.routeData.personalBestMs).toBe(123);
-    tester.expect(routeLoader.routeData.sumOfBestMs).toBe(456);
+    tester.expect(splitTimerController.routeData.schemaVersion).toBe(3);
+    tester.expect(splitTimerController.routeData.routeId).toBe('custom-route-id');
+    tester.expect(splitTimerController.routeData.personalBestMs).toBe(123);
+    tester.expect(splitTimerController.routeData.sumOfBestMs).toBe(456);
 
-    const segment = routeLoader.routeData.segments[0];
+    const segment = splitTimerController.routeData.segments[0];
 
     tester.expect(segment.id).toBe('custom-segment-id');
     tester.expect(segment.order).toBe(10);

@@ -23,7 +23,7 @@ const safeJsonParse = (rawValue, fallback = null) => {
 
 /**
  * Generic route-data storage.
- * This keeps your old helper working for route-loader.js.
+ * This keeps your old helper working for split-timer-controller.js.
  */
 export function persistRouteDataToStorage(routeData, routeStorageKey, storage) {
   if (!routeData) return;
