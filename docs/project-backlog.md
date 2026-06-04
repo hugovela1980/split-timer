@@ -6,7 +6,14 @@
 - Stable branch: `main`
 - Development branch: `develop`
 
+## Current Focus
 
+- [ ] Consolidate controller/service architecture
+  - [ ] Update architecture notes with current controller/service layout
+  - [ ] Review remaining `RouteLoader` responsibilities
+  - [ ] Document why `RouteLoader` is now acting as the central app coordinator
+  - [ ] Decide whether to rename `RouteLoader` to `SplitTimerController`
+  - [ ] Identify future extraction candidates without starting them yet
 
 ## Next Up
 
@@ -140,53 +147,3 @@
   Moved normal comparison panel rendering and Run Complete panel rendering into `ComparisonPanelController`. `RouteLoader` now delegates comparison UI generation while preserving LIVE / PAUSED / SAVED / IDLE status behavior, current split comparison display, run comparison display, Run Complete save/delete controls, and reset-run behavior.
 - [x] Clean up route file saving service integration  
   Added an injectable `routeFileSaver` dependency to `RouteLoader` and removed direct file-saving logic from the save method. `RouteLoader` now prefers the injected file saver while preserving the existing `window.fileSaver` fallback for browser integration. Route file write behavior remains covered by tests.
-
-## Current RouteLoader Responsibilities After Refactor
-
-`RouteLoader` is no longer only responsible for loading route data. It now acts more like the central app coordinator for the Split Timer UI.
-
-Responsibilities already extracted:
-
-- `RouteDataService`
-  - Fetches route JSON
-  - Supports wrapped route responses
-  - Validates loaded route data
-  - Applies route schema normalization
-
-- `RouteSelectorService`
-  - Fetches route list from `/api/list-routes`
-  - Populates the main route selector
-  - Syncs the start screen route selector
-
-- `RouteStorageService`
-  - Persists route data to localStorage
-  - Restores baseline route data
-  - Restores active-run route data
-  - Saves/restores run session state
-  - Clears run-related storage
-
-- `StartScreenController`
-  - Handles start screen route selection
-  - Handles Enter key route opening
-  - Handles start-screen create-route flow
-  - Shows the main app shell from the start screen
-
-- `RunSaveService`
-  - Updates gold splits from completed runs
-  - Recalculates sum of best
-  - Updates personal best from final segment
-  - Creates completed-run state
-  - Creates gold split save route data
-  - Syncs canonical millisecond timing fields during run-save workflows
-
-Responsibilities still remaining in `RouteLoader`:
-
-- Coordinates app initialization
-- Coordinates route switching and route switch confirmation
-- Coordinates route rendering and sidebar rendering
-- Handles scroll observer / active segment behavior
-- Coordinates comparison panel rendering
-- Coordinates completed-run UI flow
-- Coordinates create/edit route modal behavior
-- Coordinates stopwatch events
-- Coordinates route file saving through the current file-saving integration
