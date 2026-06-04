@@ -7,13 +7,7 @@
 - Development branch: `develop`
 
 ## Current Focus
-
-- [ ] Consolidate controller/service architecture
-  - [ ] Update architecture notes with current controller/service layout
-  - [ ] Review remaining `RouteLoader` responsibilities
-  - [ ] Document why `RouteLoader` is now acting as the central app coordinator
-  - [ ] Decide whether to rename `RouteLoader` to `SplitTimerController`
-  - [ ] Identify future extraction candidates without starting them yet
+- [ ] Route switching controller extraction from SplitTimerController
 
 ## Next Up
 
@@ -147,3 +141,5 @@
   Moved normal comparison panel rendering and Run Complete panel rendering into `ComparisonPanelController`. `RouteLoader` now delegates comparison UI generation while preserving LIVE / PAUSED / SAVED / IDLE status behavior, current split comparison display, run comparison display, Run Complete save/delete controls, and reset-run behavior.
 - [x] Clean up route file saving service integration  
   Added an injectable `routeFileSaver` dependency to `RouteLoader` and removed direct file-saving logic from the save method. `RouteLoader` now prefers the injected file saver while preserving the existing `window.fileSaver` fallback for browser integration. Route file write behavior remains covered by tests.
+- [x] Rename `RouteLoader` to `SplitTimerController`  
+  Renamed the main app coordinator from `RouteLoader` to `SplitTimerController` and renamed `route-loader.js` to `split-timer-controller.js`. Updated app/test imports and constructor usage while preserving existing behavior.

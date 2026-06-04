@@ -2,23 +2,26 @@
 
 ## Current Architecture Summary
 
-`RouteLoader` currently acts as the central app coordinator. It initializes services and controllers, coordinates route loading, route switching, run lifecycle events, stopwatch events, and high-level UI updates.
+`SplitTimerController` currently acts as the central app coordinator. It initializes services and controllers, coordinates route loading, route switching, run lifecycle events, stopwatch events, and high-level UI updates.
 
 ## Controllers
 
 ### StartScreenController
+
 - Handles start screen route selection
 - Handles Enter key route opening
 - Handles start-screen create-route flow
 - Shows the main app shell
 
 ### RunSidebarController
+
 - Renders Current Run and Last Run sidebar tabs
 - Renders current-run sidebar rows
 - Renders last-run review rows and summary
 - Preserves sidebar delta colors and tab behavior
 
 ### ComparisonPanelController
+
 - Renders normal comparison cards
 - Renders Run Complete panel
 - Preserves IDLE / LIVE / PAUSED / SAVED status behavior
@@ -26,23 +29,27 @@
 ## Services
 
 ### RouteDataService
+
 - Loads route JSON
 - Unwraps route response data
 - Validates route data
 - Applies schema normalization
 
 ### RouteSelectorService
+
 - Fetches route list
 - Populates route selector
 - Syncs start screen selector
 
 ### RouteStorageService
+
 - Handles localStorage/session persistence
 - Saves/restores baseline route data
 - Saves/restores active-run data
 - Saves/restores run session metadata
 
 ### RunSaveService
+
 - Updates gold splits
 - Recalculates sum of best
 - Updates personal best
@@ -50,12 +57,15 @@
 - Syncs canonical timing fields during run-save workflows
 
 ### routeFileSaver / FileSaver
+
 - Saves route JSON through the local server
 - Uses `/api/health` and `/api/save-route`
 - Can be injected into the app coordinator
 - Still supports `window.fileSaver` as a browser fallback
 
-## Remaining RouteLoader Responsibilities
+## Remaining SplitTimerController Responsibilities
+
+`SplitTimerController` still owns:
 
 - App initialization and controller/service wiring
 - Route switching workflow
@@ -68,11 +78,13 @@
 
 ## Naming Decision
 
-`RouteLoader` is now too narrow of a name. The class no longer only loads routes; it coordinates the Split Timer app.
+The main app coordinator was previously named `RouteLoader`, but that name became too narrow as the class evolved. It no longer only loads routes; it coordinates the Split Timer app.
 
-Recommended rename:
+The class has been renamed:
 
 `RouteLoader` → `SplitTimerController`
+
+This better reflects its current responsibility as the central coordinator for route loading, run state, UI controllers, persistence services, and high-level app workflows.
 
 ## Future Extraction Candidates
 
