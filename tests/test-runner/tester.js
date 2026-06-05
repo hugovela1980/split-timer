@@ -146,6 +146,7 @@ async function run() {
     let total = 0;
     let passed = 0;
     let failed = 0;
+    const failures = [];
 
     console.log('\nRunning tests...\n');
 
@@ -165,6 +166,13 @@ async function run() {
                 console.log(`  ✓ ${testCase.name}`);
             } catch (error) {
                 failed += 1;
+
+                failures.push({
+                    suite: suite.name,
+                    test: testCase.name,
+                    error: error.message
+                });
+                
                 console.log(`  ✗ ${testCase.name}`);
                 console.log(`    ${error.message}`);
             }
@@ -175,6 +183,16 @@ async function run() {
     console.log(`  Total:  ${total}`);
     console.log(`  Passed: ${passed}`);
     console.log(`  Failed: ${failed}`);
+    
+    if (failures.length > 0) {
+        console.log('\nFailed Test Details');
+
+        failures.forEach((failure, index) => {
+            console.log(`\n${index + 1}. ${failure.suite}`);
+            console.log(`   it: ${failure.test}`);
+            console.log(`   error: ${failure.error}`);
+  });
+}
 
     if (failed > 0) {
         process.exitCode = 1;

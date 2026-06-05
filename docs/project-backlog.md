@@ -8,15 +8,30 @@
 
 ## Current Focus
 
-- [ ] Prevent Delete Run Data from writing route files
-  - [ ] Restore baseline route state in memory only
-  - [ ] Clear active/completed run state and localStorage session data
-  - [ ] Preserve Last Run review
-  - [ ] Ensure Delete Run Data does not call the route file saver
-  - [ ] Keep confirmed save actions writing normally
-  - [ ] Update tests and smoke test completed-run workflows
+- [ ] Improve failed test summary output
+  - [ ] Update the custom tester so failed test details are collected during the run
+  - [ ] After the `Test Summary`, display each failed test with its `describe` block, `it` statement, and error message
+  - [ ] Prefer a readable three-column output: `Describe | Test | Error`
+  - [ ] If table formatting is too cumbersome, print failed tests as stacked blocks with indentation and blank lines between failures
+  - [ ] Preserve the existing passing/failing test output during the normal test run
+  - [ ] Confirm successful test runs still show the normal summary without extra failed-test details
+  - [ ] Create or temporarily force a failing test to verify the new failed-test summary format
 
 ## Next Up
+
+- [ ] Fix sidebar overflow with long split times
+  - [ ] Prevent sidebar table columns from exceeding the sidebar container width
+  - [ ] Preserve readable `Segment | Split | Vs Best` layout for routes longer than one hour
+  - [ ] Review spacing/font sizing for `HH:MM:SS` times and large positive/negative deltas
+  - [ ] Avoid horizontal page overflow when sidebar content is wide
+  - [ ] Smoke test with Act 1 / Act 2 routes and one-hour-plus split times
+
+- [ ] Fix Last Run tab showing route baseline data after deleting an unset run
+  - [ ] Reproduce: start/end a run without pressing Set Time on any segment, then click Delete Run Data
+  - [ ] Confirm Last Run tab should not show baseline route PB split data as if it were the completed run
+  - [ ] Capture only actual completed/set run segments in Last Run review
+  - [ ] Show an empty or explanatory Last Run state when no run split data was recorded
+  - [ ] Preserve correct Last Run behavior for completed runs with saved/set segment data
 
 - [ ] Clean up route file saving service integration
   - [ ] Review current `file-saver.js` / `window.fileSaver` usage
@@ -161,3 +176,5 @@
   Renamed the main app coordinator from `RouteLoader` to `SplitTimerController` and renamed `route-loader.js` to `split-timer-controller.js`. Updated app/test imports and constructor usage while preserving existing behavior.
 - [x] Route switching controller extraction from `SplitTimerController`  
   Moved route-switching workflow responsibilities out of `SplitTimerController` into a dedicated controller/service layer while preserving route loading, route-switch confirmation, cancellation, and active-run safety behavior.
+- [x] Prevent Delete Run Data from writing route files  
+  Updated Delete Run Data so it behaves as a discard/reset action instead of a saved route-data change. The app now restores baseline route state in memory, clears active/completed run session state, preserves Last Run review behavior, and avoids calling the route file saver. Save New PB and Save Gold Splits continue to write route files normally, and route file write behavior tests were updated to protect the new behavior.
