@@ -1,5 +1,6 @@
 // Route Loader - Dynamically loads and populates route data from JSON
 import { StartScreenController } from '../controllers/start-screen-controller.js';
+import { ScrollNavigationController } from '../controllers/scroll-navigation-controller.js';
 import { RunSidebarController } from '../controllers/run-sidebar-controller.js';
 import { ComparisonPanelController } from '../controllers/comparison-panel-controller.js';
 import { RouteSelectorService } from '../services/route-selector-service.js';
@@ -50,7 +51,6 @@ class SplitTimerController {
     this.sessionBestBySegment = new Map();
     this.runDataSnapshot = null;
     this.personalBestAtRunStart = '';
-    this.observer = null;
     this.suppressObserverUntil = 0;
     this.sidebarContextMenu = null;
     this.sidebarContextTarget = null;
@@ -62,6 +62,7 @@ class SplitTimerController {
     this.activeRunRouteStorageKey = 'stopwatch:activeRunRouteData';
     this.runSessionStorageKey = 'stopwatch:runSession';
     this.startScreenController = options.startScreenController || null;
+    this.scrollNavigationController = options.scrollNavigationController || null;
     this.runSidebarController = options.runSidebarController || null;
     this.comparisonPanelController = options.comparisonPanelController || null;
     this.storageProvider = options.storageProvider || (typeof globalThis !== 'undefined' && globalThis.localStorage ? globalThis.localStorage : null);
@@ -114,6 +115,7 @@ class SplitTimerController {
       this.populateSidebar();
       this.renderComparisonsPanel();
       this.refreshEditorSegmentOptions();
+      this.initScrollNavigationController();
       this.initScrollObserver();
 
       await this.resetRouteProgressToFirstSegmentAndRender({
@@ -154,6 +156,19 @@ class SplitTimerController {
     });
 
     this.startScreenController.init();
+  }
+
+  initScrollNavigationController() {
+    this.scrollNavigationController = this.scrollNavigationController || new ScrollNavigationController({
+      routeContainer: this.routeContainer,
+      getSuppressObserverUntil: () => this.suppressObserverUntil,
+      onVisibleSegmentChange: (segmentId) => this.setActiveSidebarButton(segmentId, false),
+      onError: (error) => {
+        console.error('Failed to persist current segment from observer:', error);
+      }
+    });
+
+    this.scrollNavigationController.setRouteContainer(this.routeContainer);
   }
 
   initRunSidebarController() {
@@ -306,6 +321,19 @@ class SplitTimerController {
     this.routeData.currentSegmentName = firstSegment.name;
   }
 
+  scrollRouteToSegment(segmentId, options = {}) {
+    const target = document.getElementById(`segment-${segmentId}`);
+
+    if (!target) return;
+
+    this.suppressObserverUntil = Date.now() + 1500;
+
+    target.scrollIntoView({
+      behavior: options.behavior || 'smooth',
+      block: options.block || 'start'
+    });
+  }
+  
   async syncUiToCurrentSegment({ scroll = true } = {}) {
     const currentSegmentId = Number(this.routeData?.currentSegmentId);
 
@@ -1332,8 +1360,9 @@ class SplitTimerController {
 
       onSegmentClick: async (segment) => {
         this.suppressObserverUntil = Date.now() + 1500;
-        await this.setActiveSidebarButton(`segment-${segment.id}`);
+        await this.setActiveSidebarButton(`segment-${segment.id}`, false);
 
+        // this.scrollRouteToSegment(segment.id);
         const target = document.getElementById(`segment-${segment.id}`);
         if (target) {
           target.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1353,7 +1382,7 @@ class SplitTimerController {
 
       onSubsegmentClick: async (segment, subSegmentIndex) => {
         this.suppressObserverUntil = Date.now() + 1500;
-        await this.setActiveSidebarButton(`segment-${segment.id}`);
+        await this.setActiveSidebarButton(`segment-${segment.id}`, false);
 
         const target = document.getElementById(`segment-${segment.id}-subsegment-${subSegmentIndex}`);
         if (target) {
@@ -1413,26 +1442,7 @@ class SplitTimerController {
   }
 
   initScrollObserver() {
-    if (this.observer) this.observer.disconnect();
-
-    const options = {
-      root: this.routeContainer,
-      rootMargin: '0px 0px -80% 0px',
-      threshold: 0
-    };
-
-    this.observer = new IntersectionObserver((entries) => {
-      if (Date.now() < this.suppressObserverUntil) return;
-
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-        this.setActiveSidebarButton(entry.target.id).catch((error) => {
-          console.error('Failed to persist current segment from observer:', error);
-        });
-      });
-    }, options);
-
-    document.querySelectorAll('.segment').forEach(el => this.observer.observe(el));
+    this.scrollNavigationController.observeSegments();
   }
 
   createSegment(segmentData) {
@@ -1557,6 +1567,7 @@ class SplitTimerController {
 
         this.resetRouteProgressToFirstSegment();
         this.populateSidebar();
+        this.scrollRouteToSegment(this.routeData.currentSegmentId || 1);
         this.renderComparisonsPanel();
         this.captureSessionBestSnapshot();
         this.ensureRunSnapshotCaptured();
