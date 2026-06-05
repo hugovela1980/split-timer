@@ -7,7 +7,14 @@
 - Development branch: `develop`
 
 ## Current Focus
-- [ ] Route switching controller extraction from SplitTimerController
+
+- [ ] Prevent Delete Run Data from writing route files
+  - [ ] Restore baseline route state in memory only
+  - [ ] Clear active/completed run state and localStorage session data
+  - [ ] Preserve Last Run review
+  - [ ] Ensure Delete Run Data does not call the route file saver
+  - [ ] Keep confirmed save actions writing normally
+  - [ ] Update tests and smoke test completed-run workflows
 
 ## Next Up
 
@@ -44,6 +51,15 @@
 - [ ] Improve slug generation for percent symbols in route names
 
 ## Backlog
+- [ ] Prevent Delete Run Data from writing route files
+  - [ ] Treat Delete Run Data as a discard/reset action, not a saved route-data change
+  - [ ] Restore the baseline route in memory
+  - [ ] Clear active-run localStorage/session state
+  - [ ] Clear completed-run state and rerender the route/sidebar/comparison UI
+  - [ ] Preserve Last Run review behavior if appropriate
+  - [ ] Do not call `saveRouteDataToFile` or `routeFileSaver.saveRouteData`
+  - [ ] Keep Save New PB and Save Gold Splits file-writing behavior unchanged
+  - [ ] Add/update regression tests so Delete Run Data does not write route files
 - [ ] Add force reload route-from-file behavior  
   During development/testing, manually restoring a route JSON file does not update the already-loaded in-memory route data. Add a way to force reload the current route from disk and clear active-run/session state so smoke tests can start from the actual saved file.
 - [ ] Rename `RouteLoader` to `SplitTimerController`
@@ -143,3 +159,5 @@
   Added an injectable `routeFileSaver` dependency to `RouteLoader` and removed direct file-saving logic from the save method. `RouteLoader` now prefers the injected file saver while preserving the existing `window.fileSaver` fallback for browser integration. Route file write behavior remains covered by tests.
 - [x] Rename `RouteLoader` to `SplitTimerController`  
   Renamed the main app coordinator from `RouteLoader` to `SplitTimerController` and renamed `route-loader.js` to `split-timer-controller.js`. Updated app/test imports and constructor usage while preserving existing behavior.
+- [x] Route switching controller extraction from `SplitTimerController`  
+  Moved route-switching workflow responsibilities out of `SplitTimerController` into a dedicated controller/service layer while preserving route loading, route-switch confirmation, cancellation, and active-run safety behavior.

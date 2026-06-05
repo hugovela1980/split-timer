@@ -101,7 +101,7 @@ tester.describe('SplitTimerController route file write behavior', () => {
         );
     });
 
-    tester.it('deleteCompletedRunData restores baseline route data and writes once', async () => {
+    tester.it('deleteCompletedRunData restores baseline route data without writing file', async () => {
         const baselineRoute = cloneFixture(createTimerColorPaceRoute());
 
         const modifiedRoute = cloneFixture(createTimerColorPaceRoute());
@@ -132,12 +132,7 @@ tester.describe('SplitTimerController route file write behavior', () => {
         tester.expect(splitTimerController.routeData.segments[0].pbSplitTime).toBe('00:00:05');
         tester.expect(splitTimerController.routeData.segments[0].pbSegmentDuration).toBe('00:00:05');
 
-        tester.expect(saveRouteDataMock).toHaveBeenCalledTimes(1);
-        tester.expect(saveRouteDataMock).toHaveBeenCalledWith(
-            splitTimerController.routeData,
-            'test-timer-color-pace.json',
-            { force: true }
-        );
+        tester.expect(saveRouteDataMock).toHaveBeenCalledTimes(0);
     });
 
     tester.it('deleteCompletedRunData clears active run session state', async () => {
@@ -176,7 +171,7 @@ tester.describe('SplitTimerController route file write behavior', () => {
         tester.expect(splitTimerController.runPaceState).toBe('neutral');
         tester.expect(splitTimerController.lastCompletedSegmentId).toBe(null);
 
-        tester.expect(saveRouteDataMock).toHaveBeenCalledTimes(1);
+        tester.expect(saveRouteDataMock).toHaveBeenCalledTimes(0);
     });
 
     tester.it('restartRun restores baseline route data without writing route file', async () => {

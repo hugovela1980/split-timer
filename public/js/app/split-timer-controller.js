@@ -426,8 +426,6 @@ class SplitTimerController {
     await this.resetRouteProgressToFirstSegmentAndRender({ scroll: true, save: false });
 
     window.dispatchEvent(new CustomEvent('stopwatch:clear'));
-
-    await this.saveCleanRouteState({ force: true });
   }
 
   async restartRun() {
