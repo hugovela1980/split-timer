@@ -6,16 +6,15 @@
 - Stable branch: `main`
 - Development branch: `develop`
 
+
 ## Current Focus
 
-- [ ] Improve failed test summary output
-  - [ ] Update the custom tester so failed test details are collected during the run
-  - [ ] After the `Test Summary`, display each failed test with its `describe` block, `it` statement, and error message
-  - [ ] Prefer a readable three-column output: `Describe | Test | Error`
-  - [ ] If table formatting is too cumbersome, print failed tests as stacked blocks with indentation and blank lines between failures
-  - [ ] Preserve the existing passing/failing test output during the normal test run
-  - [ ] Confirm successful test runs still show the normal summary without extra failed-test details
-  - [ ] Create or temporarily force a failing test to verify the new failed-test summary format
+- [ ] Fix Last Run tab showing route baseline data after deleting an unset run
+  - [ ] Reproduce: start/end a run without pressing Set Time on any segment, then click Delete Run Data
+  - [ ] Confirm Last Run tab should not show baseline route PB split data as if it were the completed run
+  - [ ] Capture only actual completed/set run segments in Last Run review
+  - [ ] Show an empty or explanatory Last Run state when no run split data was recorded
+  - [ ] Preserve correct Last Run behavior for completed runs with saved/set segment data
 
 ## Next Up
 
@@ -25,13 +24,6 @@
   - [ ] Review spacing/font sizing for `HH:MM:SS` times and large positive/negative deltas
   - [ ] Avoid horizontal page overflow when sidebar content is wide
   - [ ] Smoke test with Act 1 / Act 2 routes and one-hour-plus split times
-
-- [ ] Fix Last Run tab showing route baseline data after deleting an unset run
-  - [ ] Reproduce: start/end a run without pressing Set Time on any segment, then click Delete Run Data
-  - [ ] Confirm Last Run tab should not show baseline route PB split data as if it were the completed run
-  - [ ] Capture only actual completed/set run segments in Last Run review
-  - [ ] Show an empty or explanatory Last Run state when no run split data was recorded
-  - [ ] Preserve correct Last Run behavior for completed runs with saved/set segment data
 
 - [ ] Clean up route file saving service integration
   - [ ] Review current `file-saver.js` / `window.fileSaver` usage
@@ -178,3 +170,5 @@
   Moved route-switching workflow responsibilities out of `SplitTimerController` into a dedicated controller/service layer while preserving route loading, route-switch confirmation, cancellation, and active-run safety behavior.
 - [x] Prevent Delete Run Data from writing route files  
   Updated Delete Run Data so it behaves as a discard/reset action instead of a saved route-data change. The app now restores baseline route state in memory, clears active/completed run session state, preserves Last Run review behavior, and avoids calling the route file saver. Save New PB and Save Gold Splits continue to write route files normally, and route file write behavior tests were updated to protect the new behavior.
+- [x] Improve failed test summary output
+  Updated the custom test runner so failed tests are collected during the run and summarized after the main `Test Summary`. Failed test details now include the parent `describe` block, the `it` statement, and the error message in a readable stacked format, while passing test runs keep the normal summary output.

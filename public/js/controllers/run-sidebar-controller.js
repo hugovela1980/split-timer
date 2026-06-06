@@ -135,7 +135,7 @@ export class RunSidebarController {
         ) {
             const emptyItem = this.documentProvider.createElement('li');
             emptyItem.className = 'sidebar__item sidebar__item--empty';
-            emptyItem.textContent = 'No completed run to review yet.';
+            emptyItem.textContent = 'No recorded split data for the last run.';
             this.sidebarList.appendChild(emptyItem);
             return;
         }

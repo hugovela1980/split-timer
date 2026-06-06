@@ -167,12 +167,78 @@ tester.describe('SplitTimerController confirmed run save behavior', () => {
       splitTimerController.populateRoute = tester.fn();
       splitTimerController.resetRouteProgressToFirstSegmentAndRender = tester.fn(async () => { });
 
+      splitTimerController.sessionSetSegments.add(1);
+      splitTimerController.sessionSetSegments.add(2);
+
       await splitTimerController.deleteCompletedRunData();
 
       tester.expect(splitTimerController.lastCompletedRunReview === null).toBe(false);
       tester.expect(splitTimerController.lastCompletedRunReview.action).toBe('deleted-run-data');
+      tester.expect(splitTimerController.lastCompletedRunReview.hasRecordedRunData).toBe(true);
       tester.expect(splitTimerController.lastCompletedRunReview.runComplete.finalTime).toBe('00:00:19');
-      tester.expect(splitTimerController.lastCompletedRunReview.routeData.segments.length).toBe(3);
+
+      tester.expect(splitTimerController.lastCompletedRunReview.routeData.segments.length).toBe(2);
+      tester.expect(splitTimerController.lastCompletedRunReview.routeData.segments[0].id).toBe(1);
+      tester.expect(splitTimerController.lastCompletedRunReview.routeData.segments[1].id).toBe(2);
+    } finally {
+      if (originalWindow === undefined) {
+        delete globalThis.window;
+      } else {
+        globalThis.window = originalWindow;
+      }
+
+      if (originalCustomEvent === undefined) {
+        delete globalThis.CustomEvent;
+      } else {
+        globalThis.CustomEvent = originalCustomEvent;
+      }
+    }
+  });
+
+  tester.it('does not show baseline route data in Last Run review when deleting an unset run', async () => {
+    const originalWindow = globalThis.window;
+    const originalCustomEvent = globalThis.CustomEvent;
+
+    globalThis.window = {
+      dispatchEvent: tester.fn()
+    };
+
+    globalThis.CustomEvent = class FakeCustomEvent {
+      constructor(type, options = {}) {
+        this.type = type;
+        this.detail = options.detail;
+      }
+    };
+
+    try {
+      splitTimerController.routeData = cloneFixture(createTimerColorPaceRoute());
+
+      splitTimerController.runComplete = {
+        finalTime: '00:00:04',
+        isNewPB: false,
+        previousPB: '00:00:15'
+      };
+
+      splitTimerController.restoreActiveRunRouteFromStorage = tester.fn(() => (
+        cloneFixture(createTimerColorPaceRoute())
+      ));
+
+      splitTimerController.restoreBaselineRouteFromStorage = tester.fn(() => (
+        cloneFixture(createTimerColorPaceRoute())
+      ));
+
+      splitTimerController.clearRunStorage = tester.fn();
+      splitTimerController.saveRunSessionToStorage = tester.fn();
+      splitTimerController.saveCleanRouteState = tester.fn(async () => { });
+      splitTimerController.populateRoute = tester.fn();
+      splitTimerController.resetRouteProgressToFirstSegmentAndRender = tester.fn(async () => { });
+
+      await splitTimerController.deleteCompletedRunData();
+
+      tester.expect(splitTimerController.lastCompletedRunReview === null).toBe(false);
+      tester.expect(splitTimerController.lastCompletedRunReview.action).toBe('deleted-run-data');
+      tester.expect(splitTimerController.lastCompletedRunReview.hasRecordedRunData).toBe(false);
+      tester.expect(splitTimerController.lastCompletedRunReview.routeData).toBe(null);
     } finally {
       if (originalWindow === undefined) {
         delete globalThis.window;

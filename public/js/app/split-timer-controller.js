@@ -310,6 +310,16 @@ class SplitTimerController {
     this.clearRunStorage();
   }
 
+  hasSetSegmentsInRouteData(routeData) {
+    if (!routeData || !Array.isArray(routeData.segments)) {
+      return false;
+    }
+
+    return routeData.segments.some((segment) => (
+      this.sessionSetSegments.has(Number(segment.id))
+    ));
+  }
+
   resetRouteProgressToFirstSegment() {
     const firstSegment = this.routeData && Array.isArray(this.routeData.segments)
       ? this.routeData.segments[0]
@@ -439,18 +449,34 @@ class SplitTimerController {
   }
 
   captureLastCompletedRunReview({ action = '' } = {}) {
-    const activeRunRouteData = this.restoreActiveRunRouteFromStorage() || this.routeData;
+    const activeRunRouteData = this.restoreActiveRunRouteFromStorage();
 
-    if (!activeRunRouteData || !Array.isArray(activeRunRouteData.segments)) {
-      return;
-    }
+    const setSegmentIds = new Set(
+      [...this.sessionSetSegments].map((segmentId) => Number(segmentId))
+    );
+
+    const recordedSegments = activeRunRouteData && Array.isArray(activeRunRouteData.segments)
+      ? activeRunRouteData.segments.filter((segment) => (
+        setSegmentIds.has(Number(segment.id))
+      ))
+      : [];
+
+    const hasRecordedRunData = recordedSegments.length > 0;
 
     this.lastCompletedRunReview = {
       action,
       runComplete: this.runComplete ? deepClone(this.runComplete) : null,
-      routeData: deepClone(activeRunRouteData),
+      routeData: hasRecordedRunData
+        ? {
+          ...deepClone(activeRunRouteData),
+          segments: deepClone(recordedSegments)
+        }
+        : null,
+      hasRecordedRunData,
       capturedAt: new Date().toISOString()
     };
+
+    this.sidebarReviewTab = 'last-run';
   }
 
   updateSessionGoldSplitState(segment) {
