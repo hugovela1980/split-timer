@@ -125,10 +125,10 @@
   </dialog>
 
   <div id="sidebar-context-menu" class="sidebar-context-menu" hidden>
-    <button type="button" id="sidebar-context-edit" class="sidebar-context-menu__item">Edit Name</button>
-    <button type="button" id="sidebar-context-clear-split"
+    <button type="button" data-context-action="rename" id="sidebar-context-edit" class="sidebar-context-menu__item">Edit Name</button>
+    <button type="button" data-context-action="clear-split" id="sidebar-context-clear-split"
       class="sidebar-context-menu__item sidebar-context-menu__item--warn">Clear Segment Split</button>
-    <button type="button" id="sidebar-context-delete"
+    <button type="button" data-context-action="delete" id="sidebar-context-delete"
       class="sidebar-context-menu__item sidebar-context-menu__item--danger">Delete</button>
   </div>
 
@@ -147,37 +147,3 @@
 </body>
 
 </html>
-
-<!-- <div class="segment">
-      <div class="segment__title">
-        <h2 class="segment__title--name">Segment 1</h2>
-        <div class="segment__title--info">
-          <p class="segment__title--time">00:00:00</p>
-          <button class="segment__title--set btn-blue">Set Time</button>
-        </div>
-      </div>
-
-      <div class="sub-segments">
-        <div class="sub-segment">
-          <div class="sub-segment__task">
-            <input type="checkbox" name="task" class="sub-segment__checkbox">
-            <p class="sub-segment__description">Lorem ipsum dolor sit amet.</p>
-          </div>
-          <div class="sub-segment__time">
-            <p class="sub-segment__time"></p>
-            <button class="sub-segment__set btn-blue">Set Time</button>
-          </div>
-        </div>
-
-        <div class="sub-segment">
-          <div class="sub-segment__task">
-            <input type="checkbox" name="task" class="sub-segment__checkbox">
-            <p class="sub-segment__description">Lorem ipsum dolor sit amet.</p>
-          </div>
-          <div class="sub-segment__time">
-            <p class="sub-segment__time">00:00:00</p>
-            <button class="sub-segment__set btn-blue">Set Time</button>
-          </div>
-        </div>
-      </div>    
-    </div> -->

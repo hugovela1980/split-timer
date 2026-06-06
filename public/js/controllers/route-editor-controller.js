@@ -4,6 +4,12 @@ export class RouteEditorController {
         confirmProvider = globalThis.confirm,
         getSegments = () => [],
         getNextSegmentId = () => 1,
+        sidebarContextMenu = null,
+        getSidebarContextTarget = () => null,
+        setSidebarContextTarget = () => { },
+        onRenameContextTarget = async () => { },
+        onDeleteContextTarget = async () => { },
+        onClearSplitContextTarget = async () => { },
         onAddSegment = async () => { },
         onAddSubsegment = async () => { },
         onDeleteSegment = async () => { }
@@ -12,6 +18,12 @@ export class RouteEditorController {
         this.confirmProvider = confirmProvider;
         this.getSegments = getSegments;
         this.getNextSegmentId = getNextSegmentId;
+        this.sidebarContextMenu = sidebarContextMenu;
+        this.getSidebarContextTarget = getSidebarContextTarget;
+        this.setSidebarContextTarget = setSidebarContextTarget;
+        this.onRenameContextTarget = onRenameContextTarget;
+        this.onDeleteContextTarget = onDeleteContextTarget;
+        this.onClearSplitContextTarget = onClearSplitContextTarget;
         this.onAddSegment = onAddSegment;
         this.onAddSubsegment = onAddSubsegment;
         this.onDeleteSegment = onDeleteSegment;
@@ -111,6 +123,88 @@ export class RouteEditorController {
             deleteOption.value = String(segment.id);
             deleteOption.textContent = `${segment.id}. ${segment.name}`;
             deleteSelect.appendChild(deleteOption);
+        });
+    }
+
+    openSidebarContextMenu(event, target) {
+        if (event && typeof event.preventDefault === 'function') {
+            event.preventDefault();
+        }
+
+        this.setSidebarContextTarget(target);
+
+        if (!this.sidebarContextMenu) return;
+
+        this.sidebarContextMenu.style.left = `${event.pageX}px`;
+        this.sidebarContextMenu.style.top = `${event.pageY}px`;
+
+        const editButton = this.sidebarContextMenu.querySelector('[data-context-action="rename"]');
+        const clearSplitButton = this.sidebarContextMenu.querySelector('[data-context-action="clear-split"]');
+        const deleteButton = this.sidebarContextMenu.querySelector('[data-context-action="delete"]');
+
+        if (editButton) {
+            editButton.textContent = target.type === 'segment'
+                ? 'Edit Segment Name'
+                : 'Edit Sub-Segment Name';
+        }
+
+        if (clearSplitButton) {
+            clearSplitButton.hidden = target.type !== 'segment';
+        }
+
+        if (deleteButton) {
+            deleteButton.textContent = target.type === 'segment'
+                ? 'Delete Segment'
+                : 'Delete Sub-Segment';
+        }
+
+        this.sidebarContextMenu.hidden = false;
+    }
+
+    closeSidebarContextMenu() {
+        if (!this.sidebarContextMenu) return;
+
+        this.sidebarContextMenu.hidden = true;
+    }
+
+    initSidebarContextMenu() {
+        if (!this.sidebarContextMenu) return;
+
+        this.sidebarContextMenu.addEventListener('click', async (event) => {
+            const actionButton = event.target.closest('[data-context-action]');
+
+            if (!actionButton) return;
+
+            event.stopPropagation();
+
+            const target = this.getSidebarContextTarget();
+
+            if (!target) {
+                this.closeSidebarContextMenu();
+                return;
+            }
+
+            const action = actionButton.dataset.contextAction;
+
+            try {
+                if (action === 'rename') {
+                    await this.onRenameContextTarget(target);
+                } else if (action === 'delete') {
+                    await this.onDeleteContextTarget(target);
+                } else if (action === 'clear-split') {
+                    await this.onClearSplitContextTarget(target);
+                }
+            } finally {
+                this.closeSidebarContextMenu();
+            }
+        });
+
+        this.documentProvider.addEventListener('click', (event) => {
+            if (this.sidebarContextMenu.hidden) return;
+
+            if (!this.sidebarContextMenu.contains(event.target)) {
+                this.closeSidebarContextMenu();
+            }
         });
     }
 }

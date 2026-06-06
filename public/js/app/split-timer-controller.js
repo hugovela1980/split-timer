@@ -16,6 +16,7 @@ import {
   escapeHtml,
   toKebabCase,
   getSegmentGoldSplit,
+  setSegmentGoldSplit,
   getSegmentPbSplitTime,
   setSegmentPbSplitTime,
   getSegmentPbSegmentDuration,
@@ -85,54 +86,67 @@ class SplitTimerController {
 
   async init() {
     try {
+      // 1. Load the initial route data from the JSON file.
       await this.populateRouteSelectorFromServer();
       await this.loadRouteData(this.currentRouteFilename);
       this.ensureRouteStatsStructure();
       this.updateSegmentDurations();
-
-      // Fresh page load should always start clean.
-      // Do not restore stale active-run state from localStorage.
       this.resetRunSessionState();
 
-      this.routeContainer = document.querySelector('.route');
-      this.sidebarList = document.querySelector('.sidebar__list');
-      this.initRunSidebarController();
-      this.comparisonsContainer = document.querySelector('.comparisons');
-      this.initComparisonPanelController();
+      // 2. Cache DOM references needed by controllers and UI methods.
       this.startScreen = document.getElementById('start-screen');
-      this.appShell = document.getElementById('app-shell');
       this.startRouteSelector = document.getElementById('start-route-selector');
-      this.startRouteButton = document.getElementById('start-route-btn');
       this.startCreateRouteButton = document.getElementById('start-create-route-btn');
+      this.startRouteButton = document.getElementById('start-route-btn');
 
-      this.resetRouteProgressToFirstSegment();
+      this.appShell = document.getElementById('app-shell');
+      this.routeContainer = document.querySelector('.route');
+      this.comparisonsContainer = document.querySelector('.comparisons');
+      this.sidebarList = document.querySelector('.sidebar__list');
+      this.sidebarContextMenu = document.getElementById('sidebar-context-menu');
+      this.renameSidebarItemModal = document.getElementById('rename-sidebar-item-modal');      
 
-      this.initStopwatchSync();
+
+      // 3. Initialize controllers that need DOM references.
+      this.initRunSidebarController();
+      this.initComparisonPanelController();
+      this.initScrollNavigationController();
       this.initRouteEditorController();
+
+      // 4. Register app event listeners and controller-driven UI behavior.
+      this.initStopwatchSync();
       this.initEditorControls();
       this.initSidebarContextMenu();
+      this.initRenameSidebarItemModal()
       this.initRouteSelector();
       this.initStartScreen();
 
+      // 5. Prepare initial route state and render the app UI.
+      this.resetRouteProgressToFirstSegment();
       this.populateRoute();
       this.populateSidebar();
       this.renderComparisonsPanel();
       this.refreshEditorSegmentOptions();
-      this.initScrollNavigationController();
+
+      // 6. Start observing rendered route segments.
+      // This must happen after populateRoute(), because the .segment elements
+      // need to exist before the observer can attach to them.
       this.initScrollObserver();
 
+      // 7. Sync the UI to the first segment without scrolling or saving.
       await this.resetRouteProgressToFirstSegmentAndRender({
         scroll: false,
         save: false
       });
 
+      // 8. Store clean in-browser state for session recovery/reset behavior.
       // On fresh app load, treat the JSON file as the clean source of truth.
       // Do not write the loaded route back to disk.
       this.persistRouteDataToStorage();
       this.saveBaselineRouteToStorage();
       this.saveActiveRunRouteToStorage();
     } catch (error) {
-      console.error('Failed to initialize route loader:', error);
+      console.error('Failed to initialize SplitTimerController:', error);
     }
   }
 
@@ -243,7 +257,66 @@ class SplitTimerController {
           : '';
 
         await this.handleRouteStructureChanged();
+      },
+
+      sidebarContextMenu: this.sidebarContextMenu,
+
+      getSidebarContextTarget: () => this.sidebarContextTarget,
+
+      setSidebarContextTarget: (target) => {
+        this.sidebarContextTarget = target;
+      },
+
+      onRenameContextTarget: async (target) => {
+        this.showRenameSidebarItemModal(target);
+      },
+
+      onDeleteContextTarget: async (target) => {
+        await this.deleteSidebarContextTarget(target);
+      },
+
+      onClearSplitContextTarget: async (target) => {
+        if (!target || target.type !== 'segment') return;
+
+        await this.clearSegmentSplitFromContextTarget(target);
       }
+    });
+  }
+
+  initRenameSidebarItemModal() {
+    const renameForm = document.getElementById('rename-sidebar-item-form');
+    const renameTitle = document.getElementById('rename-sidebar-item-title');
+    const cancelRenameButton = document.getElementById('rename-sidebar-item-cancel');
+
+    if (
+      !this.renameSidebarItemModal ||
+      !renameForm ||
+      !renameTitle ||
+      !cancelRenameButton
+    ) {
+      return;
+    }
+
+    renameForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      const renameInput = document.getElementById('rename-sidebar-item-input');
+      const nextName = renameInput?.value.trim();
+
+      if (!nextName) return;
+
+      await this.renameSidebarContextTarget(nextName);
+      this.renameSidebarItemModal.close();
+    });
+
+    cancelRenameButton.addEventListener('click', () => {
+      this.renameSidebarItemModal.close();
+    });
+
+    this.renameSidebarItemModal.addEventListener('close', () => {
+      renameForm.reset();
+      renameTitle.textContent = 'Rename Item';
+      this.renameSidebarItemTarget = null;
     });
   }
 
@@ -405,7 +478,7 @@ class SplitTimerController {
       block: options.block || 'start'
     });
   }
-  
+
   async syncUiToCurrentSegment({ scroll = true } = {}) {
     const currentSegmentId = Number(this.routeData?.currentSegmentId);
 
@@ -453,7 +526,7 @@ class SplitTimerController {
 
     return null;
   }
-  
+
   async saveRouteDataToFile(options = {}) {
     const routeFileSaver = this.getRouteFileSaver();
 
@@ -733,112 +806,11 @@ class SplitTimerController {
   }
 
   initSidebarContextMenu() {
-    this.sidebarContextMenu = document.getElementById('sidebar-context-menu');
-    this.renameSidebarItemModal = document.getElementById('rename-sidebar-item-modal');
-
-    const editButton = document.getElementById('sidebar-context-edit');
-    const clearSplitButton = document.getElementById('sidebar-context-clear-split');
-    const deleteButton = document.getElementById('sidebar-context-delete');
-    const renameForm = document.getElementById('rename-sidebar-item-form');
-    const renameInput = document.getElementById('rename-sidebar-item-input');
-    const renameTitle = document.getElementById('rename-sidebar-item-title');
-    const cancelRenameButton = document.getElementById('rename-sidebar-item-cancel');
-
-    if (!this.sidebarContextMenu || !this.renameSidebarItemModal || !editButton || !clearSplitButton || !deleteButton || !renameForm || !renameInput || !renameTitle || !cancelRenameButton) {
-      return;
-    }
-
-    editButton.addEventListener('click', () => {
-      const target = this.sidebarContextTarget;
-      this.hideSidebarContextMenu();
-      if (!target) return;
-      this.showRenameSidebarItemModal(target);
-    });
-
-    deleteButton.addEventListener('click', async () => {
-      const target = this.sidebarContextTarget;
-      this.hideSidebarContextMenu();
-      if (!target) return;
-      await this.deleteSidebarContextTarget(target);
-    });
-
-    clearSplitButton.addEventListener('click', async () => {
-      const target = this.sidebarContextTarget;
-      this.hideSidebarContextMenu();
-      if (!target || target.type !== 'segment') return;
-      await this.clearSegmentSplitFromContextTarget(target);
-    });
-
-    document.addEventListener('click', (event) => {
-      if (!this.sidebarContextMenu || this.sidebarContextMenu.hidden) return;
-      if (this.sidebarContextMenu.contains(event.target)) return;
-      this.hideSidebarContextMenu();
-    });
-
-    document.addEventListener('scroll', () => {
-      this.hideSidebarContextMenu();
-    }, true);
-
-    window.addEventListener('resize', () => {
-      this.hideSidebarContextMenu();
-    });
-
-    document.addEventListener('keydown', (event) => {
-      if (event.key !== 'Escape') return;
-      this.hideSidebarContextMenu();
-      if (this.renameSidebarItemModal?.open) {
-        this.renameSidebarItemModal.close();
-      }
-    });
-
-    renameForm.addEventListener('submit', async (event) => {
-      event.preventDefault();
-
-      const nextName = renameInput.value.trim();
-      if (!nextName) return;
-
-      await this.renameSidebarContextTarget(nextName);
-      this.renameSidebarItemModal.close();
-    });
-
-    cancelRenameButton.addEventListener('click', () => {
-      this.renameSidebarItemModal.close();
-    });
-
-    this.renameSidebarItemModal.addEventListener('close', () => {
-      renameForm.reset();
-      renameTitle.textContent = 'Rename Item';
-      this.renameSidebarItemTarget = null;
-    });
+    this.routeEditorController.initSidebarContextMenu();
   }
 
   openSidebarContextMenu(event, target) {
-    if (!this.sidebarContextMenu) return;
-
-    event.preventDefault();
-    this.sidebarContextTarget = target;
-
-    const editButton = document.getElementById('sidebar-context-edit');
-    const clearSplitButton = document.getElementById('sidebar-context-clear-split');
-    const deleteButton = document.getElementById('sidebar-context-delete');
-    if (editButton) {
-      editButton.textContent = target.type === 'segment' ? 'Edit Segment Name' : 'Edit Sub-Segment Name';
-    }
-    if (clearSplitButton) {
-      clearSplitButton.hidden = target.type !== 'segment';
-    }
-    if (deleteButton) {
-      deleteButton.textContent = target.type === 'segment' ? 'Delete Segment' : 'Delete Sub-Segment';
-    }
-
-    this.sidebarContextMenu.hidden = false;
-
-    const menuRect = this.sidebarContextMenu.getBoundingClientRect();
-    const left = Math.min(event.clientX, window.innerWidth - menuRect.width - 12);
-    const top = Math.min(event.clientY, window.innerHeight - menuRect.height - 12);
-
-    this.sidebarContextMenu.style.left = `${Math.max(8, left)}px`;
-    this.sidebarContextMenu.style.top = `${Math.max(8, top)}px`;
+    this.routeEditorController.openSidebarContextMenu(event, target);
   }
 
   hideSidebarContextMenu() {
