@@ -8,13 +8,24 @@
 
 ## Current Focus
 
-- [ ] Extract RouteEditorController from SplitTimerController
-  - [ ] Move route editor form wiring out of `SplitTimerController`
-  - [ ] Move add-segment, delete-segment, and add-subsegment handlers
-  - [ ] Move sidebar context menu setup and actions
-  - [ ] Move rename modal behavior
-  - [ ] Keep `SplitTimerController` responsible for route data persistence and full app refresh orchestration through callbacks
-  - [ ] Preserve route editor, create-route, sidebar context menu, and clear-split behavior
+- [ ] Continue RouteEditorController extraction: sidebar context menu
+  - [ ] Write failing tests for sidebar context menu behavior
+  - [ ] Move sidebar context menu setup into `RouteEditorController`
+  - [ ] Move context menu open/close behavior
+  - [ ] Move rename modal event wiring
+  - [ ] Delegate actual route mutations back to `SplitTimerController` through callbacks
+  - [ ] Preserve rename segment/subsegment behavior
+  - [ ] Preserve delete segment/subsegment behavior
+  - [ ] Preserve clear split behavior
+  - [ ] Keep route editor tests and smoke tests passing
+
+- [ ] Add RouteEditorController context menu tests
+  - [ ] Opening the sidebar context menu stores the target and positions/shows the menu
+  - [ ] Clicking Rename calls the rename callback with the current context target
+  - [ ] Clicking Delete calls the delete callback with the current context target
+  - [ ] Clicking Clear Split calls the clear-split callback with the current context target
+  - [ ] Clicking outside the menu closes it
+  - [ ] Pressing Escape closes it, if current behavior supports Escape
 
 ## Next Up
 
