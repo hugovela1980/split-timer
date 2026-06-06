@@ -3,6 +3,7 @@ import './timing-helpers.test.js';
 import './route-data-service.test.js';
 import './route-selector-service.test.js';
 import './route-storage-service.test.js';
+import './route-editor-controller.test.js';
 import './run-save-service.test.js';
 import './start-screen-controller.test.js';
 import './split-timer-controller-timing.test.js';

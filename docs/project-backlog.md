@@ -6,15 +6,15 @@
 - Stable branch: `main`
 - Development branch: `develop`
 
-
 ## Current Focus
 
-- [ ] Fix Last Run tab showing route baseline data after deleting an unset run
-  - [ ] Reproduce: start/end a run without pressing Set Time on any segment, then click Delete Run Data
-  - [ ] Confirm Last Run tab should not show baseline route PB split data as if it were the completed run
-  - [ ] Capture only actual completed/set run segments in Last Run review
-  - [ ] Show an empty or explanatory Last Run state when no run split data was recorded
-  - [ ] Preserve correct Last Run behavior for completed runs with saved/set segment data
+- [ ] Extract RouteEditorController from SplitTimerController
+  - [ ] Move route editor form wiring out of `SplitTimerController`
+  - [ ] Move add-segment, delete-segment, and add-subsegment handlers
+  - [ ] Move sidebar context menu setup and actions
+  - [ ] Move rename modal behavior
+  - [ ] Keep `SplitTimerController` responsible for route data persistence and full app refresh orchestration through callbacks
+  - [ ] Preserve route editor, create-route, sidebar context menu, and clear-split behavior
 
 ## Next Up
 
@@ -58,22 +58,8 @@
 - [ ] Improve slug generation for percent symbols in route names
 
 ## Backlog
-- [ ] Prevent Delete Run Data from writing route files
-  - [ ] Treat Delete Run Data as a discard/reset action, not a saved route-data change
-  - [ ] Restore the baseline route in memory
-  - [ ] Clear active-run localStorage/session state
-  - [ ] Clear completed-run state and rerender the route/sidebar/comparison UI
-  - [ ] Preserve Last Run review behavior if appropriate
-  - [ ] Do not call `saveRouteDataToFile` or `routeFileSaver.saveRouteData`
-  - [ ] Keep Save New PB and Save Gold Splits file-writing behavior unchanged
-  - [ ] Add/update regression tests so Delete Run Data does not write route files
 - [ ] Add force reload route-from-file behavior  
   During development/testing, manually restoring a route JSON file does not update the already-loaded in-memory route data. Add a way to force reload the current route from disk and clear active-run/session state so smoke tests can start from the actual saved file.
-- [ ] Rename `RouteLoader` to `SplitTimerController`
-  - [ ] Rename `public/js/app/route-loader.js` if appropriate
-  - [ ] Update imports in app and tests
-  - [ ] Preserve existing behavior with tests passing
-  - [ ] Consider whether the old name should remain temporarily as an alias during transition
 - [ ] Build support for 'not' in tester
 - [ ] Clean up route file saving service integration
   - [ ] Review `public/js/services/file-saver.js` and its current `window.fileSaver` global usage
@@ -172,3 +158,5 @@
   Updated Delete Run Data so it behaves as a discard/reset action instead of a saved route-data change. The app now restores baseline route state in memory, clears active/completed run session state, preserves Last Run review behavior, and avoids calling the route file saver. Save New PB and Save Gold Splits continue to write route files normally, and route file write behavior tests were updated to protect the new behavior.
 - [x] Improve failed test summary output
   Updated the custom test runner so failed tests are collected during the run and summarized after the main `Test Summary`. Failed test details now include the parent `describe` block, the `it` statement, and the error message in a readable stacked format, while passing test runs keep the normal summary output.
+- [x] Fix Last Run tab showing route baseline data after deleting an unset run  
+  Updated Last Run review capture so it only preserves segments that were actually recorded/set during the run. Deleting an unset run now shows an empty/explanatory Last Run state instead of displaying baseline PB route data, while completed runs with recorded segment data still show the correct Last Run review.

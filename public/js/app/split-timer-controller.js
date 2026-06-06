@@ -2,6 +2,7 @@
 import { StartScreenController } from '../controllers/start-screen-controller.js';
 import { ScrollNavigationController } from '../controllers/scroll-navigation-controller.js';
 import { RunSidebarController } from '../controllers/run-sidebar-controller.js';
+import { RouteEditorController } from '../controllers/route-editor-controller.js';
 import { ComparisonPanelController } from '../controllers/comparison-panel-controller.js';
 import { RouteSelectorService } from '../services/route-selector-service.js';
 import { RouteDataService } from '../services/route-data-service.js';
@@ -64,6 +65,7 @@ class SplitTimerController {
     this.startScreenController = options.startScreenController || null;
     this.scrollNavigationController = options.scrollNavigationController || null;
     this.runSidebarController = options.runSidebarController || null;
+    this.routeEditorController = options.routeEditorController || null;
     this.comparisonPanelController = options.comparisonPanelController || null;
     this.storageProvider = options.storageProvider || (typeof globalThis !== 'undefined' && globalThis.localStorage ? globalThis.localStorage : null);
     this.routeStorageService = options.routeStorageService || new RouteStorageService({
@@ -106,6 +108,7 @@ class SplitTimerController {
       this.resetRouteProgressToFirstSegment();
 
       this.initStopwatchSync();
+      this.initRouteEditorController();
       this.initEditorControls();
       this.initSidebarContextMenu();
       this.initRouteSelector();
@@ -183,6 +186,65 @@ class SplitTimerController {
     });
 
     this.runSidebarController.setSidebarList(this.sidebarList);
+  }
+
+  initRouteEditorController() {
+    this.routeEditorController = this.routeEditorController || new RouteEditorController({
+      getSegments: () => this.routeData?.segments || [],
+      getNextSegmentId: () => this.getNextSegmentId(),
+
+      onAddSegment: async ({ id, name }) => {
+        this.routeData.segments.push({
+          id,
+          name,
+          time: '',
+          duration: '',
+          bestTime: '',
+          allowSetTime: true,
+          completed: false,
+          subSegments: []
+        });
+
+        await this.handleRouteStructureChanged();
+      },
+
+      onAddSubsegment: async ({ parentId, description, allowSetTime }) => {
+        const targetSegment = this.routeData.segments.find((segment) => (
+          Number(segment.id) === Number(parentId)
+        ));
+
+        if (!targetSegment) return;
+
+        targetSegment.subSegments.push({
+          description,
+          time: '',
+          completed: false,
+          allowSetTime
+        });
+
+        await this.handleRouteStructureChanged();
+      },
+
+      onDeleteSegment: async ({ segmentId }) => {
+        this.routeData.segments = this.routeData.segments.filter((segment) => (
+          Number(segment.id) !== Number(segmentId)
+        ));
+
+        this.reindexSegmentIds();
+
+        const fallbackSegment = this.routeData.segments[0] || null;
+
+        this.routeData.currentSegmentId = fallbackSegment
+          ? Number(fallbackSegment.id)
+          : null;
+
+        this.routeData.currentSegmentName = fallbackSegment
+          ? fallbackSegment.name
+          : '';
+
+        await this.handleRouteStructureChanged();
+      }
+    });
   }
 
   initComparisonPanelController() {
@@ -667,81 +729,7 @@ class SplitTimerController {
   }
 
   initEditorControls() {
-    const addSegmentForm = document.getElementById('add-segment-form');
-    const addSegmentInput = document.getElementById('new-segment-name');
-    const addSubsegmentForm = document.getElementById('add-subsegment-form');
-    const addSubsegmentParent = document.getElementById('subsegment-parent-id');
-    const addSubsegmentInput = document.getElementById('new-subsegment-description');
-    const addSubsegmentAllowSetTime = document.getElementById('new-subsegment-allow-set-time');
-    const deleteSegmentForm = document.getElementById('delete-segment-form');
-    const deleteSegmentSelect = document.getElementById('delete-segment-id');
-
-    if (addSegmentForm && addSegmentInput) {
-      addSegmentForm.addEventListener('submit', async (event) => {
-        event.preventDefault();
-        const name = addSegmentInput.value.trim();
-        if (!name) return;
-
-        this.routeData.segments.push({
-          id: this.getNextSegmentId(),
-          name,
-          time: '',
-          duration: '',
-          bestTime: '',
-          allowSetTime: true,
-          completed: false,
-          subSegments: []
-        });
-
-        addSegmentInput.value = '';
-        await this.handleRouteStructureChanged();
-      });
-    }
-
-    if (addSubsegmentForm && addSubsegmentParent && addSubsegmentInput) {
-      addSubsegmentForm.addEventListener('submit', async (event) => {
-        event.preventDefault();
-
-        const parentId = Number(addSubsegmentParent.value);
-        const description = addSubsegmentInput.value.trim();
-        const allowSetTime = addSubsegmentAllowSetTime ? addSubsegmentAllowSetTime.checked : false;
-        if (!parentId || !description) return;
-
-        const targetSegment = this.routeData.segments.find((segment) => segment.id === parentId);
-        if (!targetSegment) return;
-
-        targetSegment.subSegments.push({
-          description,
-          time: '',
-          completed: false,
-          allowSetTime
-        });
-
-        addSubsegmentInput.value = '';
-        if (addSubsegmentAllowSetTime) addSubsegmentAllowSetTime.checked = false;
-        await this.handleRouteStructureChanged();
-      });
-    }
-
-    if (deleteSegmentForm && deleteSegmentSelect) {
-      deleteSegmentForm.addEventListener('submit', async (event) => {
-        event.preventDefault();
-
-        const segmentId = Number(deleteSegmentSelect.value);
-        if (!segmentId) return;
-
-        const segmentName = deleteSegmentSelect.options[deleteSegmentSelect.selectedIndex].textContent;
-        if (!confirm(`Delete segment "${segmentName}"? This cannot be undone.`)) return;
-
-        this.routeData.segments = this.routeData.segments.filter((segment) => segment.id !== segmentId);
-        this.reindexSegmentIds();
-        const fallbackSegment = this.routeData.segments[0] || null;
-        this.routeData.currentSegmentId = fallbackSegment ? Number(fallbackSegment.id) : null;
-        this.routeData.currentSegmentName = fallbackSegment ? fallbackSegment.name : '';
-
-        await this.handleRouteStructureChanged();
-      });
-    }
+    this.routeEditorController.initEditorControls();
   }
 
   initSidebarContextMenu() {
@@ -1171,24 +1159,7 @@ class SplitTimerController {
   }
 
   refreshEditorSegmentOptions() {
-    const parentSelect = document.getElementById('subsegment-parent-id');
-    const deleteSelect = document.getElementById('delete-segment-id');
-    if (!parentSelect || !deleteSelect) return;
-
-    parentSelect.innerHTML = '';
-    deleteSelect.innerHTML = '';
-
-    this.routeData.segments.forEach((segment) => {
-      const parentOption = document.createElement('option');
-      parentOption.value = String(segment.id);
-      parentOption.textContent = `${segment.id}. ${segment.name}`;
-      parentSelect.appendChild(parentOption);
-
-      const deleteOption = document.createElement('option');
-      deleteOption.value = String(segment.id);
-      deleteOption.textContent = `${segment.id}. ${segment.name}`;
-      deleteSelect.appendChild(deleteOption);
-    });
+    this.routeEditorController.refreshEditorSegmentOptions();
   }
 
   reindexSegmentIds() {
