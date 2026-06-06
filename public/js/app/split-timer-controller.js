@@ -913,30 +913,37 @@ class SplitTimerController {
   }
 
   async clearSegmentSplitFromContextTarget(target) {
+    if (!target || target.type !== 'segment') return;
+
     const segment = this.getSegmentById(target.segmentId);
+
     if (!segment) return;
 
-    if (!confirm(`Clear split data for segment "${segment.name}"? This removes its saved time and gold split.`)) {
+    if (!confirm(`Clear gold split for segment "${segment.name}"?`)) {
       return;
     }
 
-    setSegmentPbSplitTime(segment, '');
-    setSegmentPbSegmentDuration(segment, '');
-    setSegmentGoldSplit(segment, '');
+    const activeSegmentId = Number(this.routeData.currentSegmentId) || Number(segment.id);
 
-    if (Object.prototype.hasOwnProperty.call(segment, 'segmentDuration')) {
-      segment.segmentDuration = '';
-    }
+    setSegmentGoldSplit(segment, '');
+    segment.goldSegmentMs = null;
 
     const numericSegmentId = Number(segment.id);
     this.sessionGoldSplits.delete(numericSegmentId);
-    this.sessionSetSegments.delete(numericSegmentId);
     this.sessionBestBySegment.delete(numericSegmentId);
     this.saveRunSessionToStorage();
 
     this.runComplete = null;
-    this.updateSegmentDurations();
+    this.updateRouteRunStats();
+
+    this.suppressObserverUntil = Date.now() + 1500;
+
     this.rerenderRouteUI();
+
+    await this.setActiveSidebarButton(`segment-${activeSegmentId}`, false);
+
+    this.suppressObserverUntil = Date.now() + 1500;
+
     this.persistRouteDataToStorage();
     await this.saveRouteDataToFile({ force: true });
   }

@@ -1,9 +1,13 @@
 import { tester } from './test-runner/tester.js';
 import { RouteEditorController } from '../public/js/controllers/route-editor-controller.js';
 
-function createFakeElement({ value = '', checked = false, hidden = false } = {}) {
+function createFakeElement({
+    value = '',
+    checked = false,
+    hidden = false,
+    queryResults = {}
+} = {}) {
     const listeners = new Map();
-    const classes = new Set();
 
     return {
         value,
@@ -32,11 +36,17 @@ function createFakeElement({ value = '', checked = false, hidden = false } = {})
 
         contains(target) {
             return target === this;
+        },
+
+        querySelector(selector) {
+            return queryResults[selector] || null;
         }
     };
 }
 
 function createFakeDocument(elements = {}) {
+    const listeners = new Map();
+
     return {
         getElementById(id) {
             return elements[id] || null;
@@ -48,6 +58,16 @@ function createFakeDocument(elements = {}) {
                 value: '',
                 textContent: ''
             };
+        },
+
+        addEventListener(type, handler) {
+            listeners.set(type, handler);
+        },
+
+        dispatchEvent(event) {
+            const handler = listeners.get(event.type);
+            if (handler) return handler(event);
+            return undefined;
         }
     };
 }
@@ -237,7 +257,19 @@ tester.describe('RouteEditorController', () => {
     });
 
     tester.it('opens the sidebar context menu with the selected target', () => {
-        const sidebarContextMenu = createFakeElement({ hidden: true });
+        const editButton = createFakeElement();
+        const clearSplitButton = createFakeElement({ hidden: true });
+        const deleteButton = createFakeElement();
+
+        const sidebarContextMenu = createFakeElement({
+            hidden: true,
+            queryResults: {
+                '[data-context-action="rename"]': editButton,
+                '[data-context-action="clear-split"]': clearSplitButton,
+                '[data-context-action="delete"]': deleteButton
+            }
+        });
+
         const setSidebarContextTarget = tester.fn();
 
         const routeEditorController = new RouteEditorController({
@@ -260,9 +292,14 @@ tester.describe('RouteEditorController', () => {
 
         tester.expect(event.preventDefault).toHaveBeenCalledTimes(1);
         tester.expect(setSidebarContextTarget).toHaveBeenCalledWith(target);
+
         tester.expect(sidebarContextMenu.style.left).toBe('120px');
         tester.expect(sidebarContextMenu.style.top).toBe('240px');
         tester.expect(sidebarContextMenu.hidden).toBe(false);
+
+        tester.expect(editButton.textContent).toBe('Edit Segment Name');
+        tester.expect(clearSplitButton.hidden).toBe(false);
+        tester.expect(deleteButton.textContent).toBe('Delete Segment');
     });
 
     tester.it('closes the sidebar context menu', () => {
@@ -279,6 +316,7 @@ tester.describe('RouteEditorController', () => {
 
     tester.it('routes sidebar context menu actions to callbacks with the current target', async () => {
         const sidebarContextMenu = createFakeElement();
+        const documentProvider = createFakeDocument();
 
         const currentTarget = {
             type: 'segment',
@@ -291,6 +329,7 @@ tester.describe('RouteEditorController', () => {
         const onClearSplitContextTarget = tester.fn(async () => { });
 
         const routeEditorController = new RouteEditorController({
+            documentProvider,
             sidebarContextMenu,
             getSidebarContextTarget,
             onRenameContextTarget,
@@ -300,38 +339,23 @@ tester.describe('RouteEditorController', () => {
 
         routeEditorController.initSidebarContextMenu();
 
-        await sidebarContextMenu.dispatchEvent({
-            type: 'click',
-            target: {
-                closest(selector) {
-                    return selector === '[data-context-action]'
-                        ? { dataset: { contextAction: 'rename' } }
-                        : null;
+        function createContextMenuClickEvent(action) {
+            return {
+                type: 'click',
+                stopPropagation: tester.fn(),
+                target: {
+                    closest(selector) {
+                        return selector === '[data-context-action]'
+                            ? { dataset: { contextAction: action } }
+                            : null;
+                    }
                 }
-            }
-        });
+            };
+        }
 
-        await sidebarContextMenu.dispatchEvent({
-            type: 'click',
-            target: {
-                closest(selector) {
-                    return selector === '[data-context-action]'
-                        ? { dataset: { contextAction: 'delete' } }
-                        : null;
-                }
-            }
-        });
-
-        await sidebarContextMenu.dispatchEvent({
-            type: 'click',
-            target: {
-                closest(selector) {
-                    return selector === '[data-context-action]'
-                        ? { dataset: { contextAction: 'clear-split' } }
-                        : null;
-                }
-            }
-        });
+        await sidebarContextMenu.dispatchEvent(createContextMenuClickEvent('rename'));
+        await sidebarContextMenu.dispatchEvent(createContextMenuClickEvent('delete'));
+        await sidebarContextMenu.dispatchEvent(createContextMenuClickEvent('clear-split'));
 
         tester.expect(onRenameContextTarget).toHaveBeenCalledWith(currentTarget);
         tester.expect(onDeleteContextTarget).toHaveBeenCalledWith(currentTarget);

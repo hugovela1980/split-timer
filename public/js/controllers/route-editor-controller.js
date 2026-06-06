@@ -1,7 +1,11 @@
 export class RouteEditorController {
     constructor({
         documentProvider = globalThis.document,
-        confirmProvider = globalThis.confirm,
+        confirmProvider = (message) => (
+            typeof globalThis.confirm === 'function'
+                ? globalThis.confirm(message)
+                : true
+        ),
         getSegments = () => [],
         getNextSegmentId = () => 1,
         sidebarContextMenu = null,
