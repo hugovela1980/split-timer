@@ -9,8 +9,43 @@ import {
 import {
   getSegmentPbSplitTime,
   getSegmentPbSegmentDuration,
-  getSegmentGoldSplit
+  getSegmentGoldSplit,
+  setSegmentPbSplitTime
 } from '../public/js/utils/utils.js';
+
+function withFakeWindow(testFn) {
+  return async () => {
+    const originalWindow = globalThis.window;
+    const originalCustomEvent = globalThis.CustomEvent;
+
+    globalThis.window = {
+      dispatchEvent: tester.fn()
+    };
+
+    globalThis.CustomEvent = class FakeCustomEvent {
+      constructor(type, options = {}) {
+        this.type = type;
+        this.detail = options.detail;
+      }
+    };
+
+    try {
+      await testFn();
+    } finally {
+      if (originalWindow === undefined) {
+        delete globalThis.window;
+      } else {
+        globalThis.window = originalWindow;
+      }
+
+      if (originalCustomEvent === undefined) {
+        delete globalThis.CustomEvent;
+      } else {
+        globalThis.CustomEvent = originalCustomEvent;
+      }
+    }
+  };
+}
 
 tester.describe('SplitTimerController confirmed run save behavior', () => {
   let splitTimerController;
@@ -253,4 +288,135 @@ tester.describe('SplitTimerController confirmed run save behavior', () => {
       }
     }
   });
+
+  tester.it('endRunManually treats a first completed run as a new PB', withFakeWindow(async () => {
+    splitTimerController.routeData = cloneFixture(createTimerColorPaceRoute());
+
+    splitTimerController.routeData.personalBest = '';
+    splitTimerController.personalBestAtRunStart = '';
+    splitTimerController.liveStopwatchTime = '00:00:12';
+    splitTimerController.hasRunStarted = true;
+
+    splitTimerController.renderComparisonsPanel = tester.fn();
+    splitTimerController.saveRunSessionToStorage = tester.fn();
+
+    await splitTimerController.endRunManually();
+
+    tester.expect(splitTimerController.runComplete.finalTime).toBe('00:00:12');
+    tester.expect(splitTimerController.runComplete.isNewPB).toBe(true);
+    tester.expect(splitTimerController.runComplete.previousPB).toBe('--:--:--');
+    tester.expect(splitTimerController.hasRunStarted).toBe(false);
+  }));
+
+  tester.it('endRunManually treats a faster completed run as a new PB', withFakeWindow(async () => {
+    splitTimerController.routeData = cloneFixture(createTimerColorPaceRoute());
+
+    splitTimerController.routeData.personalBest = '00:00:15';
+    splitTimerController.personalBestAtRunStart = '00:00:15';
+    splitTimerController.liveStopwatchTime = '00:00:12';
+    splitTimerController.hasRunStarted = true;
+
+    splitTimerController.renderComparisonsPanel = tester.fn();
+    splitTimerController.saveRunSessionToStorage = tester.fn();
+
+    await splitTimerController.endRunManually();
+
+    tester.expect(splitTimerController.runComplete.finalTime).toBe('00:00:12');
+    tester.expect(splitTimerController.runComplete.isNewPB).toBe(true);
+    tester.expect(splitTimerController.runComplete.previousPB).toBe('00:00:15');
+    tester.expect(splitTimerController.hasRunStarted).toBe(false);
+  }));
+
+  tester.it('endRunManually treats a slower completed run as non-PB', withFakeWindow(async () => {
+    splitTimerController.routeData = cloneFixture(createTimerColorPaceRoute());
+
+    splitTimerController.routeData.personalBest = '00:00:15';
+    splitTimerController.personalBestAtRunStart = '00:00:15';
+    splitTimerController.liveStopwatchTime = '00:00:19';
+    splitTimerController.hasRunStarted = true;
+
+    splitTimerController.renderComparisonsPanel = tester.fn();
+    splitTimerController.saveRunSessionToStorage = tester.fn();
+
+    await splitTimerController.endRunManually();
+
+    tester.expect(splitTimerController.runComplete.finalTime).toBe('00:00:19');
+    tester.expect(splitTimerController.runComplete.isNewPB).toBe(false);
+    tester.expect(splitTimerController.runComplete.previousPB).toBe('00:00:15');
+    tester.expect(splitTimerController.hasRunStarted).toBe(false);
+  }));
+
+  tester.it('advanceToNextSegment treats final segment on first run as a new PB', withFakeWindow(async () => {
+    splitTimerController.routeData = cloneFixture(createTimerColorPaceRoute());
+
+    splitTimerController.routeData.personalBest = '';
+    splitTimerController.personalBestAtRunStart = '';
+    splitTimerController.hasRunStarted = true;
+
+    const lastSegment = splitTimerController.routeData.segments[
+      splitTimerController.routeData.segments.length - 1
+    ];
+
+    setSegmentPbSplitTime(lastSegment, '00:00:12');
+
+    splitTimerController.renderComparisonsPanel = tester.fn();
+
+    await splitTimerController.advanceToNextSegment(lastSegment.id);
+
+    tester.expect(splitTimerController.runComplete.finalTime).toBe('00:00:12');
+    tester.expect(splitTimerController.runComplete.isNewPB).toBe(true);
+    tester.expect(splitTimerController.runComplete.previousPB).toBe('--:--:--');
+    tester.expect(splitTimerController.hasRunStarted).toBe(false);
+  }));
+
+  tester.it('advanceToNextSegment treats final segment on first run as a new PB using live stopwatch time', withFakeWindow(async () => {
+    splitTimerController.routeData = cloneFixture(createTimerColorPaceRoute());
+
+    splitTimerController.routeData.personalBest = '';
+    splitTimerController.personalBestAtRunStart = '';
+    splitTimerController.liveStopwatchTime = '00:00:12';
+    splitTimerController.hasRunStarted = true;
+
+    const lastSegment = splitTimerController.routeData.segments[
+      splitTimerController.routeData.segments.length - 1
+    ];
+
+    setSegmentPbSplitTime(lastSegment, '');
+
+    splitTimerController.renderComparisonsPanel = tester.fn();
+    splitTimerController.saveRunSessionToStorage = tester.fn();
+
+    await splitTimerController.advanceToNextSegment(lastSegment.id);
+
+    tester.expect(splitTimerController.runComplete.finalTime).toBe('00:00:12');
+    tester.expect(splitTimerController.runComplete.isNewPB).toBe(true);
+    tester.expect(splitTimerController.runComplete.previousPB).toBe('--:--:--');
+    tester.expect(splitTimerController.hasRunStarted).toBe(false);
+  }));
+
+  tester.it('advanceToNextSegment treats first run as PB even if active route data now has a personalBest', withFakeWindow(async () => {
+    splitTimerController.routeData = cloneFixture(createTimerColorPaceRoute());
+
+    splitTimerController.personalBestAtRunStart = '';
+    splitTimerController.routeData.personalBest = '00:00:03';
+    splitTimerController.liveStopwatchTime = '00:00:03';
+    splitTimerController.hasRunStarted = true;
+    splitTimerController.runDataSnapshot = cloneFixture(createTimerColorPaceRoute());
+
+    const lastSegment = splitTimerController.routeData.segments[
+      splitTimerController.routeData.segments.length - 1
+    ];
+
+    setSegmentPbSplitTime(lastSegment, '00:00:03');
+
+    splitTimerController.renderComparisonsPanel = tester.fn();
+    splitTimerController.saveRunSessionToStorage = tester.fn();
+
+    await splitTimerController.advanceToNextSegment(lastSegment.id);
+
+    tester.expect(splitTimerController.runComplete.finalTime).toBe('00:00:03');
+    tester.expect(splitTimerController.runComplete.isNewPB).toBe(true);
+    tester.expect(splitTimerController.runComplete.previousPB).toBe('--:--:--');
+    tester.expect(splitTimerController.hasRunStarted).toBe(false);
+  }));
 });

@@ -651,25 +651,68 @@ class SplitTimerController {
   }
 
   async endRunManually() {
-    const currentRunTime = this.liveStopwatchTime || this.getCurrentStopwatchTime();
-    const baselinePersonalBest = this.personalBestAtRunStart || this.routeData.personalBest;
+    const currentRunTime = this.getCompletedRunFinalTime();
+    const baselinePersonalBest = this.getBaselinePersonalBestForCompletedRun();
+    const isNewPB = this.isNewPersonalBest(currentRunTime, baselinePersonalBest);
 
     this.runComplete = this.runSaveService.createRunCompleteState({
       finalTime: currentRunTime,
-      isNewPB: false,
+      isNewPB,
       previousPB: baselinePersonalBest
     });
 
     this.hasRunStarted = false;
 
-    // Important:
-    // Do NOT clear sessionGoldSplits, sessionSetSegments, or sessionBestBySegment here.
-    // The Run Complete card still needs that data if the user chooses "End Run & Save Gold".
-    this.resetRouteProgressToFirstSegment();
-    this.populateSidebar();
     this.renderComparisonsPanel();
+    this.saveRunSessionToStorage();
+  }
 
-    window.dispatchEvent(new CustomEvent('stopwatch:clear'));
+  isNewPersonalBest(finalTime, previousPB) {
+    const finalSeconds = timeToSeconds(finalTime);
+    const previousSeconds = timeToSeconds(previousPB);
+
+    if (finalSeconds === null) return false;
+
+    return previousSeconds === null || finalSeconds < previousSeconds;
+  }
+
+  isValidCompletedRunTime(time) {
+    const seconds = timeToSeconds(time);
+
+    return seconds !== null && seconds > 0;
+  }
+
+  getCompletedRunFinalTime(segment = null) {
+    const segmentSplitTime = segment ? getSegmentPbSplitTime(segment) : '';
+    const liveStopwatchTime = this.liveStopwatchTime;
+
+    if (this.isValidCompletedRunTime(segmentSplitTime)) {
+      return segmentSplitTime;
+    }
+
+    if (this.isValidCompletedRunTime(liveStopwatchTime)) {
+      return liveStopwatchTime;
+    }
+
+    if (typeof document !== 'undefined') {
+      const currentStopwatchTime = this.getCurrentStopwatchTime();
+
+      if (this.isValidCompletedRunTime(currentStopwatchTime)) {
+        return currentStopwatchTime;
+      }
+    }
+
+    return '--:--:--';
+  }
+
+  getBaselinePersonalBestForCompletedRun() {
+    // If a run is/was in progress, trust the PB captured at run start.
+    // An empty string is meaningful: it means this was a first run.
+    if (this.runDataSnapshot || this.hasRunStarted) {
+      return this.personalBestAtRunStart || '';
+    }
+
+    return this.routeData?.personalBest || '';
   }
 
   async resetRun() {
@@ -1463,9 +1506,9 @@ class SplitTimerController {
     const isLastSegment = currentIndex === segments.length - 1;
 
     if (isLastSegment) {
-      const finalTime = getSegmentPbSplitTime(segments[currentIndex]) || '--:--:--';
-      const baselinePersonalBest = this.personalBestAtRunStart || this.routeData.personalBest;
-      const isNewPB = isBetterTime(finalTime, baselinePersonalBest);
+      const finalTime = this.getCompletedRunFinalTime(segments[currentIndex]);
+      const baselinePersonalBest = this.getBaselinePersonalBestForCompletedRun();
+      const isNewPB = this.isNewPersonalBest(finalTime, baselinePersonalBest);
 
       // Do not write to the official route JSON here.
       // Finishing a run should only show the Run Complete card.
