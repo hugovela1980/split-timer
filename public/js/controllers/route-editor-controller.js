@@ -16,7 +16,15 @@ export class RouteEditorController {
         onClearSplitContextTarget = async () => { },
         onAddSegment = async () => { },
         onAddSubsegment = async () => { },
-        onDeleteSegment = async () => { }
+        onDeleteSegment = async () => { },
+        renameSidebarItemModal = null,
+        renameSidebarItemForm = null,
+        renameSidebarItemTitle = null,
+        renameSidebarItemInput = null,
+        renameSidebarItemCancelButton = null,
+        getRenameSidebarItemTarget = () => null,
+        setRenameSidebarItemTarget = () => { },
+        onRenameSidebarItem = async () => { }
     } = {}) {
         this.documentProvider = documentProvider;
         this.confirmProvider = confirmProvider;
@@ -31,6 +39,14 @@ export class RouteEditorController {
         this.onAddSegment = onAddSegment;
         this.onAddSubsegment = onAddSubsegment;
         this.onDeleteSegment = onDeleteSegment;
+        this.renameSidebarItemModal = renameSidebarItemModal;
+        this.renameSidebarItemForm = renameSidebarItemForm;
+        this.renameSidebarItemTitle = renameSidebarItemTitle;
+        this.renameSidebarItemInput = renameSidebarItemInput;
+        this.renameSidebarItemCancelButton = renameSidebarItemCancelButton;
+        this.getRenameSidebarItemTarget = getRenameSidebarItemTarget;
+        this.setRenameSidebarItemTarget = setRenameSidebarItemTarget;
+        this.onRenameSidebarItem = onRenameSidebarItem;
     }
 
     initEditorControls() {
@@ -209,6 +225,66 @@ export class RouteEditorController {
             if (!this.sidebarContextMenu.contains(event.target)) {
                 this.closeSidebarContextMenu();
             }
+        });
+    }
+
+    openRenameSidebarItemModal(target) {
+        if (!target || !this.renameSidebarItemModal) return;
+
+        this.setRenameSidebarItemTarget(target);
+
+        if (this.renameSidebarItemTitle) {
+            this.renameSidebarItemTitle.textContent = target.type === 'segment'
+                ? 'Rename Segment'
+                : 'Rename Sub-Segment';
+        }
+
+        if (this.renameSidebarItemInput) {
+            this.renameSidebarItemInput.value = target.name || '';
+        }
+
+        this.renameSidebarItemModal.showModal();
+    }
+
+    initRenameSidebarItemModal() {
+        if (
+            !this.renameSidebarItemModal ||
+            !this.renameSidebarItemForm ||
+            !this.renameSidebarItemInput
+        ) {
+            return;
+        }
+
+        this.renameSidebarItemForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const target = this.getRenameSidebarItemTarget();
+            const name = this.renameSidebarItemInput.value.trim();
+
+            if (!target || !name) return;
+
+            await this.onRenameSidebarItem({
+                target,
+                name
+            });
+
+            this.renameSidebarItemModal.close();
+        });
+
+        if (this.renameSidebarItemCancelButton) {
+            this.renameSidebarItemCancelButton.addEventListener('click', () => {
+                this.renameSidebarItemModal.close();
+            });
+        }
+
+        this.renameSidebarItemModal.addEventListener('close', () => {
+            this.renameSidebarItemForm.reset();
+
+            if (this.renameSidebarItemTitle) {
+                this.renameSidebarItemTitle.textContent = 'Rename Item';
+            }
+
+            this.setRenameSidebarItemTarget(null);
         });
     }
 }

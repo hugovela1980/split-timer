@@ -98,14 +98,16 @@ class SplitTimerController {
       this.startRouteSelector = document.getElementById('start-route-selector');
       this.startCreateRouteButton = document.getElementById('start-create-route-btn');
       this.startRouteButton = document.getElementById('start-route-btn');
-
       this.appShell = document.getElementById('app-shell');
       this.routeContainer = document.querySelector('.route');
       this.comparisonsContainer = document.querySelector('.comparisons');
       this.sidebarList = document.querySelector('.sidebar__list');
       this.sidebarContextMenu = document.getElementById('sidebar-context-menu');
       this.renameSidebarItemModal = document.getElementById('rename-sidebar-item-modal');      
-
+      this.renameSidebarItemForm = document.getElementById('rename-sidebar-item-form');
+      this.renameSidebarItemTitle = document.getElementById('rename-sidebar-item-title');
+      this.renameSidebarItemInput = document.getElementById('rename-sidebar-item-input');
+      this.renameSidebarItemCancelButton = document.getElementById('rename-sidebar-item-cancel');
 
       // 3. Initialize controllers that need DOM references.
       this.initRunSidebarController();
@@ -268,7 +270,7 @@ class SplitTimerController {
       },
 
       onRenameContextTarget: async (target) => {
-        this.showRenameSidebarItemModal(target);
+        this.routeEditorController.openRenameSidebarItemModal(target);
       },
 
       onDeleteContextTarget: async (target) => {
@@ -279,45 +281,28 @@ class SplitTimerController {
         if (!target || target.type !== 'segment') return;
 
         await this.clearSegmentSplitFromContextTarget(target);
+      },
+
+      renameSidebarItemModal: this.renameSidebarItemModal,
+      renameSidebarItemForm: this.renameSidebarItemForm,
+      renameSidebarItemTitle: this.renameSidebarItemTitle,
+      renameSidebarItemInput: this.renameSidebarItemInput,
+      renameSidebarItemCancelButton: this.renameSidebarItemCancelButton,
+
+      getRenameSidebarItemTarget: () => this.renameSidebarItemTarget,
+
+      setRenameSidebarItemTarget: (target) => {
+        this.renameSidebarItemTarget = target;
+      },
+
+      onRenameSidebarItem: async ({ target, name }) => {
+        await this.renameSidebarContextTarget(target, name);
       }
     });
   }
 
   initRenameSidebarItemModal() {
-    const renameForm = document.getElementById('rename-sidebar-item-form');
-    const renameTitle = document.getElementById('rename-sidebar-item-title');
-    const cancelRenameButton = document.getElementById('rename-sidebar-item-cancel');
-
-    if (
-      !this.renameSidebarItemModal ||
-      !renameForm ||
-      !renameTitle ||
-      !cancelRenameButton
-    ) {
-      return;
-    }
-
-    renameForm.addEventListener('submit', async (event) => {
-      event.preventDefault();
-
-      const renameInput = document.getElementById('rename-sidebar-item-input');
-      const nextName = renameInput?.value.trim();
-
-      if (!nextName) return;
-
-      await this.renameSidebarContextTarget(nextName);
-      this.renameSidebarItemModal.close();
-    });
-
-    cancelRenameButton.addEventListener('click', () => {
-      this.renameSidebarItemModal.close();
-    });
-
-    this.renameSidebarItemModal.addEventListener('close', () => {
-      renameForm.reset();
-      renameTitle.textContent = 'Rename Item';
-      this.renameSidebarItemTarget = null;
-    });
+    this.routeEditorController.initRenameSidebarItemModal();
   }
 
   initComparisonPanelController() {
@@ -845,34 +830,27 @@ class SplitTimerController {
   }
 
   showRenameSidebarItemModal(target) {
-    if (!this.renameSidebarItemModal) return;
-
-    const renameInput = document.getElementById('rename-sidebar-item-input');
-    const renameTitle = document.getElementById('rename-sidebar-item-title');
-    if (!renameInput || !renameTitle) return;
-
-    this.renameSidebarItemTarget = target;
-    renameTitle.textContent = target.type === 'segment' ? 'Rename Segment' : 'Rename Sub-Segment';
-    renameInput.value = this.getSidebarContextTargetName(target);
-    this.renameSidebarItemModal.showModal();
-    renameInput.focus();
-    renameInput.select();
+    this.routeEditorController.openRenameSidebarItemModal(target);
   }
 
-  async renameSidebarContextTarget(nextName) {
-    const target = this.renameSidebarItemTarget;
-    if (!target) return;
+  async renameSidebarContextTarget(target, nextName) {
+    if (!target || !nextName) return;
 
     if (target.type === 'segment') {
       const segment = this.getSegmentById(target.segmentId);
+
       if (!segment) return;
+
       segment.name = nextName;
+
       if (Number(this.routeData.currentSegmentId) === Number(segment.id)) {
         this.routeData.currentSegmentName = nextName;
       }
     } else {
       const { subSegment } = this.getSubSegmentTarget(target);
+
       if (!subSegment) return;
+
       subSegment.description = nextName;
     }
 

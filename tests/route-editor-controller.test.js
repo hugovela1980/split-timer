@@ -361,4 +361,149 @@ tester.describe('RouteEditorController', () => {
         tester.expect(onDeleteContextTarget).toHaveBeenCalledWith(currentTarget);
         tester.expect(onClearSplitContextTarget).toHaveBeenCalledWith(currentTarget);
     });
+
+    tester.it('opens the rename modal with title and input value for the selected segment', () => {
+        const renameSidebarItemModal = createFakeElement();
+        renameSidebarItemModal.showModal = tester.fn();
+
+        const renameTitle = createFakeElement();
+        const renameInput = createFakeElement();
+
+        const documentProvider = createFakeDocument({
+            'rename-sidebar-item-modal': renameSidebarItemModal,
+            'rename-sidebar-item-title': renameTitle,
+            'rename-sidebar-item-input': renameInput
+        });
+
+        const routeEditorController = new RouteEditorController({
+            documentProvider,
+            renameSidebarItemModal,
+            renameSidebarItemTitle: renameTitle,
+            renameSidebarItemInput: renameInput
+        });
+
+        const target = {
+            type: 'segment',
+            segmentId: 2,
+            name: 'Old Segment Name'
+        };
+
+        routeEditorController.openRenameSidebarItemModal(target);
+
+        tester.expect(renameTitle.textContent).toBe('Rename Segment');
+        tester.expect(renameInput.value).toBe('Old Segment Name');
+        tester.expect(renameSidebarItemModal.showModal).toHaveBeenCalledTimes(1);
+    });
+
+    tester.it('submitting rename modal calls onRenameSidebarItem with target and trimmed name', async () => {
+        const renameSidebarItemModal = createFakeElement();
+        renameSidebarItemModal.close = tester.fn();
+
+        const renameForm = createFakeElement();
+        const renameTitle = createFakeElement();
+        const renameInput = createFakeElement({ value: '  New Segment Name  ' });
+        const cancelButton = createFakeElement();
+
+        const currentTarget = {
+            type: 'segment',
+            segmentId: 2,
+            name: 'Old Segment Name'
+        };
+
+        const getRenameSidebarItemTarget = tester.fn(() => currentTarget);
+        const onRenameSidebarItem = tester.fn(async () => { });
+
+        const documentProvider = createFakeDocument({
+            'rename-sidebar-item-modal': renameSidebarItemModal,
+            'rename-sidebar-item-form': renameForm,
+            'rename-sidebar-item-title': renameTitle,
+            'rename-sidebar-item-input': renameInput,
+            'rename-sidebar-item-cancel': cancelButton
+        });
+
+        const routeEditorController = new RouteEditorController({
+            documentProvider,
+            renameSidebarItemModal,
+            renameSidebarItemForm: renameForm,
+            renameSidebarItemTitle: renameTitle,
+            renameSidebarItemInput: renameInput,
+            renameSidebarItemCancelButton: cancelButton,
+            getRenameSidebarItemTarget,
+            onRenameSidebarItem
+        });
+
+        routeEditorController.initRenameSidebarItemModal();
+
+        await renameForm.dispatchEvent({
+            type: 'submit',
+            preventDefault: tester.fn()
+        });
+
+        tester.expect(onRenameSidebarItem).toHaveBeenCalledWith({
+            target: currentTarget,
+            name: 'New Segment Name'
+        });
+
+        tester.expect(renameSidebarItemModal.close).toHaveBeenCalledTimes(1);
+    });
+
+    tester.it('clicking rename modal cancel closes the modal', () => {
+        const renameSidebarItemModal = createFakeElement();
+        renameSidebarItemModal.close = tester.fn();
+
+        const renameForm = createFakeElement();
+        const renameTitle = createFakeElement();
+        const renameInput = createFakeElement();
+        const cancelButton = createFakeElement();
+
+        const routeEditorController = new RouteEditorController({
+            renameSidebarItemModal,
+            renameSidebarItemForm: renameForm,
+            renameSidebarItemTitle: renameTitle,
+            renameSidebarItemInput: renameInput,
+            renameSidebarItemCancelButton: cancelButton
+        });
+
+        routeEditorController.initRenameSidebarItemModal();
+
+        cancelButton.dispatchEvent({
+            type: 'click'
+        });
+
+        tester.expect(renameSidebarItemModal.close).toHaveBeenCalledTimes(1);
+    });
+
+    tester.it('closing rename modal resets form, title, and rename target', () => {
+        const renameSidebarItemModal = createFakeElement();
+
+        const renameForm = createFakeElement();
+        renameForm.reset = tester.fn();
+
+        const renameTitle = createFakeElement();
+        renameTitle.textContent = 'Rename Segment';
+
+        const renameInput = createFakeElement({ value: 'Some Name' });
+        const cancelButton = createFakeElement();
+
+        const setRenameSidebarItemTarget = tester.fn();
+
+        const routeEditorController = new RouteEditorController({
+            renameSidebarItemModal,
+            renameSidebarItemForm: renameForm,
+            renameSidebarItemTitle: renameTitle,
+            renameSidebarItemInput: renameInput,
+            renameSidebarItemCancelButton: cancelButton,
+            setRenameSidebarItemTarget
+        });
+
+        routeEditorController.initRenameSidebarItemModal();
+
+        renameSidebarItemModal.dispatchEvent({
+            type: 'close'
+        });
+
+        tester.expect(renameForm.reset).toHaveBeenCalledTimes(1);
+        tester.expect(renameTitle.textContent).toBe('Rename Item');
+        tester.expect(setRenameSidebarItemTarget).toHaveBeenCalledWith(null);
+    });
 });

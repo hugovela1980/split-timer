@@ -8,24 +8,16 @@
 
 ## Current Focus
 
-- [ ] Continue RouteEditorController extraction: sidebar context menu
-  - [ ] Write failing tests for sidebar context menu behavior
-  - [ ] Move sidebar context menu setup into `RouteEditorController`
-  - [ ] Move context menu open/close behavior
-  - [ ] Move rename modal event wiring
-  - [ ] Delegate actual route mutations back to `SplitTimerController` through callbacks
-  - [ ] Preserve rename segment/subsegment behavior
-  - [ ] Preserve delete segment/subsegment behavior
-  - [ ] Preserve clear split behavior
+- [ ] Move rename modal wiring into `RouteEditorController`
+  - [ ] Write failing tests for rename modal behavior
+  - [ ] Move rename modal DOM references and event listener setup out of `SplitTimerController`
+  - [ ] Move rename modal submit, cancel, and close behavior into `RouteEditorController`
+  - [ ] Keep actual route rename mutation delegated back to `SplitTimerController` through callbacks
+  - [ ] Preserve rename behavior for both segments and subsegments
+  - [ ] Preserve modal title/input behavior for the selected context target
+  - [ ] Preserve form reset and modal cleanup after close
   - [ ] Keep route editor tests and smoke tests passing
 
-- [ ] Add RouteEditorController context menu tests
-  - [ ] Opening the sidebar context menu stores the target and positions/shows the menu
-  - [ ] Clicking Rename calls the rename callback with the current context target
-  - [ ] Clicking Delete calls the delete callback with the current context target
-  - [ ] Clicking Clear Split calls the clear-split callback with the current context target
-  - [ ] Clicking outside the menu closes it
-  - [ ] Pressing Escape closes it, if current behavior supports Escape
 
 ## Next Up
 
@@ -171,3 +163,5 @@
   Updated the custom test runner so failed tests are collected during the run and summarized after the main `Test Summary`. Failed test details now include the parent `describe` block, the `it` statement, and the error message in a readable stacked format, while passing test runs keep the normal summary output.
 - [x] Fix Last Run tab showing route baseline data after deleting an unset run  
   Updated Last Run review capture so it only preserves segments that were actually recorded/set during the run. Deleting an unset run now shows an empty/explanatory Last Run state instead of displaying baseline PB route data, while completed runs with recorded segment data still show the correct Last Run review.
+- [x] Continue `RouteEditorController` extraction: sidebar context menu
+  Moved sidebar context menu open/close behavior and action routing into `RouteEditorController`. Added tests for opening the menu, routing Rename/Delete/Clear Split actions to callbacks, and closing the menu through outside clicks. `SplitTimerController` now delegates context menu UI behavior while still owning route-data mutations through callbacks. Preserved Edit Name, Delete, and Clear Segment Split behavior, including segment/subsegment menu labels and clear-split behavior that only clears gold split data.
