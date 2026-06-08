@@ -11,7 +11,8 @@
 
   <link rel="icon" type="image/x-icon" href="./img/favicon.ico">
   <link rel="stylesheet" href="./css/start-screen.css">
-  <link rel="stylesheet" href="./css/main.css">
+  <link rel="stylesheet" href="./css/main-responsive-desktop.css">
+  <link rel="stylesheet" href="./css/desktop-wrap-layout.css">
 
   <title>Split Timer</title>
 </head>
@@ -54,16 +55,18 @@
 
         <h1 class="timer__stopwatch">00:00:00</h1>
 
-        <div class="timer__btns">
-          <button class="timer__start btn-green">Start</button>
-          <button class="timer__stop btn-red">Stop</button>
-          <button class="timer__reset btn-blue">Reset</button>
+        <div class="timer__controls--buttons">
+          <div class="timer__btns">
+            <button class="timer__start btn-green">Start</button>
+            <button class="timer__stop btn-red">Stop</button>
+            <button class="timer__reset btn-blue">Reset</button>
+          </div>
+  
+          <form class="timer__set">
+            <input class="timer__set--input" autofocus>
+            <button class="timer__set--submit btn-blue" type="submit">Set</button>
+          </form>
         </div>
-
-        <form class="timer__set">
-          <input class="timer__set--input" autofocus>
-          <button class="timer__set--submit btn-blue" type="submit">Set</button>
-        </form>
       </div>
 
       <div class="comparisons">comparisons</div>

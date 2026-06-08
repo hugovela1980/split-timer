@@ -1,0 +1,285 @@
+/* Desktop wrap layout: timer + sidebar on top, route below.
+   Load this file AFTER main-responsive-desktop.css. */
+
+@media (max-width: 1270px) {
+
+  html,
+  body {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  /* main components */
+  .app-shell {
+    --top-row-height: 60dvh;
+    --route-row-height: calc(100dvh - var(--top-row-height));
+
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    align-content: flex-start;
+    width: 100%;
+    height: 100dvh;
+    max-height: 100dvh;
+    min-height: 100dvh;
+    overflow: hidden;
+    background-color: #333;
+  }
+
+  .timer {
+    flex: 1 1 calc(100% - clamp(300px, 28vw, 360px));
+    width: auto;
+    min-width: min(100%, 520px);
+    max-width: none;
+    height: var(--top-row-height);
+    max-height: var(--top-row-height);
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .sidebar {
+    flex: 0 1 clamp(300px, 28vw, 360px);
+    width: clamp(300px, 28vw, 360px);
+    min-width: min(100%, 300px);
+    height: var(--top-row-height);
+    max-height: var(--top-row-height);
+    min-height: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    overflow: hidden;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+  }
+
+  .route {
+    flex: 1 0 100%;
+    width: 100%;
+    min-width: 0;
+    height: var(--route-row-height);
+    max-height: var(--route-row-height);
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-bottom: 45vh;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+    border-radius: 0;
+  }
+
+  .comparisons {
+    width: min(96%, 760px);
+  }
+
+  /* timer components */
+  .timer__controls {
+    padding: 0;
+    gap: 0;
+  }
+
+  .timer__controls--buttons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(0.75rem, 1.8vw, 1.25rem);
+    width: min(96%, 980px);
+    margin: 0 auto;
+    min-width: 0;
+  }
+
+  .timer__controls--buttons .timer__btns {
+    flex: 0 0 auto;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: clamp(0.45rem, 1vw, 0.85rem);
+  }
+
+  .timer__controls--buttons .timer__set {
+    flex: 1 1 auto;
+    width: auto;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: clamp(0.45rem, 1vw, 0.85rem);
+  }
+
+  .timer__controls--buttons .timer__set--input {
+    flex: 1 1 auto;
+    min-width: 0;
+    width: auto;
+  }
+
+  .timer__controls--buttons .timer__set--submit {
+    flex: 0 0 auto;
+    margin: 0;
+  }
+
+  .timer__controls--buttons .timer__btns button {
+    flex: 0 0 auto;
+    margin: 0;
+  }
+
+  /* Sidebar components */
+  .sidebar__title,
+  .sidebar__editor-panel,
+  .sidebar__header,
+  .sidebar-review-tabs {
+    flex: 0 0 auto;
+  }
+
+  .sidebar__list {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .sidebar-review-tabs {
+    display: flex;
+    gap: clamp(0.35rem, 0.8vw, 0.5rem);
+    padding: 0.55rem 0.65rem;
+  }
+
+  .sidebar-review-tabs__button {
+    min-width: 0;
+    margin: 0;
+    padding: 0.4rem 0.55rem;
+    font-size: clamp(0.72rem, 1vw, 0.85rem);
+    white-space: nowrap;
+  }
+
+  /* comparisons components */
+  .comparisons__cards {
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: clamp(0.45rem, 1vw, 0.75rem);
+    align-items: stretch;
+  }
+
+  .comparisons__card {
+    min-width: 0;
+    padding: clamp(0.55rem, 1vw, 0.75rem);
+  }
+
+  .comparisons__title {
+    font-size: 1.5rem;
+  }
+
+  .comparisons__card-top {
+    gap: 0.4rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .comparisons__card-title {
+    min-width: 0;
+    font-size: .95rem;
+    line-height: 1.15;
+  }
+
+  .comparisons__status {
+    flex: 0 0 auto;
+    font-size: 0.68rem;
+    padding: 0.12rem 0.45rem;
+  }
+
+  .comparisons__row {
+    grid-template-columns: minmax(0, 1fr) minmax(4.75rem, auto);
+    gap: 0.45rem;
+    align-items: center;
+  }
+
+  .comparisons__label {
+    min-width: 0;
+    font-size: 1rem;
+    line-height: 1.2;
+  }
+
+  .comparisons__value {
+    min-width: 0;
+    justify-self: end;
+    text-align: right;
+    font-size: 1rem;
+    line-height: 1.15;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: clip;
+  }
+
+  .comparisons__value--segment {
+    white-space: normal;
+    overflow-wrap: anywhere;
+    text-align: right;
+  }
+
+  .comparisons__delta {
+    justify-content: flex-end;
+    gap: 0.3rem;
+    white-space: nowrap;
+  }
+
+  .comparisons__delta-icon {
+    flex: 0 0 auto;
+    width: 1rem;
+    height: 1rem;
+    font-size: 0.7rem;
+  }
+
+  /* route components */
+  .segment {
+    border-radius: 0;
+  }
+
+  .segment__title {
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    justify-content: space-between;
+    gap: clamp(0.75rem, 2vw, 1.5rem);
+    width: 100%;
+    padding: 0.1rem 1rem;
+    margin-bottom: 0;
+    background-color: #f4f4f4;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.14);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+  }
+
+  .segment__title--info {
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    justify-content: flex-start;
+    gap: clamp(0.75rem, 1.5vw, 1.25rem);
+    flex: 0 0 auto;
+    margin: 0;
+  }
+
+  .segment__title--name {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    text-align: right;
+    line-height: 1.05;
+    font-size: clamp(1.55rem, 2vw, 1.5rem);
+  }
+
+  .segment__title--time {
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+    font-size: clamp(1.55rem, 2vw, 1.5rem);
+  }
+
+  .segment__title--set {
+    white-space: nowrap;
+    margin: 0;
+    font-size: clamp(1.15rem, 2vw, 1.5rem);
+    padding: clamp(0.5rem, 1vw, 0.7rem) clamp(0.95rem, 1.6vw, 1.3rem);
+    line-height: 1.1;
+  }
+
+  .sub-segment {
+    max-width: 50%;
+    margin-bottom: 0;
+  }
+}

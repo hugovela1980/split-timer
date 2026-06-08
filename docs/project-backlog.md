@@ -7,31 +7,6 @@
 - Development branch: `develop`
 
 ## Current Focus
-
-## Current Focus
-
-- [ ] Fix Run Complete PB detection and first-run save behavior
-  - [ ] First completed run on a route with no existing PB should be treated as a PB run
-  - [ ] Completed runs faster than the saved PB should be treated as PB runs
-  - [ ] Completed runs slower than the saved PB should remain non-PB runs
-  - [ ] Run Complete card should show Save New PB when `isNewPB` is true
-  - [ ] Save New PB should write PB split fields and canonical millisecond fields
-  - [ ] Save Gold Splits should remain available for non-PB/gold improvements
-  - [ ] Last Run tab should show completed-run split data after PB and non-PB flows
-  - [ ] Add regression tests for first-run PB detection and faster-than-PB detection
-
-* [ ] Test editor flows and Last Run sidebar data rendering
-
-  * [x] Smoke test Add Segment, Add Subsegment, Delete Segment, Rename Segment, Rename Subsegment, Delete from context menu, and Clear Segment Split
-  * [x] Confirm editor/context-menu actions write route files only when they intentionally change saved route data
-  * [x] Confirm Clear Segment Split clears only gold split fields and keeps PB/baseline fields intact
-  * [ ] Confirm route editor actions keep legacy timing fields and canonical millisecond fields synced where both still exist
-  * [ ] Test Last Run tab after unset runs, partially completed runs, deleted runs, Save Gold Splits, and Save New PB
-  * [ ] Confirm Last Run tab does not display baseline/PB route data as if it were completed-run data
-  * [ ] Confirm unit tests and smoke tests pass before version polish
-
-## Next Up
-
 * [ ] Fix visual/UI polish issues before main branch version
 
   * [ ] Fix sidebar overflow with long split times
@@ -39,6 +14,10 @@
   * [ ] Preserve readable `Segment | Split | Vs Best` layout for routes longer than one hour
   * [ ] Review spacing/font sizing for `HH:MM:SS` times and large positive/negative deltas
   * [ ] Avoid horizontal page overflow when sidebar content is wide
+
+* [x] Test editor flows and Last Run sidebar data rendering
+
+## Next Up
 
 * [ ] Fix obvious UI text typos and wording issues
 
@@ -260,6 +239,6 @@
   Moved route-switching workflow responsibilities out of `SplitTimerController` into a dedicated controller/service layer while preserving route loading, route-switch confirmation, cancellation, and active-run safety behavior.
 
 ## Notes
-- All route editor functionality is working well, along with context menu actions
-- When a route is created and ran for the first time, the run complete card should acknowledge that it is a first run.  It currently treats it as a "non-PB" run.  The last run sibebar tab has blank split times.  The file only saves the splits as Gold Splits, but the doesn't fill in the "pb" fields like "pbSplitTime".  The first run should be a "PB run".  Because it isn't a PB Run and you don't have split times to compare, the app never gives you the save PB run button which is the only way that the app allows you to save your any run.  Major bug that needs to be fixed
-- After testing the baseline route, I've learned the above bug is affecting all runs.  I just did what should have been a "PB run" but it treated it as a "non-PB run" in the Run Complete card.  It doesn't allow to save the run, only the gold splits
+- I have to press Restart Run twice for it to work and now the stopwatch doesn't stop running, though the comparisons panel timers do stop
+
+- next breakpoint: 850px

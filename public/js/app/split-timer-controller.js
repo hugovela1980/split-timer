@@ -103,7 +103,7 @@ class SplitTimerController {
       this.comparisonsContainer = document.querySelector('.comparisons');
       this.sidebarList = document.querySelector('.sidebar__list');
       this.sidebarContextMenu = document.getElementById('sidebar-context-menu');
-      this.renameSidebarItemModal = document.getElementById('rename-sidebar-item-modal');      
+      this.renameSidebarItemModal = document.getElementById('rename-sidebar-item-modal');
       this.renameSidebarItemForm = document.getElementById('rename-sidebar-item-form');
       this.renameSidebarItemTitle = document.getElementById('rename-sidebar-item-title');
       this.renameSidebarItemInput = document.getElementById('rename-sidebar-item-input');
@@ -452,15 +452,36 @@ class SplitTimerController {
   }
 
   scrollRouteToSegment(segmentId, options = {}) {
-    const target = document.getElementById(`segment-${segmentId}`);
+    const routeContainer = this.routeContainer || document.querySelector('.route');
 
-    if (!target) return;
+    const segmentDomId = String(segmentId).startsWith('segment-')
+      ? String(segmentId)
+      : `segment-${segmentId}`;
+
+    const target = document.getElementById(segmentDomId);
+
+    if (!routeContainer || !target) return;
 
     this.suppressObserverUntil = Date.now() + 1500;
 
-    target.scrollIntoView({
-      behavior: options.behavior || 'smooth',
-      block: options.block || 'start'
+    const routeRect = routeContainer.getBoundingClientRect();
+    const targetRect = target.getBoundingClientRect();
+
+    const offset = options.block === 'center'
+      ? (targetRect.height / 2) - (routeRect.height / 2)
+      : 0;
+
+    const nextScrollTop = Math.max(
+      0,
+      routeContainer.scrollTop +
+      targetRect.top -
+      routeRect.top +
+      offset
+    );
+
+    routeContainer.scrollTo({
+      top: nextScrollTop,
+      behavior: options.behavior || 'smooth'
     });
   }
 
@@ -479,11 +500,7 @@ class SplitTimerController {
     await this.setActiveSidebarButton(segmentDomId, false);
 
     if (scroll) {
-      const target = document.getElementById(segmentDomId);
-
-      if (target) {
-        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
+      this.scrollRouteToSegment(segmentDomId);
     }
   }
 
@@ -1356,12 +1373,7 @@ class SplitTimerController {
       onSegmentClick: async (segment) => {
         this.suppressObserverUntil = Date.now() + 1500;
         await this.setActiveSidebarButton(`segment-${segment.id}`, false);
-
-        // this.scrollRouteToSegment(segment.id);
-        const target = document.getElementById(`segment-${segment.id}`);
-        if (target) {
-          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
+        this.scrollRouteToSegment(segment.id);
       },
 
       onSegmentDoubleClick: (segment) => {
@@ -1378,11 +1390,7 @@ class SplitTimerController {
       onSubsegmentClick: async (segment, subSegmentIndex) => {
         this.suppressObserverUntil = Date.now() + 1500;
         await this.setActiveSidebarButton(`segment-${segment.id}`, false);
-
-        const target = document.getElementById(`segment-${segment.id}-subsegment-${subSegmentIndex}`);
-        if (target) {
-          target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
+        this.scrollRouteToSegment(segment.id, { block: 'center' });
       },
 
       onSubsegmentContextMenu: (event, segment, subSegmentIndex) => {
@@ -1540,10 +1548,7 @@ class SplitTimerController {
     this.suppressObserverUntil = Date.now() + 1500;
     await this.setActiveSidebarButton(nextSegmentDomId);
 
-    const target = document.getElementById(nextSegmentDomId);
-    if (target) {
-      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    this.scrollRouteToSegment(nextSegment.id);
   }
 
   initStopwatchSync() {
