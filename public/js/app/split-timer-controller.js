@@ -1178,7 +1178,7 @@ class SplitTimerController {
     window.dispatchEvent(new CustomEvent('stopwatch:stop'));
 
     return confirm(
-      'You have an active or unfinished run.  Switching routes will dicard the current run data.  Continue?'
+      'You have an active or unfinished run.  Switching routes will discard the current run data.  Continue?'
     );
   }
 

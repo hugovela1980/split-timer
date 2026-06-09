@@ -8,13 +8,13 @@
 
 ## Current Focus
 
-
-## Next Up
-
 * [ ] Fix obvious UI text typos and wording issues
 
   * [ ] Fix confirmation message typo: “dicard” → “discard”
   * [ ] Review button labels, empty states, status labels, and modal text for clarity
+
+## Next Up
+
 
 * [ ] Update project docs before stable version
 
