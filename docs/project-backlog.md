@@ -8,22 +8,7 @@
 
 ## Current Focus
 
-* [ ] Fix obvious UI text typos and wording issues
-
-  * [ ] Fix confirmation message typo: “dicard” → “discard”
-  * [ ] Review button labels, empty states, status labels, and modal text for clarity
-
-## Next Up
-
-
-* [ ] Update project docs before stable version
-
-  * [ ] Update backlog to reflect current architecture and stable-version status
-  * [ ] Update `docs/frontend-architecture.md` after `RouteEditorController` extraction
-  * [ ] Update `docs/route-data-schema-cleanup-plan.md` with any new schema/write-behavior decisions
-  * [ ] Remove or update outdated `RouteLoader` references where they are no longer historical notes
-
-* [ ] Create or update `README.md`
+* [x] Create or update `README.md`
 
   * [ ] Explain what Split Timer does
   * [ ] Include setup/run instructions
@@ -32,7 +17,10 @@
   * [ ] Add screenshots or GIFs if available
   * [ ] Add current version notes
 
-* [ ] Final full smoke test before main branch update
+* [x] Final full smoke test before main branch update
+
+## Next Up
+
 
   * [ ] Open app and load route
   * [ ] Start / pause / resume / reset timer
@@ -236,5 +224,6 @@
 
 - [x] Fix Run Complete card for mobile layouts
 
+- [x] Update project docs before stable version
+
 ## Notes
-- I have to press Restart Run twice for it to work and now the stopwatch doesn't stop running, though the comparisons panel timers do stop
