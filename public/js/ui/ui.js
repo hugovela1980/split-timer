@@ -239,6 +239,9 @@ export function createComparisonsHtml({
           <h4 class="comparisons__card-title">Segment Comparison</h4>
           <div class="comparisons__status comparisons__status--${currentStatus.state}">${escapeHtml(currentStatus.text)}</div>
         </div>
+        <div class="comparisons__actions comparisons__actions--segment">
+          ${hasRunStarted ? '<button type="button" class="comparisons__set-segment-time-btn btn-blue">Set Segment Time</button>' : ''}
+        </div>
         <div class="comparisons__row">
           <span class="comparisons__label">Current Segment</span>
           <span class="comparisons__value comparisons__value--segment">${escapeHtml(segmentLabel)}</span>
@@ -266,6 +269,9 @@ export function createComparisonsHtml({
           <h4 class="comparisons__card-title">Run Comparison</h4>
           <div class="comparisons__status comparisons__status--${currentStatus.state}">${escapeHtml(currentStatus.text)}</div>
         </div>
+        <div class="comparisons__actions comparisons__actions--segment">
+          ${hasRunStarted ? '<button class="comparisons__reset-run-btn btn-red" type="button">Reset Run</button>' : ''}
+        </div>
         <div class="comparisons__row">
           <span class="comparisons__label">Current Run</span>
           <span class="comparisons__value">${escapeHtml(hasRunStarted ? currentRunTime : '--:--:--')}</span>
@@ -285,7 +291,6 @@ export function createComparisonsHtml({
           <span class="comparisons__label">Sum of Best</span>
           <span class="comparisons__value">${escapeHtml(sumOfBest)}</span>
         </div>
-        ${hasRunStarted ? '<button class="comparisons__reset-run-btn btn-blue" type="button">Reset Run</button>' : ''}
       </section>
     </div>
   `;

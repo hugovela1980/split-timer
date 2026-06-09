@@ -419,4 +419,61 @@ tester.describe('SplitTimerController confirmed run save behavior', () => {
     tester.expect(splitTimerController.runComplete.previousPB).toBe('--:--:--');
     tester.expect(splitTimerController.hasRunStarted).toBe(false);
   }));
+
+  tester.it('setSegmentTimeFromCurrentStopwatch sets the current segment split and advances', async () => {
+    splitTimerController.routeData = cloneFixture(createTimerColorPaceRoute());
+    splitTimerController.routeData.currentSegmentId = 1;
+    splitTimerController.routeData.currentSegmentName = 'Segment 1';
+
+    splitTimerController.getCurrentStopwatchTime = tester.fn(() => '00:00:04');
+    splitTimerController.captureSessionBestSnapshot = tester.fn();
+    splitTimerController.ensureRunSnapshotCaptured = tester.fn();
+    splitTimerController.updateRunPaceStateFromCompletedSegment = tester.fn();
+    splitTimerController.saveRunSessionToStorage = tester.fn();
+    splitTimerController.handleRouteDataChanged = tester.fn(async () => { });
+    splitTimerController.updateSessionGoldSplitState = tester.fn();
+    splitTimerController.populateSidebar = tester.fn();
+    splitTimerController.renderComparisonsPanel = tester.fn();
+    splitTimerController.updateMainTimerColor = tester.fn();
+    splitTimerController.advanceToNextSegment = tester.fn(async () => { });
+
+    await splitTimerController.setSegmentTimeFromCurrentStopwatch(1);
+
+    const segment = splitTimerController.getSegmentById(1);
+
+    tester.expect(getSegmentPbSplitTime(segment)).toBe('00:00:04');
+    tester.expect(splitTimerController.sessionSetSegments.has(1)).toBe(true);
+    tester.expect(splitTimerController.advanceToNextSegment).toHaveBeenCalledWith(1);
+  });
+
+  tester.it('bindComparisonPanelActions wires Set Segment Time button to current segment', async () => {
+    const clickListeners = {};
+
+    const setSegmentTimeButton = {
+      addEventListener(type, listener) {
+        clickListeners[type] = listener;
+      }
+    };
+
+    splitTimerController.routeData = cloneFixture(createTimerColorPaceRoute());
+    splitTimerController.routeData.currentSegmentId = 1;
+
+    splitTimerController.comparisonsContainer = {
+      querySelector(selector) {
+        if (selector === '.comparisons__set-segment-time-btn') {
+          return setSegmentTimeButton;
+        }
+
+        return null;
+      }
+    };
+
+    splitTimerController.setSegmentTimeFromCurrentStopwatch = tester.fn(async () => { });
+
+    splitTimerController.bindComparisonPanelActions();
+
+    await clickListeners.click();
+
+    tester.expect(splitTimerController.setSegmentTimeFromCurrentStopwatch).toHaveBeenCalledWith(1);
+  });
 });

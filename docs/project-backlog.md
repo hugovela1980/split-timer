@@ -7,7 +7,29 @@
 - Development branch: `develop`
 
 ## Current Focus
-- [ ] Add tablet/mobile responsive layout for 830px breakpoint where sidebar no longer fits beside timer
+
+* [ ] Add tablet comparison-card actions and layout
+
+  * [x] Add `Set Segment Time` button to the Segment Comparison card
+
+    * [ ] Render the button dynamically from the comparison panel JavaScript
+    * [ ] Hide the button by default in base/desktop CSS
+    * [ ] Show the button at the `830px` tablet breakpoint
+    * [ ] Wire the button to the existing segment Set Time behavior
+    * [ ] Keep existing `.route` segment `Set Time` buttons visible for now
+    * [ ] Smoke test setting segment times from the comparison card and from the route segment card
+
+  * [ ] Update tablet comparison card layout
+
+    * [ ] Make `.comparisons__card` use a three-column grid at the `830px` breakpoint
+    * [ ] Make `.comparisons__card-top` span the full top row
+    * [ ] Place `.comparisons__actions` in the left action column
+    * [ ] Place `.comparisons__label` in the middle column
+    * [ ] Place `.comparisons__value` in the right column
+    * [ ] Use `display: contents` on `.comparisons__row` first, if it works cleanly
+    * [ ] Keep the generated comparison HTML mostly unchanged unless `display: contents` causes problems
+    * [ ] Confirm `Reset Run` is no longer clipped in the Run Comparison card
+    * [ ] Confirm Segment Comparison and Run Comparison remain readable around 830px, 768px, and 700px
 
 ## Next Up
 
@@ -229,6 +251,8 @@
 
 * [x] Route switching controller extraction from `SplitTimerController`
   Moved route-switching workflow responsibilities out of `SplitTimerController` into a dedicated controller/service layer while preserving route loading, route-switch confirmation, cancellation, and active-run safety behavior.
+
+- [x] Add tablet/mobile responsive layout for 830px breakpoint where sidebar no longer fits beside timer
 
 ## Notes
 - I have to press Restart Run twice for it to work and now the stopwatch doesn't stop running, though the comparisons panel timers do stop

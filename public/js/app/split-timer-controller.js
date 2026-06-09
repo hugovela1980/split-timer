@@ -1466,31 +1466,14 @@ class SplitTimerController {
     if (!setButton || !timeDisplay) return;
 
     // Set button click handler for segment
-    setButton.addEventListener('click', async (e) => {
-      if (this.sessionBestBySegment.size === 0) {
-        this.captureSessionBestSnapshot();
-      }
+    setButton.addEventListener('click', async () => {
+      await this.setSegmentTimeFromCurrentStopwatch(data.id);
 
-      this.ensureRunSnapshotCaptured();
+      const updatedSegment = this.getSegmentById(data.id);
 
-      const currentTime = this.getCurrentStopwatchTime();
-
-      setSegmentPbSplitTime(data, currentTime);
-
-      this.updateRunPaceStateFromCompletedSegment(data);
-
-      this.sessionSetSegments.add(Number(data.id));
-      this.saveRunSessionToStorage();
-      timeDisplay.textContent = currentTime;
-
-      await this.handleRouteDataChanged();
-
-      this.updateSessionGoldSplitState(data);
-      this.populateSidebar();
-      this.renderComparisonsPanel();
-
-      this.updateMainTimerColor();
-      await this.advanceToNextSegment(data.id);
+      timeDisplay.textContent = updatedSegment
+        ? getSegmentPbSplitTime(updatedSegment)
+        : '';
     });
   }
 
@@ -1501,6 +1484,34 @@ class SplitTimerController {
       setButton.hidden = true;
       setButton.disabled = true;
     }
+  }
+
+  async setSegmentTimeFromCurrentStopwatch(segmentId) {
+    const segment = this.getSegmentById(segmentId);
+
+    if (!segment) return;
+
+    if (this.sessionBestBySegment.size === 0) {
+      this.captureSessionBestSnapshot();
+    }
+
+    this.ensureRunSnapshotCaptured();
+
+    const currentTime = this.getCurrentStopwatchTime();
+
+    setSegmentPbSplitTime(segment, currentTime);
+    this.updateRunPaceStateFromCompletedSegment(segment);
+    this.sessionSetSegments.add(Number(segment.id));
+    this.saveRunSessionToStorage();
+
+    await this.handleRouteDataChanged();
+
+    this.updateSessionGoldSplitState(segment);
+    this.populateSidebar();
+    this.renderComparisonsPanel();
+    this.updateMainTimerColor();
+
+    await this.advanceToNextSegment(segment.id);
   }
 
   getCurrentStopwatchTime() {
@@ -1774,6 +1785,8 @@ class SplitTimerController {
       sessionGoldSplits: this.sessionGoldSplits
     });
 
+    this.bindComparisonPanelActions();
+
     if (this.hasRunStarted) {
       const resetRunButton = this.comparisonsContainer.querySelector('.comparisons__reset-run-btn');
 
@@ -1782,6 +1795,22 @@ class SplitTimerController {
           await this.resetRun();
         });
       }
+    }
+  }
+
+  bindComparisonPanelActions() {
+    const setSegmentTimeButton = this.comparisonsContainer?.querySelector(
+      '.comparisons__set-segment-time-btn'
+    );
+
+    if (setSegmentTimeButton) {
+      setSegmentTimeButton.addEventListener('click', async () => {
+        const currentSegmentId = Number(this.routeData?.currentSegmentId);
+
+        if (!Number.isInteger(currentSegmentId)) return;
+
+        await this.setSegmentTimeFromCurrentStopwatch(currentSegmentId);
+      });
     }
   }
 }

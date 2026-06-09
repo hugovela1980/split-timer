@@ -193,6 +193,10 @@ input {
   margin: 0;
 }
 
+.comparisons__set-segment-time-btn {
+  display: none;
+}
+
 .comparisons__card-top {
   display: flex;
   justify-content: space-between;
