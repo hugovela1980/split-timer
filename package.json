@@ -1,6 +1,7 @@
 {
   "type": "module",
   "scripts": {
-    "start": "node server/server.js"
+    "start": "node server/server.js",
+    "test": "node tests/run-tests.js"
   }
 }

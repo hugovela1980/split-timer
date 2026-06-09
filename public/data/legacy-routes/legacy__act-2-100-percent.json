@@ -1,14 +1,14 @@
 {
   "name": "Act 2, 100 Percent",
   "personalBest": "01:08:26",
-  "sumOfBest": "01:03:12",
+  "sumOfBest": "01:05:18",
   "segments": [
     {
       "id": 1,
       "name": "Get Whiteward Key",
       "time": "00:04:57",
       "duration": "00:04:57",
-      "bestTime": "00:04:30",
+      "bestTime": "00:04:35",
       "allowSetTime": true,
       "completed": false,
       "subSegments": [
@@ -16,55 +16,36 @@
           "description": "Spool Fragment 3, Grand Gate",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-spool-fragment-3-grand-gate",
-          "order": 1,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Bench in Choral Chambers (above Grand Bellway)",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-bench-in-choral-chambers-above-grand-bellway",
-          "order": 2,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Open Bellway and Ventrica",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-open-bellway-and-ventrica",
-          "order": 3,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Open Ventrica, Songclave",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-open-ventrica-songclave",
-          "order": 4,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Get Whiteward Key and Quit Out",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-get-whiteward-key-and-quit-out",
-          "order": 5,
-          "setTimeMs": null
+          "allowSetTime": false
         }
       ],
       "pbSplitTime": "00:04:57",
       "pbSegmentDuration": "00:04:57",
-      "goldSplit": "00:04:30",
-      "order": 1,
-      "pbSplitMs": 297000,
-      "pbSegmentMs": 297000,
-      "goldSegmentMs": 270000
+      "goldSplit": "00:04:35"
     },
     {
       "id": 2,
@@ -79,55 +60,36 @@
           "description": "Cogheart Piece 1, Choral Chambers",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-cogheart-piece-1-choral-chambers",
-          "order": 1,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Flea 9, Choral Chambers",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-flea-9-choral-chambers",
-          "order": 2,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Get Heavy Rosary String, Choral Chambers",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-get-heavy-rosary-string-choral-chambers",
-          "order": 3,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Spool Fragment 4, The Slab",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-spool-fragment-4-the-slab",
-          "order": 4,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Open Bellway, The Slab, Quit Out",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-open-bellway-the-slab-quit-out",
-          "order": 5,
-          "setTimeMs": null
+          "allowSetTime": false
         }
       ],
       "pbSplitTime": "00:09:24",
       "pbSegmentDuration": "00:04:27",
-      "goldSplit": "00:03:53",
-      "order": 2,
-      "pbSplitMs": 564000,
-      "pbSegmentMs": 267000,
-      "goldSegmentMs": 233000
+      "goldSplit": "00:03:53"
     },
     {
       "id": 3,
@@ -142,71 +104,49 @@
           "description": "Enter Whiteward",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-enter-whiteward",
-          "order": 1,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Choral Commandment, Whiteward",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-choral-commandment-whiteward",
-          "order": 2,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Enter Underworks",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-enter-underworks",
-          "order": 3,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Flea 10, Underworks",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-flea-10-underworks",
-          "order": 4,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Craftmetal 2, Underworks",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-craftmetal-2-underworks",
-          "order": 5,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Get Clawline",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-get-clawline",
-          "order": 6,
-          "setTimeMs": null
+          "allowSetTime": false
         }
       ],
       "pbSplitTime": "00:13:19",
       "pbSegmentDuration": "00:03:55",
-      "goldSplit": "00:03:55",
-      "order": 3,
-      "pbSplitMs": 799000,
-      "pbSegmentMs": 235000,
-      "goldSegmentMs": 235000
+      "goldSplit": "00:03:55"
     },
     {
       "id": 4,
       "name": "Get Faydown Cloak, Mount Fay",
       "time": "00:21:40",
       "duration": "00:08:21",
-      "bestTime": "00:07:07",
+      "bestTime": "00:08:21",
       "allowSetTime": true,
       "completed": false,
       "subSegments": [
@@ -214,73 +154,48 @@
           "description": "Bench near Twelfth Architect, Underworks",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-bench-near-twelfth-architect-underworks",
-          "order": 1,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Buy Sawtooth Circlet",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-buy-sawtooth-circlet",
-          "order": 2,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Spool Fragment 5, Underworks, Quit Out",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-spool-fragment-5-underworks-quit-out",
-          "order": 3,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Open Underworks Ventrica, travel to Grand Bellway",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-open-underworks-ventrica-travel-to-grand-bellway",
-          "order": 4,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Travel to The Slab Bellway and enter Mount Fay",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-travel-to-the-slab-bellway-and-enter-mount-fay",
-          "order": 5,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Cocoon skip",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-cocoon-skip",
-          "order": 6,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Faydown Cloak",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-faydown-cloak",
-          "order": 7,
-          "setTimeMs": null
+          "allowSetTime": false
         }
       ],
       "pbSplitTime": "00:21:40",
       "pbSegmentDuration": "00:08:21",
-      "goldSplit": "00:07:07",
-      "order": 4,
-      "pbSplitMs": 1300000,
-      "pbSegmentMs": 501000,
-      "goldSegmentMs": 427000
+      "goldSplit": "00:08:21"
     },
     {
       "id": 5,
@@ -295,73 +210,48 @@
           "description": "Bench at upper mount fay bench",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-bench-at-upper-mount-fay-bench",
-          "order": 1,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Equip Sawtooth Circlet",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-equip-sawtooth-circlet",
-          "order": 2,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Flea 11, Mount Fay",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-flea-11-mount-fay",
-          "order": 3,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Mask Shard 2, Mount Fay",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-mask-shard-2-mount-fay",
-          "order": 4,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Get Memory Crystal, Quit Out",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-get-memory-crystal-quit-out",
-          "order": 5,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Bellway and Ventrica travel to Songclave",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-bellway-and-ventrica-travel-to-songclave",
-          "order": 6,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Ring Songclave Bell",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-ring-songclave-bell",
-          "order": 7,
-          "setTimeMs": null
+          "allowSetTime": false
         }
       ],
       "pbSplitTime": "00:25:20",
       "pbSegmentDuration": "00:03:40",
-      "goldSplit": "00:03:40",
-      "order": 5,
-      "pbSplitMs": 1520000,
-      "pbSegmentMs": 220000,
-      "goldSegmentMs": 220000
+      "goldSplit": "00:03:40"
     },
     {
       "id": 6,
@@ -376,64 +266,42 @@
           "description": "Bench at Memoriam",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-bench-at-memoriam",
-          "order": 1,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Get Cogheart Piece 2",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-get-cogheart-piece-2",
-          "order": 2,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Memory Locket 3",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-memory-locket-3",
-          "order": 3,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Get voltvessels",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-get-voltvessels",
-          "order": 4,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Flea 12 (Giant Lost Flea)",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-flea-12-giant-lost-flea",
-          "order": 5,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Spool Fragment 6, Memoriam, Quit Out",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-spool-fragment-6-memoriam-quit-out",
-          "order": 6,
-          "setTimeMs": null
+          "allowSetTime": false
         }
       ],
       "pbSplitTime": "00:31:32",
       "pbSegmentDuration": "00:06:12",
-      "goldSplit": "00:04:24",
-      "order": 6,
-      "pbSplitMs": 1892000,
-      "pbSegmentMs": 372000,
-      "goldSegmentMs": 264000
+      "goldSplit": "00:04:24"
     },
     {
       "id": 7,
@@ -448,89 +316,61 @@
           "description": "Equip Volt Vessels",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-equip-volt-vessels",
-          "order": 1,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Cogwork Dancers",
           "time": "",
           "completed": false,
-          "allowSetTime": true,
-          "id": "subsegment-cogwork-dancers",
-          "order": 2,
-          "setTimeMs": null
+          "allowSetTime": true
         },
         {
           "description": "Enter Cogwork Core",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-enter-cogwork-core",
-          "order": 3,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Mask Shard 3, Choral Chambers",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-mask-shard-3-choral-chambers",
-          "order": 4,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Rosary String, Choral Chambers",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-rosary-string-choral-chambers",
-          "order": 5,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Great Taste of Pharloom, Promise Wish",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-great-taste-of-pharloom-promise-wish",
-          "order": 6,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Open two levers in Choral Chambers, Quit Out",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-open-two-levers-in-choral-chambers-quit-out",
-          "order": 7,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Complete Melody Puzzle",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-complete-melody-puzzle",
-          "order": 8,
-          "setTimeMs": null
+          "allowSetTime": false
         }
       ],
       "pbSplitTime": "00:40:35",
       "pbSegmentDuration": "00:09:03",
-      "goldSplit": "00:09:03",
-      "order": 7,
-      "pbSplitMs": 2435000,
-      "pbSegmentMs": 543000,
-      "goldSegmentMs": 543000
+      "goldSplit": "00:09:03"
     },
     {
       "id": 8,
       "name": "Needle Upgrade 2",
       "time": "00:48:50",
       "duration": "00:08:15",
-      "bestTime": "00:07:28",
+      "bestTime": "00:08:15",
       "allowSetTime": true,
       "completed": false,
       "subSegments": [
@@ -538,91 +378,60 @@
           "description": "Enter Whispering Vaults",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-enter-whispering-vaults",
-          "order": 1,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Whispering Vaults Arena",
           "time": "",
           "completed": false,
-          "allowSetTime": true,
-          "id": "subsegment-whispering-vaults-arena",
-          "order": 2,
-          "setTimeMs": null
+          "allowSetTime": true
         },
         {
           "description": "Cogheart Piece 3, Whispering Vaults",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-cogheart-piece-3-whispering-vaults",
-          "order": 3,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Flea 13, Whispering Vaults",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-flea-13-whispering-vaults",
-          "order": 4,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Pale Oil 1, Whispering Vaults",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-pale-oil-1-whispering-vaults",
-          "order": 5,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Open lever in Trobbio Room",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-open-lever-in-trobbio-room",
-          "order": 6,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Bellway to Bellhart",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-bellway-to-bellhart",
-          "order": 7,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Turn in Relics",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-turn-in-relics",
-          "order": 8,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Upgrade Needle",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-upgrade-needle",
-          "order": 9,
-          "setTimeMs": null
+          "allowSetTime": false
         }
       ],
       "pbSplitTime": "00:48:50",
       "pbSegmentDuration": "00:08:15",
-      "goldSplit": "00:07:28",
-      "order": 8,
-      "pbSplitMs": 2930000,
-      "pbSegmentMs": 495000,
-      "goldSegmentMs": 448000
+      "goldSplit": "00:08:15"
     },
     {
       "id": 9,
@@ -637,64 +446,42 @@
           "description": "Bellway and Bench, Blasted Steps",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-bellway-and-bench-blasted-steps",
-          "order": 1,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Rosary String, Blasted Steps",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-rosary-string-blasted-steps",
-          "order": 2,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Mask Shard 4, Blasted Steps, Quit Out",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-mask-shard-4-blasted-steps-quit-out",
-          "order": 3,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Get Magnetite Dice, Quit Out",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-get-magnetite-dice-quit-out",
-          "order": 4,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Great Conchflies",
           "time": "01:07:13",
           "completed": false,
-          "allowSetTime": true,
-          "id": "subsegment-great-conchflies",
-          "order": 5,
-          "setTimeMs": 4033000
+          "allowSetTime": true
         },
         {
           "description": "Get Needle Strike",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-get-needle-strike",
-          "order": 6,
-          "setTimeMs": null
+          "allowSetTime": false
         }
       ],
       "pbSplitTime": "00:54:20",
       "pbSegmentDuration": "00:05:30",
-      "goldSplit": "00:05:06",
-      "order": 9,
-      "pbSplitMs": 3260000,
-      "pbSegmentMs": 330000,
-      "goldSegmentMs": 306000
+      "goldSplit": "00:05:06"
     },
     {
       "id": 10,
@@ -709,100 +496,66 @@
           "description": "Enter Sands of Karak",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-enter-sands-of-karak",
-          "order": 1,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Visit Shakra",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-visit-shakra",
-          "order": 2,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Get Crustnut, Quit Out",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-get-crustnut-quit-out",
-          "order": 3,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Buy __ from Grindle",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-buy-from-grindle",
-          "order": 4,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Get Beast Shard",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-get-beast-shard",
-          "order": 5,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Flea 14, Blasted Steps",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-flea-14-blasted-steps",
-          "order": 6,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Flea 15, Sands of Karak",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-flea-15-sands-of-karak",
-          "order": 7,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Get Simple Key",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-get-simple-key",
-          "order": 8,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Voltvrm",
           "time": "01:30:53",
           "completed": false,
-          "allowSetTime": true,
-          "id": "subsegment-voltvrm",
-          "order": 9,
-          "setTimeMs": 5453000
+          "allowSetTime": true
         },
         {
           "description": "Get Volt Filament, Quit Out",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-get-volt-filament-quit-out",
-          "order": 10,
-          "setTimeMs": null
+          "allowSetTime": false
         }
       ],
       "pbSplitTime": "01:08:26",
       "pbSegmentDuration": "00:14:06",
-      "goldSplit": "00:14:06",
-      "order": 10,
-      "pbSplitMs": 4106000,
-      "pbSegmentMs": 846000,
-      "goldSegmentMs": 846000
+      "goldSplit": "00:14:06"
     },
     {
       "id": 11,
@@ -817,46 +570,30 @@
           "description": "Get Dead Bug's Purse",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-get-dead-bugs-purse",
-          "order": 1,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Flea 16, Wormways",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-flea-16-wormways",
-          "order": 2,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Mask Shard 5, Wormways",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-mask-shard-5-wormways",
-          "order": 3,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Get Sharpdart",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-get-sharpdart",
-          "order": 4,
-          "setTimeMs": null
+          "allowSetTime": false
         }
       ],
       "pbSplitTime": "",
       "pbSegmentDuration": "",
-      "goldSplit": "",
-      "order": 11,
-      "pbSplitMs": null,
-      "pbSegmentMs": null,
-      "goldSegmentMs": null
+      "goldSplit": ""
     },
     {
       "id": 12,
@@ -871,55 +608,36 @@
           "description": "Get 3 Plasmium samples",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-get-3-plasmium-samples",
-          "order": 1,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Memory Locket 4, Wormways, Quit Out",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-memory-locket-4-wormways-quit-out",
-          "order": 2,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Plasmium Phial",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-plasmium-phial",
-          "order": 3,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Mossberry 2, Bonegrave",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-mossberry-2-bonegrave",
-          "order": 4,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Get Wanderer Crest",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-get-wanderer-crest",
-          "order": 5,
-          "setTimeMs": null
+          "allowSetTime": false
         }
       ],
       "pbSplitTime": "",
       "pbSegmentDuration": "",
-      "goldSplit": "",
-      "order": 12,
-      "pbSplitMs": null,
-      "pbSegmentMs": null,
-      "goldSegmentMs": null
+      "goldSplit": ""
     },
     {
       "id": 13,
@@ -934,118 +652,78 @@
           "description": "Get Mossberry 3, Bone Bottom",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-get-mossberry-3-bone-bottom",
-          "order": 1,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Grant Bone Bottom Repairs, Accept Berry Picking, Garb of the Pilgrims and Terrible Tyrant",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-grant-bone-bottom-repairs-accept-berry-picking-garb-of-the-pilgrims-and-terrible-tyrant",
-          "order": 2,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Buy Magnetite Brooch",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-buy-magnetite-brooch",
-          "order": 3,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Unlock Wanderer Crest, Equip Magnetite Brooch, Silkspeed Anklets, Sawtooth Circlet, Volt Filament and Flea Brew",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-unlock-wanderer-crest-equip-magnetite-brooch-silkspeed-anklets-sawtooth-circlet-volt-filament-and-flea-brew",
-          "order": 4,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Mossberry 4, Moss Grotto",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-mossberry-4-moss-grotto",
-          "order": 5,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Get Map of Weavenest Atla",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-get-map-of-weavenest-atla",
-          "order": 6,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Mask Shard 6, Weavenest Atla",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-mask-shard-6-weavenest-atla",
-          "order": 7,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Spool Fragment 7, Weavenest Atla",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-spool-fragment-7-weavenest-atla",
-          "order": 8,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Snare Setter",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-snare-setter",
-          "order": 9,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Mossberry 4, Weavenest Atla",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-mossberry-4-weavenest-atla",
-          "order": 10,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Moss Mothers",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-moss-mothers",
-          "order": 11,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Weavelight, Quit Out",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-weavelight-quit-out",
-          "order": 12,
-          "setTimeMs": null
+          "allowSetTime": false
         }
       ],
       "pbSplitTime": "",
       "pbSegmentDuration": "",
-      "goldSplit": "",
-      "order": 13,
-      "pbSplitMs": null,
-      "pbSegmentMs": null,
-      "goldSegmentMs": null
+      "goldSplit": ""
     },
     {
       "id": 14,
@@ -1060,106 +738,68 @@
           "description": "Farm pilgrim garbs",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-farm-pilgrim-garbs",
-          "order": 1,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "get mossberry tear, and sell extra mossberries",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-get-mossberry-tear-and-sell-extra-mossberries",
-          "order": 2,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Farm more garbs",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-farm-more-garbs",
-          "order": 3,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "get shard pendent",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-get-shard-pendent",
-          "order": 4,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Craftmetal, The Marrow",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-craftmetal-the-marrow",
-          "order": 5,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Skull Tyrant",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-skull-tyrant",
-          "order": 6,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Turn in Garbs and Skull Tyrant",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-turn-in-garbs-and-skull-tyrant",
-          "order": 7,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Shard Donation",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-shard-donation",
-          "order": 8,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Buy Craftmetal and Mask Shard",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-buy-craftmetal-and-mask-shard",
-          "order": 9,
-          "setTimeMs": null
+          "allowSetTime": false
         },
         {
           "description": "Equip volt vessel, circlet, volt filament, anklets, brooch and thief's mark",
           "time": "",
           "completed": false,
-          "allowSetTime": false,
-          "id": "subsegment-equip-volt-vessel-circlet-volt-filament-anklets-brooch-and-thiefs-mark",
-          "order": 10,
-          "setTimeMs": null
+          "allowSetTime": false
         }
       ],
       "pbSplitTime": "",
       "pbSegmentDuration": "",
-      "goldSplit": "",
-      "order": 14,
-      "pbSplitMs": null,
-      "pbSegmentMs": null,
-      "goldSegmentMs": null
+      "goldSplit": ""
     }
   ],
-  "currentSegmentId": 1,
-  "currentSegmentName": "Get Whiteward Key",
-  "schemaVersion": 2,
-  "routeId": "act-2-100-percent",
-  "personalBestMs": 4106000,
-  "sumOfBestMs": 3792000
+  "currentSegmentId": 14,
+  "currentSegmentName": "seg14"
 }

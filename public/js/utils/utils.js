@@ -20,6 +20,24 @@ export function timeToSeconds(timeString) {
   return (hours * 3600) + (minutes * 60) + seconds;
 }
 
+export function timeToMilliseconds(timeValue) {
+  if (timeValue === null || timeValue === undefined || timeValue === '') {
+    return null;
+  }
+
+  if (typeof timeValue === 'number') {
+    return timeValue * 1000;
+  }
+
+  const seconds = timeToSeconds(timeValue);
+
+  if (Number.isNaN(seconds)) {
+    return null;
+  }
+
+  return seconds * 1000;
+}
+
 export function isBetterTime(candidateTime, referenceTime) {
   const candidateSeconds = timeToSeconds(candidateTime);
   if (candidateSeconds === null) return false;
@@ -122,12 +140,86 @@ export function normalizeSegmentTimingFields(segment) {
   setSegmentPbSplitTime(segment, pbSplitTime);
   setSegmentPbSegmentDuration(segment, pbSegmentDuration);
   setSegmentGoldSplit(segment, goldSplit);
+
+  if (segment.pbSplitMs === undefined) {
+    segment.pbSplitMs = timeToMilliseconds(pbSplitTime);
+  }
+
+  if (segment.pbSegmentMs === undefined) {
+    segment.pbSegmentMs = timeToMilliseconds(pbSegmentDuration);
+  }
+
+  if (segment.goldSegmentMs === undefined) {
+    segment.goldSegmentMs = timeToMilliseconds(goldSplit);
+  }
+}
+
+export function normalizeSubSegmentTimingFields(subSegment) {
+  if (!subSegment) return;
+
+  if (subSegment.setTimeMs === undefined) {
+    subSegment.setTimeMs = timeToMilliseconds(subSegment.time);
+  }
 }
 
 export function normalizeRouteTimingFields(routeData) {
-  if (!routeData || !Array.isArray(routeData.segments)) return;
+  if (!routeData) return;
 
-  routeData.segments.forEach((segment) => {
+  if (routeData.schemaVersion === undefined) {
+    routeData.schemaVersion = 2;
+  }
+
+  if (routeData.routeId === undefined) {
+    routeData.routeId = createRouteId(routeData);
+  }
+
+  if (routeData.personalBestMs === undefined) {
+    routeData.personalBestMs = timeToMilliseconds(routeData.personalBest);
+  }
+
+  if (routeData.sumOfBestMs === undefined) {
+    routeData.sumOfBestMs = timeToMilliseconds(routeData.sumOfBest);
+  }
+
+  if (!Array.isArray(routeData.segments)) return;
+
+  routeData.segments.forEach((segment, segmentIndex) => {
+    if (segment.id === undefined) {
+      segment.id = createSegmentId(segment, segmentIndex);
+    }
+
+    if (segment.order === undefined) {
+      segment.order = segmentIndex + 1;
+    }
+
     normalizeSegmentTimingFields(segment);
+
+    if (Array.isArray(segment.subSegments)) {
+      segment.subSegments.forEach((subSegment, subSegmentIndex) => {
+        if (subSegment.id === undefined) {
+          subSegment.id = createSubSegmentId(subSegment, subSegmentIndex);
+        }
+
+        if (subSegment.order === undefined) {
+          subSegment.order = subSegmentIndex + 1;
+        }
+
+        normalizeSubSegmentTimingFields(subSegment);
+      });
+    }
   });
+}
+
+export function createRouteId(routeData) {
+  return toKebabCase(routeData?.name || 'untitled-route');
+}
+
+export function createSegmentId(segment, index) {
+  const baseName = segment?.name || `segment-${index + 1}`;
+  return `segment-${toKebabCase(baseName)}`;
+}
+
+export function createSubSegmentId(subSegment, index) {
+  const baseDescription = subSegment?.description || `subsegment-${index + 1}`;
+  return `subsegment-${toKebabCase(baseDescription)}`;
 }

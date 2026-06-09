@@ -1,0 +1,502 @@
+/* Tablet split layout: timer/comparisons on top, sidebar + route below.
+   Load this file AFTER desktop-wrap-layout.css. */
+
+@media (max-width: 830px) {
+
+  html,
+  body {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .app-shell {
+    --tablet-timer-row-height: clamp(56dvh, 60dvh, 64dvh);
+    --tablet-info-row-height: calc(100dvh - var(--tablet-timer-row-height));
+
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    align-content: flex-start;
+    width: min(100%, 830px);
+    height: 100dvh;
+    max-height: 100dvh;
+    min-height: 100dvh;
+    margin: 0 auto;
+    overflow: hidden;
+    background-color: #333;
+  }
+
+  .timer {
+    flex: 1 0 100%;
+    width: 100%;
+    min-width: 0;
+    height: var(--tablet-timer-row-height);
+    max-height: var(--tablet-timer-row-height);
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .timer__controls {
+    padding: 0;
+    gap: 0;
+  }
+
+  .timer__topbar {
+    width: 100%;
+    min-width: 0;
+    padding: 0.15rem 0.5rem;
+  }
+
+  .route-picker {
+    max-width: 100%;
+  }
+
+  .route-picker__select {
+    min-width: min(60vw, 20rem);
+    max-width: 100%;
+    font-size: clamp(0.82rem, 1.8vw, 1rem);
+    padding: 0.35rem 0.55rem;
+  }
+
+  .timer__stopwatch {
+    font-size: clamp(5.5rem, 20cqw, 7.5rem);
+    padding: clamp(0.8rem, 2.2vh, 1.2rem) clamp(0.35rem, 1vw, 0.75rem);
+    line-height: 0.95;
+  }
+
+  .timer__controls--buttons {
+    width: min(98%, 790px);
+    gap: clamp(0.45rem, 1vw, 0.75rem);
+  }
+
+  .timer__controls--buttons button {
+    font-size: clamp(0.88rem, 2vw, 1.1rem);
+    padding: 0.35rem 0.65rem;
+  }
+
+  .timer__controls--buttons .timer__btns {
+    gap: clamp(0.35rem, 0.8vw, 0.55rem);
+  }
+
+  .timer__controls--buttons .timer__set {
+    flex: 0 1 clamp(260px, 45vw, 520px);
+    width: clamp(260px, 45vw, 520px);
+    min-width: 0;
+  }
+
+  .timer__controls--buttons .timer__set--input {
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .timer__set--input {
+    min-width: 0;
+  }
+
+  .comparisons {
+    width: min(96%, 760px);
+    max-height: none;
+    margin: 0.35rem auto 0;
+    padding: clamp(0.55rem, 1.2vw, 0.85rem);
+    overflow: hidden;
+  }
+
+  .comparisons__title {
+    font-size: clamp(1.1rem, 2.6vw, 1.45rem);
+    margin-bottom: 0.4rem;
+  }
+
+  .comparisons__cards {
+    grid-template-columns: 1fr;
+    gap: clamp(0.45rem, 1vw, 0.7rem);
+  }
+
+  .comparisons__card {
+    min-width: 0;
+    display: grid;
+    grid-auto-rows: min-content;
+    column-gap: clamp(1rem, 4vw, 2rem);
+    row-gap: 0.35rem;
+    align-items: center;
+    padding: clamp(0.6rem, 1.2vw, 0.85rem);
+  }
+
+  /* Shared top-row behavior:
+   Let title/status participate in the parent card grid. */
+  .comparisons__card-top {
+    display: contents;
+  }
+
+  .comparisons__card-title {
+    min-width: 0;
+    font-size: clamp(0.9rem, 2vw, 1.08rem);
+    line-height: 1.15;
+    text-align: center;
+  }
+
+  .comparisons__status {
+    justify-self: end;
+    align-self: center;
+    font-size: 0.68rem;
+    padding: 0.12rem 0.42rem;
+    white-space: nowrap;
+    z-index: 1;
+  }
+
+  /* Let label/value become direct grid children of .comparisons__card. */
+  .comparisons__row {
+    display: contents;
+  }
+
+  .comparisons__label {
+    min-width: 0;
+    font-size: clamp(0.82rem, 1.8vw, 1rem);
+    line-height: 1.15;
+    text-align: center;
+    justify-self: end;
+    align-self: center;
+  }
+
+  .comparisons__value {
+    min-width: 0;
+    justify-self: start;
+    align-self: center;
+    text-align: center;
+    font-size: clamp(0.86rem, 1.9vw, 1.05rem);
+    line-height: 1.15;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: clip;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .comparisons__value--segment {
+    white-space: normal;
+    overflow-wrap: anywhere;
+    line-height: 1.15;
+  }
+
+  .comparisons__delta {
+    justify-content: center;
+    gap: 0.35rem;
+    white-space: nowrap;
+  }
+
+  .comparisons__delta-icon {
+    flex: 0 0 auto;
+    width: 1rem;
+    height: 1rem;
+    font-size: 0.7rem;
+  }
+
+  /*
+  PRE-RUN / IDLE CARD LAYOUT
+
+  row 1:
+  [ title centered across both columns, status on far right ]
+
+  rows below:
+  [ label ] [ value ]
+*/
+  .comparisons__card--pre-run {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .comparisons__card--pre-run .comparisons__card-title {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    justify-self: center;
+    text-align: center;
+  }
+
+  .comparisons__card--pre-run .comparisons__status {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+  }
+
+  .comparisons__card--pre-run .comparisons__label {
+    grid-column: 1;
+  }
+
+  .comparisons__card--pre-run .comparisons__value {
+    grid-column: 2;
+  }
+
+  /*
+  DURING-RUN CARD LAYOUT
+
+  row 1:
+  [ empty action column ] [ title spans columns 2-3 ] [ status right ]
+
+  rows below:
+  [ action button ] [ label ] [ value ]
+*/
+  .comparisons__card--during-run {
+    grid-template-columns: minmax(8rem, 11rem) minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .comparisons__card--during-run .comparisons__card-title {
+    grid-column: 2 / 4;
+    grid-row: 1;
+    justify-self: center;
+    text-align: center;
+  }
+
+  .comparisons__card--during-run .comparisons__status {
+    grid-column: 3;
+    grid-row: 1;
+    justify-self: end;
+  }
+
+  .comparisons__card--during-run .comparisons__actions {
+    grid-column: 1;
+    grid-row: 3 / span 2;
+    align-self: center;
+    justify-self: center;
+  }
+
+  .comparisons__card--during-run .comparisons__label {
+    grid-column: 2;
+  }
+
+  .comparisons__card--during-run .comparisons__value {
+    grid-column: 3;
+  }
+
+  /*
+  Shared comparison action styling
+*/
+  .comparisons__actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.45rem;
+    margin: 0;
+  }
+
+  .comparisons__actions button {
+    margin: 0;
+    font-size: clamp(0.95rem, 2.2vw, 1.25rem);
+    padding: clamp(0.45rem, 1vw, 0.7rem) clamp(0.75rem, 1.5vw, 1.1rem);
+    line-height: 1.1;
+    white-space: normal;
+    max-width: 100%;
+  }
+
+  .comparisons__set-segment-time-btn {
+    display: block;
+  }
+
+  /* Run Complete card styling */
+  /* Run Complete card: compact tablet/phone layout */
+.comparisons__card--finish {
+  display: grid;
+  grid-template-columns: 1fr;
+  justify-items: center;
+  row-gap: clamp(0.45rem, 1.4vw, 0.75rem);
+  padding: clamp(0.75rem, 1.6vw, 1rem);
+}
+
+.comparisons__card--finish .comparisons__pb-banner {
+  grid-column: 1;
+  text-align: center;
+  margin-bottom: 0.35rem;
+}
+
+/* Override the normal tablet `display: contents` behavior for Run Complete rows */
+.comparisons__card--finish .comparisons__row {
+  display: grid;
+  grid-template-columns: max-content max-content;
+  justify-content: center;
+  align-items: center;
+  column-gap: clamp(0.75rem, 2vw, 1.25rem);
+  width: 100%;
+  margin-bottom: 0;
+}
+
+.comparisons__card--finish .comparisons__label {
+  grid-column: 1;
+  justify-self: end;
+  text-align: right;
+  font-size: clamp(0.88rem, 2vw, 1.05rem);
+  line-height: 1.15;
+}
+
+.comparisons__card--finish .comparisons__value {
+  grid-column: 2;
+  justify-self: start;
+  text-align: left;
+  font-size: clamp(0.95rem, 2.1vw, 1.12rem);
+  line-height: 1.15;
+  white-space: nowrap;
+}
+
+/* Put Run Complete actions underneath, side by side */
+.comparisons__card--finish .comparisons__actions {
+  grid-column: 1;
+  grid-row: auto;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: clamp(0.55rem, 1.5vw, 0.85rem);
+  margin-top: clamp(0.45rem, 1.4vw, 0.75rem);
+}
+
+.comparisons__card--finish .comparisons__actions button {
+  margin: 0;
+  font-size: clamp(0.9rem, 2.3vw, 1.1rem);
+  padding: clamp(0.45rem, 1vw, 0.65rem) clamp(0.75rem, 1.7vw, 1.1rem);
+  line-height: 1.1;
+  white-space: normal;
+}
+
+  .sidebar {
+    flex: 0 0 clamp(300px, 40%, 340px);
+    width: clamp(300px, 40%, 340px);
+    min-width: 0;
+    height: var(--tablet-info-row-height);
+    max-height: var(--tablet-info-row-height);
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+  }
+
+  .route {
+    flex: 1 1 0;
+    width: auto;
+    min-width: 0;
+    height: var(--tablet-info-row-height);
+    max-height: var(--tablet-info-row-height);
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-bottom: 45vh;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+    border-radius: 0;
+  }
+
+  .sidebar__title {
+    font-size: clamp(1.05rem, 2.5vw, 1.45rem);
+    padding-bottom: 0.6rem;
+  }
+
+  .sidebar__editor-panel,
+  .sidebar__header,
+  .sidebar-review-tabs {
+    flex: 0 0 auto;
+  }
+
+  .sidebar__list {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .sidebar__row {
+    grid-template-columns: minmax(0, 1fr) minmax(4.2rem, auto) minmax(4.2rem, auto);
+    column-gap: 0.25rem;
+    padding-right: 0.35rem;
+  }
+
+  .sidebar__btn {
+    font-size: clamp(0.95rem, 2.3vw, 1.25rem);
+    padding: 0.55rem 0.5rem 0.55rem 0.85rem;
+  }
+
+  .sidebar__split-time,
+  .sidebar__time {
+    font-size: clamp(0.8rem, 1.9vw, 1rem);
+  }
+
+  .sidebar-review-tabs {
+    gap: 0.4rem;
+    padding: 0.5rem 0.55rem;
+  }
+
+  .sidebar-review-tabs__button {
+    min-width: 0;
+    margin: 0;
+    padding: 0.38rem 0.5rem;
+    font-size: clamp(0.72rem, 1.7vw, 0.88rem);
+    white-space: nowrap;
+  }
+
+  .segment {
+    border-radius: 0;
+    margin-bottom: 0.6rem;
+    padding: clamp(0.55rem, 1.4vw, 0.85rem);
+  }
+
+  .segment__title {
+    display: block;
+    padding: 0.35rem 0.55rem;
+    margin-bottom: 0.45rem;
+    text-align: center;
+    background-color: #f4f4f4;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.14);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+  }
+
+  .segment__title--name {
+    display: block;
+    margin: 0 0 0.35rem;
+    padding: 0;
+    text-align: center;
+    font-size: clamp(1.35rem, 4vw, 2rem);
+    line-height: 1.05;
+  }
+
+  .segment__title--info {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: clamp(0.45rem, 1.5vw, 0.8rem);
+    margin: 0;
+  }
+
+  .segment__title--time {
+    font-size: clamp(1.05rem, 3vw, 1.45rem);
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .segment__title--set {
+    display: none;
+  }
+
+  .sub-segment {
+    width: min(90%, 30rem);
+    max-width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 0.35rem;
+    font-size: clamp(0.85rem, 2vw, 1rem);
+    text-align: center;
+  }
+
+  .sub-segment__description {
+    margin-right: 0;
+    text-align: center;
+  }
+
+  .sub-segment__time {
+    flex: 1 1 100%;
+    min-width: 0;
+    grid-template-columns: 1fr auto;
+    gap: 0.45rem;
+  }
+
+  .sidebar__editor-panel {
+    display: none;
+  }
+}

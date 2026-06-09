@@ -1,4 +1,13 @@
 // Route Loader - Dynamically loads and populates route data from JSON
+import { StartScreenController } from '../controllers/start-screen-controller.js';
+import { ScrollNavigationController } from '../controllers/scroll-navigation-controller.js';
+import { RunSidebarController } from '../controllers/run-sidebar-controller.js';
+import { RouteEditorController } from '../controllers/route-editor-controller.js';
+import { ComparisonPanelController } from '../controllers/comparison-panel-controller.js';
+import { RouteSelectorService } from '../services/route-selector-service.js';
+import { RouteDataService } from '../services/route-data-service.js';
+import { RouteStorageService } from '../services/route-storage-service.js';
+import { RunSaveService } from '../services/run-save-service.js';
 import {
   deepClone,
   timeToSeconds,
@@ -6,29 +15,20 @@ import {
   secondsToTime,
   escapeHtml,
   toKebabCase,
-  formatDurationDelta,
+  getSegmentGoldSplit,
+  setSegmentGoldSplit,
   getSegmentPbSplitTime,
   setSegmentPbSplitTime,
   getSegmentPbSegmentDuration,
   setSegmentPbSegmentDuration,
-  getSegmentGoldSplit,
-  setSegmentGoldSplit,
   normalizeSegmentTimingFields,
-  normalizeRouteTimingFields
 } from '../utils/utils.js';
 import {
-  persistRouteDataToStorage as persistRouteDataToStorageHelper,
-  saveRunSessionToStorage as saveRunSessionToStorageHelper,
-  restoreRunSessionFromStorage as restoreRunSessionFromStorageHelper,
-  saveBaselineRouteToStorage,
-  restoreBaselineRouteFromStorage,
-  saveActiveRunRouteToStorage,
-  restoreActiveRunRouteFromStorage,
-  clearRunStorage
-} from '../persistence/storage.js';
-import { createRouteSegmentElement, createRouteSubSegmentElement, createSidebarSegmentItem, createRunCompleteComparisonsHtml, createComparisonsHtml } from '../ui/ui.js';
+  createRouteSegmentElement,
+  createRouteSubSegmentElement,
+} from '../ui/ui.js';
 
-class RouteLoader {
+class SplitTimerController {
   constructor(options = {}) {
     this.routeData = null;
     this.currentRouteFilename = 'act-1-100-percent.json';
@@ -46,12 +46,13 @@ class RouteLoader {
     this.lastCompletedSegmentId = null;
     this.hasRunStarted = false;
     this.runComplete = null;
+    this.lastCompletedRunReview = null;
+    this.sidebarReviewTab = 'current-run';
     this.sessionGoldSplits = new Set();
     this.sessionSetSegments = new Set();
     this.sessionBestBySegment = new Map();
     this.runDataSnapshot = null;
     this.personalBestAtRunStart = '';
-    this.observer = null;
     this.suppressObserverUntil = 0;
     this.sidebarContextMenu = null;
     this.sidebarContextTarget = null;
@@ -62,55 +63,92 @@ class RouteLoader {
     this.baselineRouteStorageKey = 'stopwatch:baselineRouteData';
     this.activeRunRouteStorageKey = 'stopwatch:activeRunRouteData';
     this.runSessionStorageKey = 'stopwatch:runSession';
+    this.startScreenController = options.startScreenController || null;
+    this.scrollNavigationController = options.scrollNavigationController || null;
+    this.runSidebarController = options.runSidebarController || null;
+    this.routeEditorController = options.routeEditorController || null;
+    this.comparisonPanelController = options.comparisonPanelController || null;
     this.storageProvider = options.storageProvider || (typeof globalThis !== 'undefined' && globalThis.localStorage ? globalThis.localStorage : null);
+    this.routeStorageService = options.routeStorageService || new RouteStorageService({
+      storageProvider: this.storageProvider,
+      keys: {
+        routeData: this.routeStorageKey,
+        baselineRouteData: this.baselineRouteStorageKey,
+        activeRunRouteData: this.activeRunRouteStorageKey,
+        runSession: this.runSessionStorageKey
+      }
+    });
+    this.routeDataService = options.routeDataService || new RouteDataService();
+    this.routeSelectorService = options.routeSelectorService || new RouteSelectorService();
+    this.runSaveService = options.runSaveService || new RunSaveService();
+    this.routeFileSaver = options.routeFileSaver || null;
   }
 
   async init() {
     try {
+      // 1. Load the initial route data from the JSON file.
       await this.populateRouteSelectorFromServer();
       await this.loadRouteData(this.currentRouteFilename);
       this.ensureRouteStatsStructure();
       this.updateSegmentDurations();
-
-      // Fresh page load should always start clean.
-      // Do not restore stale active-run state from localStorage.
       this.resetRunSessionState();
 
-      this.routeContainer = document.querySelector('.route');
-      this.sidebarList = document.querySelector('.sidebar__list');
-      this.comparisonsContainer = document.querySelector('.comparisons');
+      // 2. Cache DOM references needed by controllers and UI methods.
       this.startScreen = document.getElementById('start-screen');
-      this.appShell = document.getElementById('app-shell');
       this.startRouteSelector = document.getElementById('start-route-selector');
-      this.startRouteButton = document.getElementById('start-route-btn');
       this.startCreateRouteButton = document.getElementById('start-create-route-btn');
+      this.startRouteButton = document.getElementById('start-route-btn');
+      this.appShell = document.getElementById('app-shell');
+      this.routeContainer = document.querySelector('.route');
+      this.comparisonsContainer = document.querySelector('.comparisons');
+      this.sidebarList = document.querySelector('.sidebar__list');
+      this.sidebarContextMenu = document.getElementById('sidebar-context-menu');
+      this.renameSidebarItemModal = document.getElementById('rename-sidebar-item-modal');
+      this.renameSidebarItemForm = document.getElementById('rename-sidebar-item-form');
+      this.renameSidebarItemTitle = document.getElementById('rename-sidebar-item-title');
+      this.renameSidebarItemInput = document.getElementById('rename-sidebar-item-input');
+      this.renameSidebarItemCancelButton = document.getElementById('rename-sidebar-item-cancel');
 
-      this.resetRouteProgressToFirstSegment();
+      // 3. Initialize controllers that need DOM references.
+      this.initRunSidebarController();
+      this.initComparisonPanelController();
+      this.initScrollNavigationController();
+      this.initRouteEditorController();
 
+      // 4. Register app event listeners and controller-driven UI behavior.
       this.initStopwatchSync();
       this.initEditorControls();
       this.initSidebarContextMenu();
+      this.initRenameSidebarItemModal()
       this.initRouteSelector();
       this.initStartScreen();
 
+      // 5. Prepare initial route state and render the app UI.
+      this.resetRouteProgressToFirstSegment();
       this.populateRoute();
       this.populateSidebar();
       this.renderComparisonsPanel();
       this.refreshEditorSegmentOptions();
+
+      // 6. Start observing rendered route segments.
+      // This must happen after populateRoute(), because the .segment elements
+      // need to exist before the observer can attach to them.
       this.initScrollObserver();
 
+      // 7. Sync the UI to the first segment without scrolling or saving.
       await this.resetRouteProgressToFirstSegmentAndRender({
         scroll: false,
         save: false
       });
 
+      // 8. Store clean in-browser state for session recovery/reset behavior.
       // On fresh app load, treat the JSON file as the clean source of truth.
       // Do not write the loaded route back to disk.
       this.persistRouteDataToStorage();
       this.saveBaselineRouteToStorage();
       this.saveActiveRunRouteToStorage();
     } catch (error) {
-      console.error('Failed to initialize route loader:', error);
+      console.error('Failed to initialize SplitTimerController:', error);
     }
   }
 
@@ -122,43 +160,157 @@ class RouteLoader {
   }
 
   initStartScreen() {
-    if (!this.startRouteButton ||!this.startRouteSelector ||!this.startScreen ||!this.appShell) {
-      return;
-    }
-
-    this.populateStartRouteSelectorFromMainSelector();
-    this.startRouteSelector.focus();
-
-    const openSelectedRoute = async () => {
-      const selectedRoute = this.startRouteSelector.value;
-      if (!selectedRoute) return;
-  
-      if (!this.confirmRouteSwitchIfRunActive()) return;
-      await this.switchRoute(selectedRoute);
-  
-      this.showMainApp();
-  
-      window.dispatchEvent(new CustomEvent('stopwatch:clear'));
-    };
-
-    this.startRouteButton.addEventListener('click', openSelectedRoute);
-
-    this.startRouteSelector.addEventListener('keydown', async (event) => {
-      if (event.key !== 'Enter') return;
-
-      event.preventDefault();
-      await openSelectedRoute();
+    this.startScreenController = this.startScreenController || new StartScreenController({
+      startRouteButton: this.startRouteButton,
+      startRouteSelector: this.startRouteSelector,
+      startScreen: this.startScreen,
+      appShell: this.appShell,
+      startCreateRouteButton: this.startCreateRouteButton,
+      populateStartRouteSelector: () => this.populateStartRouteSelectorFromMainSelector(),
+      confirmRouteSwitch: () => this.confirmRouteSwitchIfRunActive(),
+      switchRoute: (selectedRoute) => this.switchRoute(selectedRoute),
+      showCreateRouteModal: (options) => this.showCreateRouteModal(options),
+      dispatchEvent: (event) => window.dispatchEvent(event),
+      CustomEventClass: CustomEvent
     });
 
-    if (this.startCreateRouteButton) {
-      this.startCreateRouteButton.addEventListener('click', () => {
-        this.showCreateRouteModal({
-          onRouteCreated: () => {
-            this.showMainApp();
-          }
+    this.startScreenController.init();
+  }
+
+  initScrollNavigationController() {
+    this.scrollNavigationController = this.scrollNavigationController || new ScrollNavigationController({
+      routeContainer: this.routeContainer,
+      getSuppressObserverUntil: () => this.suppressObserverUntil,
+      onVisibleSegmentChange: (segmentId) => this.setActiveSidebarButton(segmentId, false),
+      onError: (error) => {
+        console.error('Failed to persist current segment from observer:', error);
+      }
+    });
+
+    this.scrollNavigationController.setRouteContainer(this.routeContainer);
+  }
+
+  initRunSidebarController() {
+    this.runSidebarController = this.runSidebarController || new RunSidebarController({
+      sidebarList: this.sidebarList,
+      getActiveTab: () => this.sidebarReviewTab,
+      setActiveTab: (tab) => {
+        this.sidebarReviewTab = tab;
+      },
+      getLastCompletedRunReview: () => this.lastCompletedRunReview,
+      onTabChange: () => this.populateSidebar()
+    });
+
+    this.runSidebarController.setSidebarList(this.sidebarList);
+  }
+
+  initRouteEditorController() {
+    this.routeEditorController = this.routeEditorController || new RouteEditorController({
+      getSegments: () => this.routeData?.segments || [],
+      getNextSegmentId: () => this.getNextSegmentId(),
+
+      onAddSegment: async ({ id, name }) => {
+        this.routeData.segments.push({
+          id,
+          name,
+          time: '',
+          duration: '',
+          bestTime: '',
+          allowSetTime: true,
+          completed: false,
+          subSegments: []
         });
-      });
-    }
+
+        await this.handleRouteStructureChanged();
+      },
+
+      onAddSubsegment: async ({ parentId, description, allowSetTime }) => {
+        const targetSegment = this.routeData.segments.find((segment) => (
+          Number(segment.id) === Number(parentId)
+        ));
+
+        if (!targetSegment) return;
+
+        targetSegment.subSegments.push({
+          description,
+          time: '',
+          completed: false,
+          allowSetTime
+        });
+
+        await this.handleRouteStructureChanged();
+      },
+
+      onDeleteSegment: async ({ segmentId }) => {
+        this.routeData.segments = this.routeData.segments.filter((segment) => (
+          Number(segment.id) !== Number(segmentId)
+        ));
+
+        this.reindexSegmentIds();
+
+        const fallbackSegment = this.routeData.segments[0] || null;
+
+        this.routeData.currentSegmentId = fallbackSegment
+          ? Number(fallbackSegment.id)
+          : null;
+
+        this.routeData.currentSegmentName = fallbackSegment
+          ? fallbackSegment.name
+          : '';
+
+        await this.handleRouteStructureChanged();
+      },
+
+      sidebarContextMenu: this.sidebarContextMenu,
+
+      getSidebarContextTarget: () => this.sidebarContextTarget,
+
+      setSidebarContextTarget: (target) => {
+        this.sidebarContextTarget = target;
+      },
+
+      onRenameContextTarget: async (target) => {
+        this.routeEditorController.openRenameSidebarItemModal(target);
+      },
+
+      onDeleteContextTarget: async (target) => {
+        await this.deleteSidebarContextTarget(target);
+      },
+
+      onClearSplitContextTarget: async (target) => {
+        if (!target || target.type !== 'segment') return;
+
+        await this.clearSegmentSplitFromContextTarget(target);
+      },
+
+      renameSidebarItemModal: this.renameSidebarItemModal,
+      renameSidebarItemForm: this.renameSidebarItemForm,
+      renameSidebarItemTitle: this.renameSidebarItemTitle,
+      renameSidebarItemInput: this.renameSidebarItemInput,
+      renameSidebarItemCancelButton: this.renameSidebarItemCancelButton,
+
+      getRenameSidebarItemTarget: () => this.renameSidebarItemTarget,
+
+      setRenameSidebarItemTarget: (target) => {
+        this.renameSidebarItemTarget = target;
+      },
+
+      onRenameSidebarItem: async ({ target, name }) => {
+        await this.renameSidebarContextTarget(target, name);
+      }
+    });
+  }
+
+  initRenameSidebarItemModal() {
+    this.routeEditorController.initRenameSidebarItemModal();
+  }
+
+  initComparisonPanelController() {
+    this.comparisonPanelController = this.comparisonPanelController || new ComparisonPanelController({
+      comparisonsContainer: this.comparisonsContainer
+    });
+
+    this.comparisonPanelController.setComparisonsContainer(this.comparisonsContainer);
   }
 
   showMainApp() {
@@ -173,27 +325,9 @@ class RouteLoader {
 
   async loadRouteData(filename = 'act-1-100-percent.json') {
     try {
-      // Set the current route filename
       this.currentRouteFilename = filename;
       this.expandedSidebarSegmentIds = new Set();
-
-      // Load data from specified route file
-      const response = await fetch(`./data/routes/${filename}`);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
-
-      // Support both shapes:
-      // 1) { route: { ... } }
-      // 2) { ...routeData }
-      this.routeData = data.route || data;
-
-      if (!this.routeData || !Array.isArray(this.routeData.segments)) {
-        throw new Error(`Invalid ${filename} format: missing route segments`);
-      }
-      
-      normalizeRouteTimingFields(this.routeData);
+      this.routeData = await this.routeDataService.loadRouteData(filename);
     } catch (error) {
       this.clearRunSnapshot();
       throw error;
@@ -201,59 +335,31 @@ class RouteLoader {
   }
 
   persistRouteDataToStorage() {
-    persistRouteDataToStorageHelper(this.routeData, this.routeStorageKey, this.storageProvider);
+    this.routeStorageService.persistRouteData(this.routeData);
   }
 
   saveBaselineRouteToStorage() {
-    saveBaselineRouteToStorage(
-      this.routeData,
-      this.baselineRouteStorageKey,
-      this.storageProvider
-    );
+    this.routeStorageService.saveBaselineRoute(this.routeData);
   }
 
   restoreBaselineRouteFromStorage() {
-    return restoreBaselineRouteFromStorage(
-      this.baselineRouteStorageKey,
-      this.storageProvider
-    );
+    return this.routeStorageService.restoreBaselineRoute();
   }
 
   saveActiveRunRouteToStorage() {
-    saveActiveRunRouteToStorage(
-      this.routeData,
-      this.activeRunRouteStorageKey,
-      this.storageProvider
-    );
+    this.routeStorageService.saveActiveRunRoute(this.routeData);
   }
 
   restoreActiveRunRouteFromStorage() {
-    return restoreActiveRunRouteFromStorage(
-      this.activeRunRouteStorageKey,
-      this.storageProvider
-    );
+    return this.routeStorageService.restoreActiveRunRoute();
   }
 
   clearRunStorage() {
-    clearRunStorage(
-      [
-        this.runSessionStorageKey,
-        this.activeRunRouteStorageKey
-      ],
-      this.storageProvider
-    );
+    this.routeStorageService.clearRunStorage();
   }
 
   clearAllRouteStorage() {
-    clearRunStorage(
-      [
-        this.routeStorageKey,
-        this.baselineRouteStorageKey,
-        this.activeRunRouteStorageKey,
-        this.runSessionStorageKey
-      ],
-      this.storageProvider
-    );
+    this.routeStorageService.clearAllRouteStorage();
   }
 
   async saveActiveRunState() {
@@ -324,6 +430,16 @@ class RouteLoader {
     this.clearRunStorage();
   }
 
+  hasSetSegmentsInRouteData(routeData) {
+    if (!routeData || !Array.isArray(routeData.segments)) {
+      return false;
+    }
+
+    return routeData.segments.some((segment) => (
+      this.sessionSetSegments.has(Number(segment.id))
+    ));
+  }
+
   resetRouteProgressToFirstSegment() {
     const firstSegment = this.routeData && Array.isArray(this.routeData.segments)
       ? this.routeData.segments[0]
@@ -333,6 +449,40 @@ class RouteLoader {
 
     this.routeData.currentSegmentId = Number(firstSegment.id);
     this.routeData.currentSegmentName = firstSegment.name;
+  }
+
+  scrollRouteToSegment(segmentId, options = {}) {
+    const routeContainer = this.routeContainer || document.querySelector('.route');
+
+    const segmentDomId = String(segmentId).startsWith('segment-')
+      ? String(segmentId)
+      : `segment-${segmentId}`;
+
+    const target = document.getElementById(segmentDomId);
+
+    if (!routeContainer || !target) return;
+
+    this.suppressObserverUntil = Date.now() + 1500;
+
+    const routeRect = routeContainer.getBoundingClientRect();
+    const targetRect = target.getBoundingClientRect();
+
+    const offset = options.block === 'center'
+      ? (targetRect.height / 2) - (routeRect.height / 2)
+      : 0;
+
+    const nextScrollTop = Math.max(
+      0,
+      routeContainer.scrollTop +
+      targetRect.top -
+      routeRect.top +
+      offset
+    );
+
+    routeContainer.scrollTo({
+      top: nextScrollTop,
+      behavior: options.behavior || 'smooth'
+    });
   }
 
   async syncUiToCurrentSegment({ scroll = true } = {}) {
@@ -350,11 +500,7 @@ class RouteLoader {
     await this.setActiveSidebarButton(segmentDomId, false);
 
     if (scroll) {
-      const target = document.getElementById(segmentDomId);
-
-      if (target) {
-        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
+      this.scrollRouteToSegment(segmentDomId);
     }
   }
 
@@ -367,9 +513,31 @@ class RouteLoader {
     }
   }
 
+  getRouteFileSaver() {
+    if (this.routeFileSaver) {
+      return this.routeFileSaver;
+    }
+
+    if (
+      typeof window !== 'undefined' &&
+      window.fileSaver &&
+      typeof window.fileSaver.saveRouteData === 'function'
+    ) {
+      return window.fileSaver;
+    }
+
+    return null;
+  }
+
   async saveRouteDataToFile(options = {}) {
-    if (window.fileSaver && typeof window.fileSaver.saveRouteData === 'function') {
-      await window.fileSaver.saveRouteData(this.routeData, this.currentRouteFilename, options);
+    const routeFileSaver = this.getRouteFileSaver();
+
+    if (routeFileSaver && typeof routeFileSaver.saveRouteData === 'function') {
+      await routeFileSaver.saveRouteData(
+        this.routeData,
+        this.currentRouteFilename,
+        options
+      );
     }
   }
 
@@ -392,24 +560,65 @@ class RouteLoader {
 
   async deleteCompletedRunData() {
     this.restoreBaselineRouteState();
+
+    this.captureLastCompletedRunReview({
+      action: 'deleted-run-data'
+    });
+
+    this.sidebarReviewTab = 'last-run';
+
     this.resetRunSessionState();
 
     this.populateRoute();
     await this.resetRouteProgressToFirstSegmentAndRender({ scroll: true, save: false });
 
     window.dispatchEvent(new CustomEvent('stopwatch:clear'));
-
-    await this.saveCleanRouteState({ force: true });
   }
 
   async restartRun() {
-    this.resetRunSessionState();
-    this.restoreBaselineRouteState();
+    window.dispatchEvent(new CustomEvent('stopwatch:stop'));
 
+    this.restoreBaselineRouteState();
+    this.resetRunSessionState();
     this.populateRoute();
-    await this.resetRouteProgressToFirstSegmentAndRender({ scroll: true, save: true });
+
+    await this.resetRouteProgressToFirstSegmentAndRender({
+      scroll: true,
+      save: false
+    });
 
     window.dispatchEvent(new CustomEvent('stopwatch:clear'));
+  }
+
+  captureLastCompletedRunReview({ action = '' } = {}) {
+    const activeRunRouteData = this.restoreActiveRunRouteFromStorage();
+
+    const setSegmentIds = new Set(
+      [...this.sessionSetSegments].map((segmentId) => Number(segmentId))
+    );
+
+    const recordedSegments = activeRunRouteData && Array.isArray(activeRunRouteData.segments)
+      ? activeRunRouteData.segments.filter((segment) => (
+        setSegmentIds.has(Number(segment.id))
+      ))
+      : [];
+
+    const hasRecordedRunData = recordedSegments.length > 0;
+
+    this.lastCompletedRunReview = {
+      action,
+      runComplete: this.runComplete ? deepClone(this.runComplete) : null,
+      routeData: hasRecordedRunData
+        ? {
+          ...deepClone(activeRunRouteData),
+          segments: deepClone(recordedSegments)
+        }
+        : null,
+      hasRecordedRunData,
+      capturedAt: new Date().toISOString()
+    };
+
+    this.sidebarReviewTab = 'last-run';
   }
 
   updateSessionGoldSplitState(segment) {
@@ -427,42 +636,11 @@ class RouteLoader {
   }
 
   updateGoldSplitsFromCompletedRun(targetRouteData, activeRunRouteData, baselineRouteData) {
-    if (
-      !targetRouteData ||
-      !activeRunRouteData ||
-      !baselineRouteData ||
-      !Array.isArray(targetRouteData.segments) ||
-      !Array.isArray(activeRunRouteData.segments) ||
-      !Array.isArray(baselineRouteData.segments)
-    ) {
-      return;
-    }
-
-    targetRouteData.segments.forEach((targetSegment) => {
-      const segmentId = Number(targetSegment.id);
-
-      if (!this.sessionSetSegments.has(segmentId)) {
-        return;
-      }
-
-      const activeSegment = activeRunRouteData.segments.find(
-        (segment) => Number(segment.id) === segmentId
-      );
-
-      const baselineSegment = baselineRouteData.segments.find(
-        (segment) => Number(segment.id) === segmentId
-      );
-
-      if (!activeSegment || !baselineSegment) return;
-
-      const activeDuration = getSegmentPbSegmentDuration(activeSegment);
-      const baselineGoldSplit = getSegmentGoldSplit(baselineSegment);
-
-      if (activeDuration && isBetterTime(activeDuration, baselineGoldSplit)) {
-        setSegmentGoldSplit(targetSegment, activeDuration);
-      } else {
-        setSegmentGoldSplit(targetSegment, baselineGoldSplit);
-      }
+    this.runSaveService.updateGoldSplitsFromCompletedRun({
+      targetRouteData,
+      activeRunRouteData,
+      baselineRouteData,
+      sessionSetSegments: this.sessionSetSegments
     });
   }
 
@@ -495,25 +673,70 @@ class RouteLoader {
   }
 
   async endRunManually() {
-    const currentRunTime = this.liveStopwatchTime || this.getCurrentStopwatchTime();
-    const baselinePersonalBest = this.personalBestAtRunStart || this.routeData.personalBest;
+    const currentRunTime = this.getCompletedRunFinalTime();
+    const baselinePersonalBest = this.getBaselinePersonalBestForCompletedRun();
+    const isNewPB = this.isNewPersonalBest(currentRunTime, baselinePersonalBest);
 
-    this.runComplete = {
+    this.runComplete = this.runSaveService.createRunCompleteState({
       finalTime: currentRunTime,
-      isNewPB: false,
-      previousPB: baselinePersonalBest || '--:--:--'
-    };
+      isNewPB,
+      previousPB: baselinePersonalBest
+    });
 
     this.hasRunStarted = false;
 
-    // Important:
-    // Do NOT clear sessionGoldSplits, sessionSetSegments, or sessionBestBySegment here.
-    // The Run Complete card still needs that data if the user chooses "End Run & Save Gold".
-    this.resetRouteProgressToFirstSegment();
-    this.populateSidebar();
-    this.renderComparisonsPanel();
+    window.dispatchEvent(new CustomEvent('stopwatch:stop'));
 
-    window.dispatchEvent(new CustomEvent('stopwatch:clear'));
+    this.renderComparisonsPanel();
+    this.saveRunSessionToStorage();
+  }
+
+  isNewPersonalBest(finalTime, previousPB) {
+    const finalSeconds = timeToSeconds(finalTime);
+    const previousSeconds = timeToSeconds(previousPB);
+
+    if (finalSeconds === null) return false;
+
+    return previousSeconds === null || finalSeconds < previousSeconds;
+  }
+
+  isValidCompletedRunTime(time) {
+    const seconds = timeToSeconds(time);
+
+    return seconds !== null && seconds > 0;
+  }
+
+  getCompletedRunFinalTime(segment = null) {
+    const segmentSplitTime = segment ? getSegmentPbSplitTime(segment) : '';
+    const liveStopwatchTime = this.liveStopwatchTime;
+
+    if (this.isValidCompletedRunTime(segmentSplitTime)) {
+      return segmentSplitTime;
+    }
+
+    if (this.isValidCompletedRunTime(liveStopwatchTime)) {
+      return liveStopwatchTime;
+    }
+
+    if (typeof document !== 'undefined') {
+      const currentStopwatchTime = this.getCurrentStopwatchTime();
+
+      if (this.isValidCompletedRunTime(currentStopwatchTime)) {
+        return currentStopwatchTime;
+      }
+    }
+
+    return '--:--:--';
+  }
+
+  getBaselinePersonalBestForCompletedRun() {
+    // If a run is/was in progress, trust the PB captured at run start.
+    // An empty string is meaningful: it means this was a first run.
+    if (this.runDataSnapshot || this.hasRunStarted) {
+      return this.personalBestAtRunStart || '';
+    }
+
+    return this.routeData?.personalBest || '';
   }
 
   async resetRun() {
@@ -544,14 +767,18 @@ class RouteLoader {
       await this.saveCleanRouteState({ force: true });
     }
 
+    this.captureLastCompletedRunReview({
+      action: this.runComplete?.isNewPB ? 'saved-pb' : 'saved-gold-splits'
+    });
+
+    this.sidebarReviewTab = 'last-run';
+
     this.resetRunSessionState();
 
     this.populateRoute();
     await this.resetRouteProgressToFirstSegmentAndRender({ scroll: true, save: false });
 
     window.dispatchEvent(new CustomEvent('stopwatch:clear'));
-
-    await this.saveCleanRouteState({ force: true });
   }
 
   async cancelRunMidway() {
@@ -627,190 +854,15 @@ class RouteLoader {
   }
 
   initEditorControls() {
-    const addSegmentForm = document.getElementById('add-segment-form');
-    const addSegmentInput = document.getElementById('new-segment-name');
-    const addSubsegmentForm = document.getElementById('add-subsegment-form');
-    const addSubsegmentParent = document.getElementById('subsegment-parent-id');
-    const addSubsegmentInput = document.getElementById('new-subsegment-description');
-    const addSubsegmentAllowSetTime = document.getElementById('new-subsegment-allow-set-time');
-    const deleteSegmentForm = document.getElementById('delete-segment-form');
-    const deleteSegmentSelect = document.getElementById('delete-segment-id');
-
-    if (addSegmentForm && addSegmentInput) {
-      addSegmentForm.addEventListener('submit', async (event) => {
-        event.preventDefault();
-        const name = addSegmentInput.value.trim();
-        if (!name) return;
-
-        this.routeData.segments.push({
-          id: this.getNextSegmentId(),
-          name,
-          time: '',
-          duration: '',
-          bestTime: '',
-          allowSetTime: true,
-          completed: false,
-          subSegments: []
-        });
-
-        addSegmentInput.value = '';
-        await this.handleRouteStructureChanged();
-      });
-    }
-
-    if (addSubsegmentForm && addSubsegmentParent && addSubsegmentInput) {
-      addSubsegmentForm.addEventListener('submit', async (event) => {
-        event.preventDefault();
-
-        const parentId = Number(addSubsegmentParent.value);
-        const description = addSubsegmentInput.value.trim();
-        const allowSetTime = addSubsegmentAllowSetTime ? addSubsegmentAllowSetTime.checked : false;
-        if (!parentId || !description) return;
-
-        const targetSegment = this.routeData.segments.find((segment) => segment.id === parentId);
-        if (!targetSegment) return;
-
-        targetSegment.subSegments.push({
-          description,
-          time: '',
-          completed: false,
-          allowSetTime
-        });
-
-        addSubsegmentInput.value = '';
-        if (addSubsegmentAllowSetTime) addSubsegmentAllowSetTime.checked = false;
-        await this.handleRouteStructureChanged();
-      });
-    }
-
-    if (deleteSegmentForm && deleteSegmentSelect) {
-      deleteSegmentForm.addEventListener('submit', async (event) => {
-        event.preventDefault();
-
-        const segmentId = Number(deleteSegmentSelect.value);
-        if (!segmentId) return;
-
-        const segmentName = deleteSegmentSelect.options[deleteSegmentSelect.selectedIndex].textContent;
-        if (!confirm(`Delete segment "${segmentName}"? This cannot be undone.`)) return;
-
-        this.routeData.segments = this.routeData.segments.filter((segment) => segment.id !== segmentId);
-        this.reindexSegmentIds();
-        const fallbackSegment = this.routeData.segments[0] || null;
-        this.routeData.currentSegmentId = fallbackSegment ? Number(fallbackSegment.id) : null;
-        this.routeData.currentSegmentName = fallbackSegment ? fallbackSegment.name : '';
-
-        await this.handleRouteStructureChanged();
-      });
-    }
+    this.routeEditorController.initEditorControls();
   }
 
   initSidebarContextMenu() {
-    this.sidebarContextMenu = document.getElementById('sidebar-context-menu');
-    this.renameSidebarItemModal = document.getElementById('rename-sidebar-item-modal');
-
-    const editButton = document.getElementById('sidebar-context-edit');
-    const clearSplitButton = document.getElementById('sidebar-context-clear-split');
-    const deleteButton = document.getElementById('sidebar-context-delete');
-    const renameForm = document.getElementById('rename-sidebar-item-form');
-    const renameInput = document.getElementById('rename-sidebar-item-input');
-    const renameTitle = document.getElementById('rename-sidebar-item-title');
-    const cancelRenameButton = document.getElementById('rename-sidebar-item-cancel');
-
-    if (!this.sidebarContextMenu || !this.renameSidebarItemModal || !editButton || !clearSplitButton || !deleteButton || !renameForm || !renameInput || !renameTitle || !cancelRenameButton) {
-      return;
-    }
-
-    editButton.addEventListener('click', () => {
-      const target = this.sidebarContextTarget;
-      this.hideSidebarContextMenu();
-      if (!target) return;
-      this.showRenameSidebarItemModal(target);
-    });
-
-    deleteButton.addEventListener('click', async () => {
-      const target = this.sidebarContextTarget;
-      this.hideSidebarContextMenu();
-      if (!target) return;
-      await this.deleteSidebarContextTarget(target);
-    });
-
-    clearSplitButton.addEventListener('click', async () => {
-      const target = this.sidebarContextTarget;
-      this.hideSidebarContextMenu();
-      if (!target || target.type !== 'segment') return;
-      await this.clearSegmentSplitFromContextTarget(target);
-    });
-
-    document.addEventListener('click', (event) => {
-      if (!this.sidebarContextMenu || this.sidebarContextMenu.hidden) return;
-      if (this.sidebarContextMenu.contains(event.target)) return;
-      this.hideSidebarContextMenu();
-    });
-
-    document.addEventListener('scroll', () => {
-      this.hideSidebarContextMenu();
-    }, true);
-
-    window.addEventListener('resize', () => {
-      this.hideSidebarContextMenu();
-    });
-
-    document.addEventListener('keydown', (event) => {
-      if (event.key !== 'Escape') return;
-      this.hideSidebarContextMenu();
-      if (this.renameSidebarItemModal?.open) {
-        this.renameSidebarItemModal.close();
-      }
-    });
-
-    renameForm.addEventListener('submit', async (event) => {
-      event.preventDefault();
-
-      const nextName = renameInput.value.trim();
-      if (!nextName) return;
-
-      await this.renameSidebarContextTarget(nextName);
-      this.renameSidebarItemModal.close();
-    });
-
-    cancelRenameButton.addEventListener('click', () => {
-      this.renameSidebarItemModal.close();
-    });
-
-    this.renameSidebarItemModal.addEventListener('close', () => {
-      renameForm.reset();
-      renameTitle.textContent = 'Rename Item';
-      this.renameSidebarItemTarget = null;
-    });
+    this.routeEditorController.initSidebarContextMenu();
   }
 
   openSidebarContextMenu(event, target) {
-    if (!this.sidebarContextMenu) return;
-
-    event.preventDefault();
-    this.sidebarContextTarget = target;
-
-    const editButton = document.getElementById('sidebar-context-edit');
-    const clearSplitButton = document.getElementById('sidebar-context-clear-split');
-    const deleteButton = document.getElementById('sidebar-context-delete');
-    if (editButton) {
-      editButton.textContent = target.type === 'segment' ? 'Edit Segment Name' : 'Edit Sub-Segment Name';
-    }
-    if (clearSplitButton) {
-      clearSplitButton.hidden = target.type !== 'segment';
-    }
-    if (deleteButton) {
-      deleteButton.textContent = target.type === 'segment' ? 'Delete Segment' : 'Delete Sub-Segment';
-    }
-
-    this.sidebarContextMenu.hidden = false;
-
-    const menuRect = this.sidebarContextMenu.getBoundingClientRect();
-    const left = Math.min(event.clientX, window.innerWidth - menuRect.width - 12);
-    const top = Math.min(event.clientY, window.innerHeight - menuRect.height - 12);
-
-    this.sidebarContextMenu.style.left = `${Math.max(8, left)}px`;
-    this.sidebarContextMenu.style.top = `${Math.max(8, top)}px`;
+    this.routeEditorController.openSidebarContextMenu(event, target);
   }
 
   hideSidebarContextMenu() {
@@ -845,34 +897,27 @@ class RouteLoader {
   }
 
   showRenameSidebarItemModal(target) {
-    if (!this.renameSidebarItemModal) return;
-
-    const renameInput = document.getElementById('rename-sidebar-item-input');
-    const renameTitle = document.getElementById('rename-sidebar-item-title');
-    if (!renameInput || !renameTitle) return;
-
-    this.renameSidebarItemTarget = target;
-    renameTitle.textContent = target.type === 'segment' ? 'Rename Segment' : 'Rename Sub-Segment';
-    renameInput.value = this.getSidebarContextTargetName(target);
-    this.renameSidebarItemModal.showModal();
-    renameInput.focus();
-    renameInput.select();
+    this.routeEditorController.openRenameSidebarItemModal(target);
   }
 
-  async renameSidebarContextTarget(nextName) {
-    const target = this.renameSidebarItemTarget;
-    if (!target) return;
+  async renameSidebarContextTarget(target, nextName) {
+    if (!target || !nextName) return;
 
     if (target.type === 'segment') {
       const segment = this.getSegmentById(target.segmentId);
+
       if (!segment) return;
+
       segment.name = nextName;
+
       if (Number(this.routeData.currentSegmentId) === Number(segment.id)) {
         this.routeData.currentSegmentName = nextName;
       }
     } else {
       const { subSegment } = this.getSubSegmentTarget(target);
+
       if (!subSegment) return;
+
       subSegment.description = nextName;
     }
 
@@ -913,82 +958,59 @@ class RouteLoader {
   }
 
   async clearSegmentSplitFromContextTarget(target) {
+    if (!target || target.type !== 'segment') return;
+
     const segment = this.getSegmentById(target.segmentId);
+
     if (!segment) return;
 
-    if (!confirm(`Clear split data for segment "${segment.name}"? This removes its saved time and gold split.`)) {
+    if (!confirm(`Clear gold split for segment "${segment.name}"?`)) {
       return;
     }
 
-    setSegmentPbSplitTime(segment, '');
-    setSegmentPbSegmentDuration(segment, '');
-    setSegmentGoldSplit(segment, '');
+    const activeSegmentId = Number(this.routeData.currentSegmentId) || Number(segment.id);
 
-    if (Object.prototype.hasOwnProperty.call(segment, 'segmentDuration')) {
-      segment.segmentDuration = '';
-    }
+    setSegmentGoldSplit(segment, '');
+    segment.goldSegmentMs = null;
 
     const numericSegmentId = Number(segment.id);
     this.sessionGoldSplits.delete(numericSegmentId);
-    this.sessionSetSegments.delete(numericSegmentId);
     this.sessionBestBySegment.delete(numericSegmentId);
     this.saveRunSessionToStorage();
 
     this.runComplete = null;
-    this.updateSegmentDurations();
+    this.updateRouteRunStats();
+
+    this.suppressObserverUntil = Date.now() + 1500;
+
     this.rerenderRouteUI();
+
+    await this.setActiveSidebarButton(`segment-${activeSegmentId}`, false);
+
+    this.suppressObserverUntil = Date.now() + 1500;
+
     this.persistRouteDataToStorage();
     await this.saveRouteDataToFile({ force: true });
   }
 
   populateStartRouteSelectorFromMainSelector() {
-    const mainSelector = document.getElementById('route-selector');
-    if(!this.startRouteSelector || !mainSelector) return;
+    const routeSelector = document.getElementById('route-selector');
 
-    this.startRouteSelector.innerHTML = '';
-
-    Array.from(mainSelector.options)
-      .filter((option) => option.value !== '__create_new__')
-      .forEach((option) => {
-        const startOption = document.createElement('option');
-        startOption.value = option.value;
-        startOption.textContent = option.textContent;
-        this.startRouteSelector.appendChild(startOption);
-      });
-
-    if (this.currentRouteFilename) {
-      this.startRouteSelector.value = this.currentRouteFilename
-    }
+    this.routeSelectorService.populateStartRouteSelectorFromMainSelector({
+      mainSelector: routeSelector,
+      startRouteSelector: this.startRouteSelector,
+      currentRouteFilename: this.currentRouteFilename
+    });
   }
 
   async populateRouteSelectorFromServer() {
-    const routeSelector = document.getElementById('route-selector');
-    if (!routeSelector) return;
-
     try {
-      const response = await fetch('/api/list-routes');
-      if (!response.ok) throw new Error('Failed to fetch route list');
-      const { routes } = await response.json();
+      const routeSelector = document.getElementById('route-selector');
 
-      // Clear existing route options (keep the create-new sentinel if present)
-      Array.from(routeSelector.options)
-        .filter(o => o.value !== '__create_new__')
-        .forEach(o => o.remove());
-
-      const createOption = routeSelector.querySelector('option[value="__create_new__"]');
-
-      routes.forEach(({ filename, name }) => {
-        const option = document.createElement('option');
-        option.value = filename;
-        option.textContent = name;
-        routeSelector.insertBefore(option, createOption);
+      this.currentRouteFilename = await this.routeSelectorService.populateRouteSelectorFromServer({
+        routeSelector,
+        currentRouteFilename: this.currentRouteFilename
       });
-
-      // Default selection to first route
-      if (routes.length > 0) {
-        this.currentRouteFilename = routes[0].filename;
-        routeSelector.value = this.currentRouteFilename;
-      }
     } catch (error) {
       console.error('Failed to populate route selector:', error);
     }
@@ -1113,7 +1135,7 @@ class RouteLoader {
       if (this.startRouteSelector) {
         this.startRouteSelector.value = filename;
       }
-      
+
       // Clear session state when switching routes
       this.sessionGoldSplits.clear();
       this.sessionSetSegments.clear();
@@ -1121,6 +1143,8 @@ class RouteLoader {
       this.runPaceState = 'neutral';
       this.lastCompletedSegmentId = null;
       this.runComplete = null;
+      this.lastCompletedRunReview = null;
+      this.sidebarReviewTab = 'current-run';
       this.hasRunStarted = false;
       this.clearRunStorage();
 
@@ -1133,7 +1157,7 @@ class RouteLoader {
       this.initScrollObserver();
 
       await this.resetRouteProgressToFirstSegmentAndRender({ scroll: true, save: false });
-      
+
       window.dispatchEvent(new CustomEvent('stopwatch:clear'));
     } catch (error) {
       console.error('Failed to switch route:', error);
@@ -1141,7 +1165,7 @@ class RouteLoader {
   }
 
   confirmRouteSwitchIfRunActive() {
-    const hasActiveRunData = 
+    const hasActiveRunData =
       this.hasRunStarted ||
       this.isStopwatchRunning ||
       this.runComplete ||
@@ -1154,29 +1178,12 @@ class RouteLoader {
     window.dispatchEvent(new CustomEvent('stopwatch:stop'));
 
     return confirm(
-      'You have an active or unfinished run.  Switching routes will dicard the current run data.  Continue?'
+      'You have an active or unfinished run.  Switching routes will discard the current run data.  Continue?'
     );
   }
 
   refreshEditorSegmentOptions() {
-    const parentSelect = document.getElementById('subsegment-parent-id');
-    const deleteSelect = document.getElementById('delete-segment-id');
-    if (!parentSelect || !deleteSelect) return;
-
-    parentSelect.innerHTML = '';
-    deleteSelect.innerHTML = '';
-
-    this.routeData.segments.forEach((segment) => {
-      const parentOption = document.createElement('option');
-      parentOption.value = String(segment.id);
-      parentOption.textContent = `${segment.id}. ${segment.name}`;
-      parentSelect.appendChild(parentOption);
-
-      const deleteOption = document.createElement('option');
-      deleteOption.value = String(segment.id);
-      deleteOption.textContent = `${segment.id}. ${segment.name}`;
-      deleteSelect.appendChild(deleteOption);
-    });
+    this.routeEditorController.refreshEditorSegmentOptions();
   }
 
   reindexSegmentIds() {
@@ -1235,27 +1242,21 @@ class RouteLoader {
   }
 
   saveRunSessionToStorage() {
-    saveRunSessionToStorageHelper(
-      {
-        hasRunStarted: this.hasRunStarted,
-        currentRouteFilename: this.currentRouteFilename,
-        sessionSetSegments: this.sessionSetSegments,
-        sessionGoldSplits: this.sessionGoldSplits,
-        sessionBestBySegment: this.sessionBestBySegment
-      },
-      this.runSessionStorageKey,
-      this.storageProvider
-    );
+    this.routeStorageService.saveRunSession({
+      hasRunStarted: this.hasRunStarted,
+      runComplete: this.runComplete,
+      runPaceState: this.runPaceState,
+      lastCompletedSegmentId: this.lastCompletedSegmentId,
+      currentRouteFilename: this.currentRouteFilename,
+      sessionGoldSplits: this.sessionGoldSplits,
+      sessionSetSegments: this.sessionSetSegments,
+      sessionBestBySegment: this.sessionBestBySegment,
+      personalBestAtRunStart: this.personalBestAtRunStart
+    });
   }
 
   restoreRunSessionFromStorage() {
-    const session = restoreRunSessionFromStorageHelper(this.runSessionStorageKey, this.storageProvider);
-    if (!session) return;
-
-    this.hasRunStarted = session.hasRunStarted;
-    this.sessionSetSegments = session.sessionSetSegments;
-    this.sessionGoldSplits = session.sessionGoldSplits;
-    this.sessionBestBySegment = session.sessionBestBySegment;
+    return this.routeStorageService.restoreRunSession();
   }
 
   getComparisonBestDuration(segment) {
@@ -1301,19 +1302,9 @@ class RouteLoader {
   updateRouteRunStats() {
     if (!this.routeData || !Array.isArray(this.routeData.segments)) return;
 
-    const lastSegment = this.routeData.segments[this.routeData.segments.length - 1];
-    const lastSegmentTime = lastSegment ? getSegmentPbSplitTime(lastSegment) : null;
-    
-    if (isBetterTime(lastSegmentTime, this.routeData.personalBest)) {
-      this.routeData.personalBest = lastSegmentTime;
-    }
-
-    const sumOfBestSeconds = this.routeData.segments.reduce((total, segment) => {
-      const goldSplitSeconds = timeToSeconds(getSegmentGoldSplit(segment));
-      return total + (goldSplitSeconds === null ? 0 : goldSplitSeconds);
-    }, 0);
-
-    this.routeData.sumOfBest = secondsToTime(sumOfBestSeconds);
+    this.runSaveService.updatePersonalBestFromFinalSegment(this.routeData);
+    this.runSaveService.syncCanonicalPbTimingFields(this.routeData);
+    this.runSaveService.recalculateSumOfBest(this.routeData);
   }
 
   ensureRouteStatsStructure() {
@@ -1372,60 +1363,55 @@ class RouteLoader {
   populateSidebar() {
     if (!this.routeData || !this.sidebarList) return;
 
-    this.sidebarList.innerHTML = '';
+    this.runSidebarController.ensureReviewTabs();
 
-    this.routeData.segments.forEach(segment => {
-      const segmentWasSet = this.sessionSetSegments.has(Number(segment.id));
-      const comparisonBestDuration = this.getComparisonBestDuration(segment);
-      const sidebarDelta = segmentWasSet
-        ? formatDurationDelta(getSegmentPbSegmentDuration(segment), comparisonBestDuration)
-        : { text: '--:--:--', state: 'neutral' };
-      const isGoldSplit = segmentWasSet && this.sessionGoldSplits.has(Number(segment.id));
-
-      const items = createSidebarSegmentItem({
-        segment,
-        segmentWasSet,
-        sidebarDelta,
-        isExpanded: this.isSidebarSegmentExpanded(segment.id),
-        isGoldSplit,
-        onSegmentClick: async () => {
-          this.suppressObserverUntil = Date.now() + 1500;
-          await this.setActiveSidebarButton(`segment-${segment.id}`);
-          const target = document.getElementById(`segment-${segment.id}`);
-          if (target) {
-            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }
-        },
-        onSegmentDoubleClick: () => this.toggleSidebarSegmentExpansion(segment.id),
-        onSegmentContextMenu: (event) => {
-          this.openSidebarContextMenu(event, {
-            type: 'segment',
-            segmentId: Number(segment.id)
-          });
-        },
-        onSubsegmentClick: async (subSegmentIndex) => {
-          this.suppressObserverUntil = Date.now() + 1500;
-          await this.setActiveSidebarButton(`segment-${segment.id}`);
-          const target = document.getElementById(`segment-${segment.id}-subsegment-${subSegmentIndex}`);
-          if (target) {
-            target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          }
-        },
-        onSubsegmentContextMenu: (event, subSegmentIndex) => {
-          this.openSidebarContextMenu(event, {
-            type: 'subsegment',
-            segmentId: Number(segment.id),
-            subSegmentIndex
-          });
-        }
-      });
-
-      items.forEach((item) => this.sidebarList.appendChild(item));
-    });
-
-    if (Number.isInteger(this.routeData.currentSegmentId)) {
-      this.setActiveSidebarButton(`segment-${this.routeData.currentSegmentId}`, false);
+    if (this.sidebarReviewTab === 'last-run') {
+      this.runSidebarController.populateLastRunSidebar();
+      return;
     }
+
+    this.runSidebarController.populateCurrentRunSidebar({
+      routeData: this.routeData,
+      sessionSetSegments: this.sessionSetSegments,
+      sessionGoldSplits: this.sessionGoldSplits,
+      getComparisonBestDuration: (segment) => this.getComparisonBestDuration(segment),
+      isSidebarSegmentExpanded: (segmentId) => this.isSidebarSegmentExpanded(segmentId),
+
+      onSegmentClick: async (segment) => {
+        this.suppressObserverUntil = Date.now() + 1500;
+        await this.setActiveSidebarButton(`segment-${segment.id}`, false);
+        this.scrollRouteToSegment(segment.id);
+      },
+
+      onSegmentDoubleClick: (segment) => {
+        this.toggleSidebarSegmentExpansion(segment.id);
+      },
+
+      onSegmentContextMenu: (event, segment) => {
+        this.openSidebarContextMenu(event, {
+          type: 'segment',
+          segmentId: Number(segment.id)
+        });
+      },
+
+      onSubsegmentClick: async (segment, subSegmentIndex) => {
+        this.suppressObserverUntil = Date.now() + 1500;
+        await this.setActiveSidebarButton(`segment-${segment.id}`, false);
+        this.scrollRouteToSegment(segment.id, { block: 'center' });
+      },
+
+      onSubsegmentContextMenu: (event, segment, subSegmentIndex) => {
+        this.openSidebarContextMenu(event, {
+          type: 'subsegment',
+          segmentId: Number(segment.id),
+          subSegmentIndex
+        });
+      },
+
+      setActiveSidebarButton: (segmentId, persistProgress) => (
+        this.setActiveSidebarButton(segmentId, persistProgress)
+      )
+    });
   }
 
   async setActiveSidebarButton(segmentId, persistProgress = true) {
@@ -1444,7 +1430,7 @@ class RouteLoader {
       this.renderComparisonsPanel();
       return;
     }
-    
+   
     if (!this.routeData || !Array.isArray(this.routeData.segments)) return;
 
     const segmentIdNumber = Number(String(segmentId).replace('segment-', ''));
@@ -1466,26 +1452,7 @@ class RouteLoader {
   }
 
   initScrollObserver() {
-    if (this.observer) this.observer.disconnect();
-
-    const options = {
-      root: this.routeContainer,
-      rootMargin: '0px 0px -80% 0px',
-      threshold: 0
-    };
-
-    this.observer = new IntersectionObserver((entries) => {
-      if (Date.now() < this.suppressObserverUntil) return;
-
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-        this.setActiveSidebarButton(entry.target.id).catch((error) => {
-          console.error('Failed to persist current segment from observer:', error);
-        });
-      });
-    }, options);
-
-    document.querySelectorAll('.segment').forEach(el => this.observer.observe(el));
+    this.scrollNavigationController.observeSegments();
   }
 
   createSegment(segmentData) {
@@ -1506,42 +1473,53 @@ class RouteLoader {
     if (!setButton || !timeDisplay) return;
 
     // Set button click handler for segment
-    setButton.addEventListener('click', async (e) => {
-      if (this.sessionBestBySegment.size === 0) {
-        this.captureSessionBestSnapshot();
-      }
+    setButton.addEventListener('click', async () => {
+      await this.setSegmentTimeFromCurrentStopwatch(data.id);
 
-      this.ensureRunSnapshotCaptured();
+      const updatedSegment = this.getSegmentById(data.id);
 
-      const currentTime = this.getCurrentStopwatchTime();
-
-      setSegmentPbSplitTime(data, currentTime);
-
-      this.updateRunPaceStateFromCompletedSegment(data);
-
-      this.sessionSetSegments.add(Number(data.id));
-      this.saveRunSessionToStorage();
-      timeDisplay.textContent = currentTime;
-
-      await this.handleRouteDataChanged();
-
-      this.updateSessionGoldSplitState(data);
-      this.populateSidebar();
-      this.renderComparisonsPanel();
-
-      this.updateMainTimerColor();
-      await this.advanceToNextSegment(data.id);
+      timeDisplay.textContent = updatedSegment
+        ? getSegmentPbSplitTime(updatedSegment)
+        : '';
     });
   }
 
   addSubSegmentEventListeners(element, data) {
-  const setButton = element.querySelector('.sub-segment__set');
+    const setButton = element.querySelector('.sub-segment__set');
 
-  if (setButton) {
-    setButton.hidden = true;
-    setButton.disabled = true;
+    if (setButton) {
+      setButton.hidden = true;
+      setButton.disabled = true;
+    }
   }
-}
+
+  async setSegmentTimeFromCurrentStopwatch(segmentId) {
+    const segment = this.getSegmentById(segmentId);
+
+    if (!segment) return;
+
+    if (this.sessionBestBySegment.size === 0) {
+      this.captureSessionBestSnapshot();
+    }
+
+    this.ensureRunSnapshotCaptured();
+
+    const currentTime = this.getCurrentStopwatchTime();
+
+    setSegmentPbSplitTime(segment, currentTime);
+    this.updateRunPaceStateFromCompletedSegment(segment);
+    this.sessionSetSegments.add(Number(segment.id));
+    this.saveRunSessionToStorage();
+
+    await this.handleRouteDataChanged();
+
+    this.updateSessionGoldSplitState(segment);
+    this.populateSidebar();
+    this.renderComparisonsPanel();
+    this.updateMainTimerColor();
+
+    await this.advanceToNextSegment(segment.id);
+  }
 
   getCurrentStopwatchTime() {
     const stopwatchElement = document.querySelector('.timer__stopwatch');
@@ -1554,9 +1532,9 @@ class RouteLoader {
     const isLastSegment = currentIndex === segments.length - 1;
 
     if (isLastSegment) {
-      const finalTime = getSegmentPbSplitTime(segments[currentIndex]) || '--:--:--';
-      const baselinePersonalBest = this.personalBestAtRunStart || this.routeData.personalBest;
-      const isNewPB = isBetterTime(finalTime, baselinePersonalBest);
+      const finalTime = this.getCompletedRunFinalTime(segments[currentIndex]);
+      const baselinePersonalBest = this.getBaselinePersonalBestForCompletedRun();
+      const isNewPB = this.isNewPersonalBest(finalTime, baselinePersonalBest);
 
       // Do not write to the official route JSON here.
       // Finishing a run should only show the Run Complete card.
@@ -1564,11 +1542,11 @@ class RouteLoader {
       // - Save New PB
       // - Save Gold Splits
       // - Delete Run Data
-      this.runComplete = {
+      this.runComplete = this.runSaveService.createRunCompleteState({
         finalTime,
         isNewPB,
-        previousPB: baselinePersonalBest || '--:--:--'
-      };
+        previousPB: baselinePersonalBest
+      });
 
       window.dispatchEvent(new CustomEvent('run:complete', { detail: { finalTime, isNewPB } }));
       this.renderComparisonsPanel();
@@ -1588,10 +1566,7 @@ class RouteLoader {
     this.suppressObserverUntil = Date.now() + 1500;
     await this.setActiveSidebarButton(nextSegmentDomId);
 
-    const target = document.getElementById(nextSegmentDomId);
-    if (target) {
-      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    this.scrollRouteToSegment(nextSegment.id);
   }
 
   initStopwatchSync() {
@@ -1606,10 +1581,12 @@ class RouteLoader {
 
       this.isStopwatchRunning = detail.runState === 'running';
       if (this.isStopwatchRunning && !this.hasRunStarted) {
+        this.sidebarReviewTab = 'current-run';
+
         this.resetRouteProgressToFirstSegment();
         this.populateSidebar();
+        this.scrollRouteToSegment(this.routeData.currentSegmentId || 1);
         this.renderComparisonsPanel();
-
         this.captureSessionBestSnapshot();
         this.ensureRunSnapshotCaptured();
         this.hasRunStarted = true;
@@ -1635,10 +1612,6 @@ class RouteLoader {
       return { duration: '--:--:--', isLive: false };
     }
 
-    if (!this.isStopwatchRunning) {
-      return { duration: savedDuration, isLive: false };
-    }
-
     const segmentIndex = this.routeData.segments.findIndex(
       (segment) => Number(segment.id) === Number(currentSegment.id)
     );
@@ -1658,7 +1631,11 @@ class RouteLoader {
       return { duration: savedDuration, isLive: false };
     }
 
-    return { duration: secondsToTime(liveSeconds - previousSeconds), isLive: true };
+    return {
+      duration: secondsToTime(liveSeconds - previousSeconds),
+      isLive: this.isStopwatchRunning,
+      isPaused: this.hasRunStarted && !this.isStopwatchRunning
+    };
   }
 
   getCurrentSegmentData() {
@@ -1766,16 +1743,9 @@ class RouteLoader {
     if (!this.comparisonsContainer) return;
 
     if (this.runComplete) {
-      const { finalTime, isNewPB, previousPB } = this.runComplete;
-      const previousPersonalBest = previousPB || '--:--:--';
-      const runDelta = formatDurationDelta(finalTime, previousPersonalBest);
-
-      this.comparisonsContainer.innerHTML = createRunCompleteComparisonsHtml({
-        finalTime,
-        isNewPB,
-        previousPersonalBest,
-        runDelta,
-        sumOfBest: this.routeData.sumOfBest || '--:--:--'
+      this.comparisonPanelController.renderRunComplete({
+        runComplete: this.runComplete,
+        routeData: this.routeData
       });
 
       const saveGoldButton = this.comparisonsContainer.querySelector('.comparisons__end-run-btn');
@@ -1796,52 +1766,37 @@ class RouteLoader {
     }
 
     const currentSegment = this.getCurrentSegmentData();
-    const segmentLabel = currentSegment
-      ? `${currentSegment.id}. ${currentSegment.name}`
-      : 'No segment selected';
-
     const durationMeta = this.getCurrentSegmentDuration(currentSegment);
     const currentDuration = durationMeta.duration;
-    const segmentStatus = (!this.hasRunStarted && !this.isStopwatchRunning)
-      ? { state: 'idle', text: 'IDLE' }
-      : (durationMeta.isLive
-        ? { state: 'live', text: 'LIVE' }
-        : { state: 'saved', text: 'SAVED' });
 
-    const bestDuration = currentSegment
+    const comparisonBestDuration = currentSegment
       ? (this.getComparisonBestDuration(currentSegment) || '--:--:--')
       : '--:--:--';
 
-    const delta = formatDurationDelta(currentDuration, bestDuration);
     const currentRunTime = this.liveStopwatchTime || this.getCurrentStopwatchTime();
+
     const personalBest = this.routeData && typeof this.routeData.personalBest === 'string'
       ? (this.routeData.personalBest || '--:--:--')
       : '--:--:--';
-    const runDelta = this.hasRunStarted
-      ? formatDurationDelta(currentRunTime, personalBest)
-      : { text: '--:--:--', state: 'neutral' };
-    const isGoldSplit = Boolean(
-      currentSegment &&
-      this.sessionGoldSplits.has(currentSegment.id)
-    );
 
-    this.comparisonsContainer.innerHTML = createComparisonsHtml({
-      segmentLabel,
+    this.comparisonPanelController.renderCurrentComparison({
+      currentSegment,
       currentDuration,
-      segmentStatus,
-      bestDuration,
-      delta,
+      durationMeta,
+      hasRunStarted: this.hasRunStarted,
+      isStopwatchRunning: this.isStopwatchRunning,
+      comparisonBestDuration,
       currentRunTime,
       personalBest,
-      runDelta,
       sumOfBest: this.routeData.sumOfBest || '--:--:--',
-      isGoldSplit,
-      isStopwatchRunning: this.isStopwatchRunning,
-      hasRunStarted: this.hasRunStarted
+      sessionGoldSplits: this.sessionGoldSplits
     });
+
+    this.bindComparisonPanelActions();
 
     if (this.hasRunStarted) {
       const resetRunButton = this.comparisonsContainer.querySelector('.comparisons__reset-run-btn');
+
       if (resetRunButton) {
         resetRunButton.addEventListener('click', async () => {
           await this.resetRun();
@@ -1849,14 +1804,30 @@ class RouteLoader {
       }
     }
   }
+
+  bindComparisonPanelActions() {
+    const setSegmentTimeButton = this.comparisonsContainer?.querySelector(
+      '.comparisons__set-segment-time-btn'
+    );
+
+    if (setSegmentTimeButton) {
+      setSegmentTimeButton.addEventListener('click', async () => {
+        const currentSegmentId = Number(this.routeData?.currentSegmentId);
+
+        if (!Number.isInteger(currentSegmentId)) return;
+
+        await this.setSegmentTimeFromCurrentStopwatch(currentSegmentId);
+      });
+    }
+  }
 }
 
 // Initialize route loader when DOM is ready
 if (typeof document !== 'undefined' && document.addEventListener) {
   document.addEventListener('DOMContentLoaded', () => {
-    const routeLoader = new RouteLoader();
-    routeLoader.init();
+    const splitTimerController = new SplitTimerController();
+    splitTimerController.init();
   });
 }
 
-export { RouteLoader };
+export { SplitTimerController };

@@ -220,7 +220,7 @@ export function createRunCompleteComparisonsHtml({ finalTime, isNewPB, previousP
 export function createComparisonsHtml({
   segmentLabel,
   currentDuration,
-  segmentStatus,
+  currentStatus,
   bestDuration,
   delta,
   currentRunTime,
@@ -231,13 +231,20 @@ export function createComparisonsHtml({
   isStopwatchRunning,
   hasRunStarted
 }) {
+  const comparisonsCardStateClass = hasRunStarted
+    ? 'comparisons__card--during-run'
+    : 'comparisons__card--pre-run';
+  
   return `
     <h3 class="comparisons__title">Comparisons</h3>
     <div class="comparisons__cards">
-      <section class="comparisons__card">
+      <section class="comparisons__card ${comparisonsCardStateClass}">
         <div class="comparisons__card-top">
           <h4 class="comparisons__card-title">Segment Comparison</h4>
-          <div class="comparisons__status comparisons__status--${segmentStatus.state}">${escapeHtml(segmentStatus.text)}</div>
+          <div class="comparisons__status comparisons__status--${currentStatus.state}">${escapeHtml(currentStatus.text)}</div>
+        </div>
+        <div class="comparisons__actions comparisons__actions--segment">
+          ${hasRunStarted ? '<button type="button" class="comparisons__set-segment-time-btn btn-blue">Set Segment Time</button>' : ''}
         </div>
         <div class="comparisons__row">
           <span class="comparisons__label">Current Segment</span>
@@ -261,10 +268,13 @@ export function createComparisonsHtml({
         ${isGoldSplit ? '<p class="comparisons__gold-note">Gold Split! New best split time.</p>' : ''}
       </section>
 
-      <section class="comparisons__card">
+      <section class="comparisons__card ${comparisonsCardStateClass}">
         <div class="comparisons__card-top">
           <h4 class="comparisons__card-title">Run Comparison</h4>
-          <div class="comparisons__status comparisons__status--${isStopwatchRunning ? 'live' : 'saved'}">${isStopwatchRunning ? 'LIVE' : 'SAVED'}</div>
+          <div class="comparisons__status comparisons__status--${currentStatus.state}">${escapeHtml(currentStatus.text)}</div>
+        </div>
+        <div class="comparisons__actions comparisons__actions--segment">
+          ${hasRunStarted ? '<button class="comparisons__reset-run-btn btn-red" type="button">Reset Run</button>' : ''}
         </div>
         <div class="comparisons__row">
           <span class="comparisons__label">Current Run</span>
@@ -285,7 +295,6 @@ export function createComparisonsHtml({
           <span class="comparisons__label">Sum of Best</span>
           <span class="comparisons__value">${escapeHtml(sumOfBest)}</span>
         </div>
-        ${hasRunStarted ? '<button class="comparisons__reset-run-btn btn-blue" type="button">Reset Run</button>' : ''}
       </section>
     </div>
   `;

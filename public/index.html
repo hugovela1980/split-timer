@@ -7,11 +7,10 @@
 
   <script src="./js/services/file-saver.js" defer></script>
   <script src="./js/app/main.js" defer></script>
-  <script type="module" src="./js/app/route-loader.js"></script>
+  <script type="module" src="./js/app/split-timer-controller.js"></script>
 
   <link rel="icon" type="image/x-icon" href="./img/favicon.ico">
-  <link rel="stylesheet" href="./css/start-screen.css">
-  <link rel="stylesheet" href="./css/main.css">
+  <link rel="stylesheet" href="./css/app.css">
 
   <title>Split Timer</title>
 </head>
@@ -54,16 +53,18 @@
 
         <h1 class="timer__stopwatch">00:00:00</h1>
 
-        <div class="timer__btns">
-          <button class="timer__start btn-green">Start</button>
-          <button class="timer__stop btn-red">Stop</button>
-          <button class="timer__reset btn-blue">Reset</button>
+        <div class="timer__controls--buttons">
+          <div class="timer__btns">
+            <button class="timer__start btn-green">Start</button>
+            <button class="timer__stop btn-red">Stop</button>
+            <button class="timer__reset btn-blue">Reset</button>
+          </div>
+  
+          <form class="timer__set">
+            <input class="timer__set--input" autofocus>
+            <button class="timer__set--submit btn-blue" type="submit">Set</button>
+          </form>
         </div>
-
-        <form class="timer__set">
-          <input class="timer__set--input" autofocus>
-          <button class="timer__set--submit btn-blue" type="submit">Set</button>
-        </form>
       </div>
 
       <div class="comparisons">comparisons</div>
@@ -125,10 +126,10 @@
   </dialog>
 
   <div id="sidebar-context-menu" class="sidebar-context-menu" hidden>
-    <button type="button" id="sidebar-context-edit" class="sidebar-context-menu__item">Edit Name</button>
-    <button type="button" id="sidebar-context-clear-split"
-      class="sidebar-context-menu__item sidebar-context-menu__item--warn">Clear Segment Split</button>
-    <button type="button" id="sidebar-context-delete"
+    <button type="button" data-context-action="rename" id="sidebar-context-edit" class="sidebar-context-menu__item">Edit Name</button>
+    <button type="button" data-context-action="clear-split" id="sidebar-context-clear-split"
+      class="sidebar-context-menu__item sidebar-context-menu__item--warn">Clear Gold Split</button>
+    <button type="button" data-context-action="delete" id="sidebar-context-delete"
       class="sidebar-context-menu__item sidebar-context-menu__item--danger">Delete</button>
   </div>
 
@@ -147,37 +148,3 @@
 </body>
 
 </html>
-
-<!-- <div class="segment">
-      <div class="segment__title">
-        <h2 class="segment__title--name">Segment 1</h2>
-        <div class="segment__title--info">
-          <p class="segment__title--time">00:00:00</p>
-          <button class="segment__title--set btn-blue">Set Time</button>
-        </div>
-      </div>
-
-      <div class="sub-segments">
-        <div class="sub-segment">
-          <div class="sub-segment__task">
-            <input type="checkbox" name="task" class="sub-segment__checkbox">
-            <p class="sub-segment__description">Lorem ipsum dolor sit amet.</p>
-          </div>
-          <div class="sub-segment__time">
-            <p class="sub-segment__time"></p>
-            <button class="sub-segment__set btn-blue">Set Time</button>
-          </div>
-        </div>
-
-        <div class="sub-segment">
-          <div class="sub-segment__task">
-            <input type="checkbox" name="task" class="sub-segment__checkbox">
-            <p class="sub-segment__description">Lorem ipsum dolor sit amet.</p>
-          </div>
-          <div class="sub-segment__time">
-            <p class="sub-segment__time">00:00:00</p>
-            <button class="sub-segment__set btn-blue">Set Time</button>
-          </div>
-        </div>
-      </div>    
-    </div> -->
