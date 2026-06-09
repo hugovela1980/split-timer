@@ -576,11 +576,16 @@ class SplitTimerController {
   }
 
   async restartRun() {
+    window.dispatchEvent(new CustomEvent('stopwatch:stop'));
+
     this.restoreBaselineRouteState();
     this.resetRunSessionState();
-
     this.populateRoute();
-    await this.resetRouteProgressToFirstSegmentAndRender({ scroll: true, save: false });
+
+    await this.resetRouteProgressToFirstSegmentAndRender({
+      scroll: true,
+      save: false
+    });
 
     window.dispatchEvent(new CustomEvent('stopwatch:clear'));
   }
@@ -679,6 +684,8 @@ class SplitTimerController {
     });
 
     this.hasRunStarted = false;
+
+    window.dispatchEvent(new CustomEvent('stopwatch:stop'));
 
     this.renderComparisonsPanel();
     this.saveRunSessionToStorage();

@@ -289,6 +289,71 @@
     display: block;
   }
 
+  /* Run Complete card styling */
+  /* Run Complete card: compact tablet/phone layout */
+.comparisons__card--finish {
+  display: grid;
+  grid-template-columns: 1fr;
+  justify-items: center;
+  row-gap: clamp(0.45rem, 1.4vw, 0.75rem);
+  padding: clamp(0.75rem, 1.6vw, 1rem);
+}
+
+.comparisons__card--finish .comparisons__pb-banner {
+  grid-column: 1;
+  text-align: center;
+  margin-bottom: 0.35rem;
+}
+
+/* Override the normal tablet `display: contents` behavior for Run Complete rows */
+.comparisons__card--finish .comparisons__row {
+  display: grid;
+  grid-template-columns: max-content max-content;
+  justify-content: center;
+  align-items: center;
+  column-gap: clamp(0.75rem, 2vw, 1.25rem);
+  width: 100%;
+  margin-bottom: 0;
+}
+
+.comparisons__card--finish .comparisons__label {
+  grid-column: 1;
+  justify-self: end;
+  text-align: right;
+  font-size: clamp(0.88rem, 2vw, 1.05rem);
+  line-height: 1.15;
+}
+
+.comparisons__card--finish .comparisons__value {
+  grid-column: 2;
+  justify-self: start;
+  text-align: left;
+  font-size: clamp(0.95rem, 2.1vw, 1.12rem);
+  line-height: 1.15;
+  white-space: nowrap;
+}
+
+/* Put Run Complete actions underneath, side by side */
+.comparisons__card--finish .comparisons__actions {
+  grid-column: 1;
+  grid-row: auto;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: clamp(0.55rem, 1.5vw, 0.85rem);
+  margin-top: clamp(0.45rem, 1.4vw, 0.75rem);
+}
+
+.comparisons__card--finish .comparisons__actions button {
+  margin: 0;
+  font-size: clamp(0.9rem, 2.3vw, 1.1rem);
+  padding: clamp(0.45rem, 1vw, 0.65rem) clamp(0.75rem, 1.7vw, 1.1rem);
+  line-height: 1.1;
+  white-space: normal;
+}
+
   .sidebar {
     flex: 0 0 clamp(300px, 40%, 340px);
     width: clamp(300px, 40%, 340px);

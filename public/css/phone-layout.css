@@ -60,6 +60,23 @@
     padding: 0.1rem 0.35rem;
   }
 
+  .comparisons__card--finish .comparisons__row {
+    column-gap: clamp(0.55rem, 3vw, 0.9rem);
+  }
+
+  .comparisons__card--finish .comparisons__label {
+    font-size: clamp(0.82rem, 3.2vw, 0.98rem);
+  }
+
+  .comparisons__card--finish .comparisons__value {
+    font-size: clamp(0.88rem, 3.4vw, 1.05rem);
+  }
+
+  .comparisons__card--finish .comparisons__actions button {
+    font-size: clamp(0.85rem, 3.4vw, 1rem);
+    padding: 0.45rem 0.65rem;
+  }
+
   .sidebar__editor-panel {
     display: none;
   }

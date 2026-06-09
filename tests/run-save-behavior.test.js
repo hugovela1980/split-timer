@@ -346,6 +346,28 @@ tester.describe('SplitTimerController confirmed run save behavior', () => {
     tester.expect(splitTimerController.hasRunStarted).toBe(false);
   }));
 
+  tester.it('endRunManually stops the stopwatch when creating run complete state', withFakeWindow(async () => {
+    const dispatchedEvents = [];
+
+    globalThis.window.dispatchEvent = (event) => {
+      dispatchedEvents.push(event.type);
+    };
+
+    splitTimerController.routeData = cloneFixture(createTimerColorPaceRoute());
+    splitTimerController.liveStopwatchTime = '00:00:12';
+    splitTimerController.personalBestAtRunStart = '';
+    splitTimerController.hasRunStarted = true;
+
+    splitTimerController.renderComparisonsPanel = tester.fn();
+    splitTimerController.saveRunSessionToStorage = tester.fn();
+
+    await splitTimerController.endRunManually();
+
+    tester.expect(splitTimerController.runComplete.finalTime).toBe('00:00:12');
+    tester.expect(splitTimerController.hasRunStarted).toBe(false);
+    tester.expect(dispatchedEvents.includes('stopwatch:stop')).toBe(true);
+  }));
+
   tester.it('advanceToNextSegment treats final segment on first run as a new PB', withFakeWindow(async () => {
     splitTimerController.routeData = cloneFixture(createTimerColorPaceRoute());
 
