@@ -8,44 +8,32 @@
 
 ## Current Focus
 
-* [x] Create or update `README.md`
-
-  * [ ] Explain what Split Timer does
-  * [ ] Include setup/run instructions
-  * [ ] Include test command
-  * [ ] Briefly describe project architecture and testing approach
-  * [ ] Add screenshots or GIFs if available
-  * [ ] Add current version notes
-
-* [x] Final full smoke test before main branch update
 
 ## Next Up
 
+* [ ] Audit route file write behavior before removing compatibility layer
 
-  * [ ] Open app and load route
-  * [ ] Start / pause / resume / reset timer
-  * [ ] Complete PB run and Save New PB
-  * [ ] Complete non-PB run and Save Gold Splits
-  * [ ] Delete Run Data and verify no route file write occurs
-  * [ ] Review Last Run tab behavior
-  * [ ] Switch routes with and without active run data
-  * [ ] Add/delete/rename segment
-  * [ ] Add subsegment
-  * [ ] Clear Segment Split
-  * [ ] Refresh browser and reload route
-  * [ ] Run full unit test suite
+  * [ ] Confirm route files are written only for intentional saved route-data changes
+  * [ ] Confirm navigation, scrolling, tab switching, pause/resume, and Delete Run Data do not write route files
+  * [ ] Confirm Save New PB and Save Gold Splits write expected canonical and transitional fields
+  * [ ] Confirm route editor writes expected canonical and transitional fields
 
-* [ ] Prepare stable version for main branch
+* [ ] Remove timing compatibility layer after route files fully migrate
 
-  * [ ] Confirm `develop` is clean
-  * [ ] Confirm `npm test` passes
-  * [ ] Merge `develop` into `main`
-  * [ ] Tag stable version
-  * [ ] Push `main` and tags
+  * [ ] Remove old timing-field fallback logic
+  * [ ] Update tests to expect final schema only
+  * [ ] Keep migration tests only if old route imports still need support
+  * [ ] Confirm PB, gold split, sum of best, comparison panel, sidebar, and Last Run behavior still work
 
 ## Backlog
 
 ### Compatibility Layer Removal Path
+
+* [ ] Review frontend folder structure after controller/service extractions
+
+  * [ ] Decide whether `public/js/persistence/storage.js` should remain as a low-level persistence helper
+  * [ ] Consider moving storage helpers into a clearer infrastructure/services folder
+  * [ ] Update imports in a separate cleanup commit after refactors stabilize
 
 * [ ] Verify all user-facing route files are fully migrated
 
@@ -61,13 +49,6 @@
   * [ ] Add Subsegment should create all required canonical fields
   * [ ] Create Route should create schema-complete route files
   * [ ] Rename/delete/clear actions should preserve schema consistency
-
-* [ ] Audit route file write behavior before removing compatibility layer
-
-  * [ ] Confirm route files are written only for intentional saved route-data changes
-  * [ ] Confirm navigation, scrolling, tab switching, pause/resume, and Delete Run Data do not write route files
-  * [ ] Confirm Save New PB and Save Gold Splits write expected canonical and transitional fields
-  * [ ] Confirm route editor writes expected canonical and transitional fields
 
 * [ ] Decide whether clean route writes should save normalized schema fields
 
@@ -96,22 +77,7 @@
   * [ ] Generate formatted display strings from millisecond values where possible
   * [ ] Reduce dependence on legacy display-string fields
 
-* [ ] Remove timing compatibility layer after route files fully migrate
-
-  * [ ] Remove old timing-field fallback logic
-  * [ ] Update tests to expect final schema only
-  * [ ] Keep migration tests only if old route imports still need support
-  * [ ] Confirm PB, gold split, sum of best, comparison panel, sidebar, and Last Run behavior still work
-
 ### Stable Version Polish / Usability
-
-* [ ] Fix sidebar overflow with long split times
-
-  * [ ] Prevent sidebar table columns from exceeding the sidebar container width
-  * [ ] Preserve readable `Segment | Split | Vs Best` layout for routes longer than one hour
-  * [ ] Review spacing/font sizing for `HH:MM:SS` times and large positive/negative deltas
-  * [ ] Avoid horizontal page overflow when sidebar content is wide
-  * [ ] Smoke test with Act 1 / Act 2 routes and one-hour-plus split times
 
 * [ ] Review whether Clear Segment Split should preserve current segment selection
 
@@ -133,12 +99,6 @@
   * [ ] Confirm before leaving if active/unfinished run data exists
 
 ### Future Architecture / Tooling
-
-* [ ] Review frontend folder structure after controller/service extractions
-
-  * [ ] Decide whether `public/js/persistence/storage.js` should remain as a low-level persistence helper
-  * [ ] Consider moving storage helpers into a clearer infrastructure/services folder
-  * [ ] Update imports in a separate cleanup commit after refactors stabilize
 
 * [ ] Extract stopwatch logic from `public/js/app/main.js` into a dedicated stopwatch module
 
@@ -226,4 +186,9 @@
 
 - [x] Update project docs before stable version
 
+* [x] Create or update `README.md`
+
+* [x] Final full smoke test before main branch update
+
 ## Notes
+
