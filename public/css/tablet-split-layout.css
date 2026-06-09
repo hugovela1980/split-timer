@@ -2,6 +2,7 @@
    Load this file AFTER desktop-wrap-layout.css. */
 
 @media (max-width: 830px) {
+
   html,
   body {
     height: 100%;
@@ -113,45 +114,61 @@
 
   .comparisons__card {
     min-width: 0;
-    padding: clamp(0.5rem, 1.1vw, 0.7rem);
+    display: grid;
+    grid-auto-rows: min-content;
+    column-gap: clamp(1rem, 4vw, 2rem);
+    row-gap: 0.35rem;
+    align-items: center;
+    padding: clamp(0.6rem, 1.2vw, 0.85rem);
   }
 
-  .comparisons__set-segment-time-btn {
-    display: block;
-  }
-
+  /* Shared top-row behavior:
+   Let title/status participate in the parent card grid. */
   .comparisons__card-top {
-    margin-bottom: 0.45rem;
+    display: contents;
   }
 
   .comparisons__card-title {
-    font-size: clamp(0.78rem, 1.8vw, 0.95rem);
+    min-width: 0;
+    font-size: clamp(0.9rem, 2vw, 1.08rem);
     line-height: 1.15;
+    text-align: center;
   }
 
   .comparisons__status {
-    font-size: 0.62rem;
-    padding: 0.1rem 0.38rem;
+    justify-self: end;
+    align-self: center;
+    font-size: 0.68rem;
+    padding: 0.12rem 0.42rem;
+    white-space: nowrap;
+    z-index: 1;
   }
 
+  /* Let label/value become direct grid children of .comparisons__card. */
   .comparisons__row {
-    grid-template-columns: minmax(0, 1fr) minmax(4.8rem, auto);
-    gap: 0.4rem;
-    margin-bottom: 0.35rem;
+    display: contents;
   }
 
   .comparisons__label {
-    font-size: clamp(0.72rem, 1.7vw, 0.92rem);
+    min-width: 0;
+    font-size: clamp(0.82rem, 1.8vw, 1rem);
     line-height: 1.15;
+    text-align: center;
+    justify-self: end;
+    align-self: center;
   }
 
   .comparisons__value {
-    justify-self: end;
-    text-align: right;
-    font-size: clamp(0.78rem, 1.8vw, 0.98rem);
+    min-width: 0;
+    justify-self: start;
+    align-self: center;
+    text-align: center;
+    font-size: clamp(0.86rem, 1.9vw, 1.05rem);
+    line-height: 1.15;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: clip;
+    font-variant-numeric: tabular-nums;
   }
 
   .comparisons__value--segment {
@@ -160,14 +177,116 @@
     line-height: 1.15;
   }
 
+  .comparisons__delta {
+    justify-content: center;
+    gap: 0.35rem;
+    white-space: nowrap;
+  }
+
+  .comparisons__delta-icon {
+    flex: 0 0 auto;
+    width: 1rem;
+    height: 1rem;
+    font-size: 0.7rem;
+  }
+
+  /*
+  PRE-RUN / IDLE CARD LAYOUT
+
+  row 1:
+  [ title centered across both columns, status on far right ]
+
+  rows below:
+  [ label ] [ value ]
+*/
+  .comparisons__card--pre-run {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .comparisons__card--pre-run .comparisons__card-title {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    justify-self: center;
+    text-align: center;
+  }
+
+  .comparisons__card--pre-run .comparisons__status {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+  }
+
+  .comparisons__card--pre-run .comparisons__label {
+    grid-column: 1;
+  }
+
+  .comparisons__card--pre-run .comparisons__value {
+    grid-column: 2;
+  }
+
+  /*
+  DURING-RUN CARD LAYOUT
+
+  row 1:
+  [ empty action column ] [ title spans columns 2-3 ] [ status right ]
+
+  rows below:
+  [ action button ] [ label ] [ value ]
+*/
+  .comparisons__card--during-run {
+    grid-template-columns: minmax(8rem, 11rem) minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .comparisons__card--during-run .comparisons__card-title {
+    grid-column: 2 / 4;
+    grid-row: 1;
+    justify-self: center;
+    text-align: center;
+  }
+
+  .comparisons__card--during-run .comparisons__status {
+    grid-column: 3;
+    grid-row: 1;
+    justify-self: end;
+  }
+
+  .comparisons__card--during-run .comparisons__actions {
+    grid-column: 1;
+    grid-row: 3 / span 2;
+    align-self: center;
+    justify-self: center;
+  }
+
+  .comparisons__card--during-run .comparisons__label {
+    grid-column: 2;
+  }
+
+  .comparisons__card--during-run .comparisons__value {
+    grid-column: 3;
+  }
+
+  /*
+  Shared comparison action styling
+*/
   .comparisons__actions {
-    margin-top: 0.45rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     gap: 0.45rem;
+    margin: 0;
   }
 
   .comparisons__actions button {
-    font-size: clamp(0.85rem, 1.9vw, 1.05rem);
-    padding: 0.35rem 0.65rem;
+    margin: 0;
+    font-size: clamp(0.95rem, 2.2vw, 1.25rem);
+    padding: clamp(0.45rem, 1vw, 0.7rem) clamp(0.75rem, 1.5vw, 1.1rem);
+    line-height: 1.1;
+    white-space: normal;
+    max-width: 100%;
+  }
+
+  .comparisons__set-segment-time-btn {
+    display: block;
   }
 
   .sidebar {
@@ -310,5 +429,9 @@
     min-width: 0;
     grid-template-columns: 1fr auto;
     gap: 0.45rem;
+  }
+
+  .sidebar__editor-panel {
+    display: none;
   }
 }

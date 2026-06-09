@@ -231,10 +231,14 @@ export function createComparisonsHtml({
   isStopwatchRunning,
   hasRunStarted
 }) {
+  const comparisonsCardStateClass = hasRunStarted
+    ? 'comparisons__card--during-run'
+    : 'comparisons__card--pre-run';
+  
   return `
     <h3 class="comparisons__title">Comparisons</h3>
     <div class="comparisons__cards">
-      <section class="comparisons__card">
+      <section class="comparisons__card ${comparisonsCardStateClass}">
         <div class="comparisons__card-top">
           <h4 class="comparisons__card-title">Segment Comparison</h4>
           <div class="comparisons__status comparisons__status--${currentStatus.state}">${escapeHtml(currentStatus.text)}</div>
@@ -264,7 +268,7 @@ export function createComparisonsHtml({
         ${isGoldSplit ? '<p class="comparisons__gold-note">Gold Split! New best split time.</p>' : ''}
       </section>
 
-      <section class="comparisons__card">
+      <section class="comparisons__card ${comparisonsCardStateClass}">
         <div class="comparisons__card-top">
           <h4 class="comparisons__card-title">Run Comparison</h4>
           <div class="comparisons__status comparisons__status--${currentStatus.state}">${escapeHtml(currentStatus.text)}</div>

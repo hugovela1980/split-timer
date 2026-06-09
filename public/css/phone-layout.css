@@ -1,0 +1,66 @@
+/* Phone layout: hide route, keep timer/comparisons/sidebar */
+@media (max-width: 500px) {
+  .app-shell {
+    --tablet-timer-row-height: 60dvh;
+    --tablet-info-row-height: calc(100dvh - var(--tablet-timer-row-height));
+  }
+
+  .route {
+    display: none;
+  }
+
+  .sidebar {
+    flex: 1 0 100%;
+    width: 100%;
+    height: var(--tablet-info-row-height);
+    max-height: var(--tablet-info-row-height);
+  }
+
+  .comparisons__card--during-run {
+    grid-template-columns: minmax(5.2rem, 6.8rem) minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: clamp(0.45rem, 1.5vw, 0.75rem);
+  }
+
+  .comparisons__actions {
+    grid-row: 3 / span 2;
+    align-self: center;
+    justify-self: center;
+  }
+
+  .comparisons__actions button {
+    width: 100%;
+    max-width: 6.4rem;
+    min-height: 3.2rem;
+    font-size: clamp(0.78rem, 3.2vw, 0.95rem);
+    padding: 0.35rem 0.45rem;
+    line-height: 1.05;
+    text-align: center;
+  }
+
+  .comparisons__set-segment-time-btn {
+    max-width: 6.4rem;
+  }
+
+  .comparisons__label {
+    font-size: clamp(0.78rem, 3vw, 0.92rem);
+    line-height: 1.05;
+  }
+
+  .comparisons__value {
+    font-size: clamp(0.82rem, 3vw, 0.95rem);
+    line-height: 1.05;
+  }
+
+  .comparisons__card-title {
+    font-size: clamp(0.85rem, 3.3vw, 1rem);
+  }
+
+  .comparisons__status {
+    font-size: 0.62rem;
+    padding: 0.1rem 0.35rem;
+  }
+
+  .sidebar__editor-panel {
+    display: none;
+  }
+}

@@ -19,7 +19,7 @@
     * [ ] Keep existing `.route` segment `Set Time` buttons visible for now
     * [ ] Smoke test setting segment times from the comparison card and from the route segment card
 
-  * [ ] Update tablet comparison card layout
+  * [x] Update tablet comparison card layout
 
     * [ ] Make `.comparisons__card` use a three-column grid at the `830px` breakpoint
     * [ ] Make `.comparisons__card-top` span the full top row

@@ -180,6 +180,8 @@ input {
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 10px;
   padding: clamp(0.6rem, 1.3vw, 0.85rem) clamp(0.65rem, 1.4vw, 0.95rem);
+  display: flex;
+  flex-direction: column;
 }
 
 .comparisons__actions {
@@ -198,6 +200,7 @@ input {
 }
 
 .comparisons__card-top {
+  order: 1;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -241,6 +244,7 @@ input {
 }
 
 .comparisons__row {
+  order: 2;
   display: grid;
   grid-template-columns: minmax(7.5rem, 155px) minmax(0, 1fr);
   gap: clamp(0.45rem, 1.2vw, 0.9rem);
@@ -363,6 +367,11 @@ input {
   font-size: 0.93rem;
   font-weight: 700;
   letter-spacing: 0.02em;
+}
+
+.comparisons__actions {
+  order: 3;
+  margin-top: 0.85rem;
 }
 
 .route {
