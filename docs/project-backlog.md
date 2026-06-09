@@ -8,7 +8,6 @@
 
 ## Current Focus
 
-[x] Add phone layout
 
 ## Next Up
 
@@ -235,6 +234,7 @@
 
 - [x] Add tablet comparison-card actions and layout
 
+- [x] Fix Run Complete card for mobile layouts
 
 ## Notes
 - I have to press Restart Run twice for it to work and now the stopwatch doesn't stop running, though the comparisons panel timers do stop
