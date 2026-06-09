@@ -7,15 +7,7 @@
 - Development branch: `develop`
 
 ## Current Focus
-* [ ] Fix visual/UI polish issues before main branch version
-
-  * [ ] Fix sidebar overflow with long split times
-  * [ ] Prevent sidebar table columns from exceeding the sidebar container width
-  * [ ] Preserve readable `Segment | Split | Vs Best` layout for routes longer than one hour
-  * [ ] Review spacing/font sizing for `HH:MM:SS` times and large positive/negative deltas
-  * [ ] Avoid horizontal page overflow when sidebar content is wide
-
-* [x] Test editor flows and Last Run sidebar data rendering
+- [ ] Add tablet/mobile responsive layout for 830px breakpoint where sidebar no longer fits beside timer
 
 ## Next Up
 
